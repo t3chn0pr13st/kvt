@@ -1,0 +1,254 @@
+.UIText, .UITextSmall{
+    line-height: 11px !important;
+}
+
+.jpt-tools{
+    margin-top: 0px !important;
+}
+
+
+/**
+ * Заявка
+ */
+/* поля ввода и плюс/минус */
+.pt-numeric-input .pt-button-group.pt-vertical>.pt-button {
+    width: 20px !important
+}
+.kvt-root [class*=src-components-Forms-NumericInput-styles-rightElement-][class*=src-components-Forms-NumericInput-styles-withBtn-] {
+    right: 21px !important;
+}
+.kvt-root [class*=src-components-Forms-commonStyles-rightElement-]{
+    padding-right: 3px !important
+}
+.kvt-root [class*=src-components-Forms-commonStyles-description-]{
+    padding-right: 0 !important;
+    min-width: 10px !important;
+}
+
+/* комиссия + цена сделки */
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    margin-top: 7px !important;
+    padding: 2px 7px;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
+    padding: 1px 0 !important;
+    border-bottom: none !important;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-caption] {
+    display: none;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-value-] {
+    margin-left: 0;
+}
+
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-]{
+    padding: 5px 5px 0 !important;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-assetCard-] {
+    margin-bottom: 7px !important;
+}
+.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
+    padding: 0 7px !important;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-]{
+    padding: 0 4px 0 !important;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-] {
+    border: none;
+    margin: 1px;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
+    padding: 0 5px !important;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-]{
+    padding: 4px !important;
+    margin-bottom: 4px !important;
+}
+/* меньше кнопочки */
+.pt-button.pt-fill{
+    min-height: 24px !important;
+    padding: 1px !important;
+}
+
+
+
+/**
+ * список заявок
+ */
+.UICard{
+    padding: 5px 7px !important;
+}
+
+.kvt-root [class*=src-components-TabPanel-styles-wrapper-] {
+    padding: 2px 5px !important;
+}
+
+.kvt-root [class*=src-modules-Orders-containers-components-styles-main-]{
+    min-width: 210px !important;
+}
+
+.kvt-root [class*=src-components-TabButton-styles-wrapper-] {
+    padding: 4px 3px !important;
+    max-width: 44px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+.kvt-root [class*=src-components-TabButton-styles-wrapper-]:not(:first-child) {
+    margin-left: 4px !important;
+}
+
+/* item заявки */
+.kvt-root [class*=src-modules-Orders-containers-styles-inner-]{
+    margin: 0 5px !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-header-]{
+    padding-right: 27px;
+    border-bottom: none !important;
+    padding-bottom: 2px !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] {
+    align-items: center;
+    max-width: 60%;
+    position: relative;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] [class*=src-modules-Orders-containers-components-styles-logo-] {
+    position: absolute;
+    top: 0;
+}
+
+.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] [class*=src-modules-Orders-containers-components-styles-primary-]{
+    padding-left: 26px;
+}
+
+.kvt-root [class*=src-modules-Orders-containers-components-styles-secondary-] {
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: 3px;
+}
+
+.kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-]{
+    position: absolute !important;
+    right: 5px !important;
+    width: 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 0 !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] {flex-direction: column;flex-wrap: nowrap;align-content: center;}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-] > [class*=src-modules-Orders-containers-components-styles-secondary-] {
+    display: none !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-divider-] {
+    display: none !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *{
+    overflow: hidden !important;
+    width: 24px !important;
+    height: 19px !important;
+    margin: 3px 0 !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(1):before,
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(3):before{
+    width: 24px !important;
+    height: 19px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 13px !important;
+    border-radius: 4px !important;
+    color: var(--text-primary-inverse)!important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(1):before{
+    content: "✎" !important;
+    background-color: var(--color-blue3) !important;
+}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(3):before{
+    content: '🗙' !important;
+    background-color: var(--color-red2) !important;
+}
+
+
+/* логотип в заявке и списке заявок */
+.kvt-root [class*=src-components-Logo-Logo-logoLarge-]{
+    min-width: 20px;
+    min-height: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.kvt-root [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-]{
+    width: 20px;
+    height: 20px;
+}
+
+
+
+
+/**
+ * История операций
+ */
+.kvt-root [class*=src-components-TickerInfo-TickerInfo-container-] {
+    padding: 4px 0 !important;
+}
+.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
+    margin-top: 2px !important;
+}
+.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-main] {
+    margin-top: 4px !important;
+    padding: 0 7px !important;
+}
+.kvt-root [class*=src-components-SmartList-styles-withMargin-] {
+    margin: 0 5px !important;
+}
+.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-main-] {
+    padding: 0 5px!important;
+}
+
+
+/**
+ * Список инструментов
+ */
+.kvt-root [class*=src-modules-Market-containers-styles-name-] {
+
+}
+.kvt-root table[class*=src-modules-Market-containers-styles-table-] thead>tr>th[class*=src-modules-Market-containers-styles-name-],
+.kvt-root .draggableTable[class*=src-modules-Market-containers-styles-table-] tr>td[data-type=instrument]{
+    width: 65px !important;
+    padding: 4px!important;
+}
+.kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logoAndName-]:hover [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-ticker-] {
+    opacity: 1;
+}
+.kvt-root [class*=rc-components-SymbolLogoAndName-SymbolLogoAndName-fullName-]{
+    display: none !important;
+}
+.kvt-root [class*=src-modules-Market-containers-styles-table-] th div {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logo-] {
+    margin-right: 6px;
+}
+.kvt-root [class*=src-components-Logo-Logo-logoSmall-] {
+    min-width: 18px;
+    min-height: 18px;
+    width: 18px;
+    height: 18px;
+}
+.kvt-root [class*=src-components-Logo-Logo-logoSmall-] [class*=src-components-Logo-Logo-logoImage-] {
+    width: 18px;
+    height: 18px;
+}
+.table tbody>tr>td>div{
+    font-size: 12px !important;
+}

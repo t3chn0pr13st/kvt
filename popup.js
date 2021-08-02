@@ -1,14 +1,37 @@
 'use strict';
 
+let storage = chrome.storage.local;
 
-let inputFromDate = document.getElementById('fromDate'),
-    inputToDate = document.getElementById('toDate');
-
-chrome.storage.local.get(['fromDate', 'toDate'], (result) => {
-    inputFromDate.value = result.fromDate ? result.fromDate : ''
-    inputToDate.value = result.toDate ? result.toDate : ''
+// input settings
+let settingsInput = ['fromDate', 'toDate'];
+settingsInput.forEach(function (st) {
+    storage.get(st, (result) => {
+        var t = document.getElementById(st);
+        if(result[st]) {
+            t.value = result[st];
+        }
+    });
 });
 
+// checkbox settings
+let settingsSwitch = ['compactStyle'];
+settingsSwitch.forEach(function (st) {
+    storage.get(st, (result) => {
+        var t = document.getElementById(st);
+
+        if(result[st]) {
+            t.checked = true
+        }
+        t.onchange = function () {
+            var obj= {};
+            obj[st] = t.checked || '';
+            storage.set(obj);
+        }
+    });
+});
+
+
+// Кнопка загрузить отчет
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('kvShowReport').addEventListener('click', function (e){
         chrome.tabs.query({currentWindow: !0, active: !0}, function (e) {
@@ -18,14 +41,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Загружаем отчет
 chrome.runtime.onMessage.addListener(function (e, t, o) {
     if (e && "psid" === e.msg) {
 
         let reportWindow = document.getElementById('reportWindow'),
             m = new Date(),
             i = createUTCOffset(m),
-            fromDate = inputFromDate.value,
-            toDate = inputToDate.value,
+            fromDate = document.getElementById('fromDate').value,
+            toDate = document.getElementById('toDate').value,
             c = (m.getMonth() + 1 + "").padStart(2, "0"), l = (m.getDate() + "").padStart(2, "0");
 
         fromDate = fromDate ? fromDate.replace(" ", "T") : m.getFullYear() + "-" + c + "-" + l + "T00:00:00";
@@ -133,22 +157,29 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                     return currencies.push(total[e])
                 })
 
+
+                let topTable = '<div class="top-table">';
                 currencies.forEach(function (e) {
-                    reportWindow.innerHTML += '' +
-                        '<p>Чистая прибыль: ' + _ft(e.result) + ' ' + e.currency + '<br/>' +
-                        'Комиссия: '+ _ft(e.commission) + ' ' + e.currency + '<br/>' +
-                        'Оборот: '+ _ft(e.buySum + e.sellSum) + ' ' + e.currency + '</p>'
+                    topTable += '' +
+                        '<div>' +
+                        'Чистыми: ' + _ft(e.result) + ' ' + _c(e.currency) + '<br/>' +
+                        'Комиссия: '+ _ft(e.commission) + ' ' + _c(e.currency) + '<br/>' +
+                        'Оборот: '+ _ft(e.buySum + e.sellSum) + ' ' + _c(e.currency) +
+                        '</div>'
                     ;
                 });
+                topTable += '</div>';
+
+                reportWindow.innerHTML += topTable;
 
                 let table = '<table class="report_table" id="sortable">' +
                     '<thead><tr>' +
                     '<th>тикер</th>' +
                     '<th>прибыль</th>' +
                     '<th>комиссия</th>' +
-                    '<th>сделок buy/sell</th>' +
+                    '<th title="buy/sell (совершенных/отмененных)">кол-во сделок</th>' +
                     '<th>сумма buy/sell</th>' +
-                    '<th>валюта</th>' +
+                    '<th></th>' +
                     '</tr></thead><tbody>';
                 result.forEach(function (e) {
                     if(e["Финансовый результат"] === 0) {
@@ -159,9 +190,9 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                         '<td>'+e['Тикер']+'</td>'+
                         '<td data-sort="'+ _rt(e['Финансовый результат с учётом комиссии']) +'">'+_style(e['Финансовый результат с учётом комиссии']) +'</td>'+
                         '<td data-sort="'+ _rt(e['Комиссия']) +'">'+_ft(e['Комиссия'])+'</td>'+
-                        '<td>'+e['Сделок покупки']+ ' / ' + e['Сделок продажи'] + '</td>'+
+                        '<td>'+e['Сделок покупки']+ ' / ' + e['Сделок продажи'] + ' (' + (e['Сделок покупки']+e['Сделок продажи'])+ ' / ' + e["Отмененных сделок"] + ')</td>'+
                         '<td data-sort="'+ _rt(e['Сумма покупок'] + e['Сумма продаж']) +'">'+_ft(e['Сумма покупок'])+ ' / ' + _ft(e['Сумма продаж']) + '</td>'+
-                        '<td>' + e['Валюта'] + '</td>'+
+                        '<td data-sort="'+e['Валюта']+'">' + _c(e['Валюта']) + '</td>'+
                         '</tr>';
                 });
                 table += '</tbody></table>';
@@ -172,9 +203,10 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 
                 return result;
             }
-        }).catch(function (e) {
-            console.error(e)
-            return console.error(e), chrome.notifications.create("", {
+        }).catch(function (error) {
+            reportWindow.innerHTML = '';
+            console.error(error)
+            chrome.notifications.create("", {
                 title: "Финансовый результат",
                 message: "Не удалось загрузить",
                 type: "basic",
@@ -209,6 +241,14 @@ function _style(e) {
 
 function _rt(e) {
     return e.toFixed(2)
+}
+
+function _c(currency) {
+    let symbols = {
+        'USD': '$', 'RUB': '₽', 'EUR': '€'
+    };
+
+    return symbols[currency] || currency;
 }
 
 

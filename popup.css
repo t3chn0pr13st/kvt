@@ -2,6 +2,54 @@
     min-width: 550px;
 }
 
+/**
+ * табы
+ */
+.b-nav-tab {
+    display: inline-block;
+    cursor: pointer;
+    padding: 4px 14px;
+    position: relative;
+    color: black;
+    text-decoration: none;
+}
+
+.b-nav-tab.active {
+    border: 1px solid #cbcbcb;
+    border-bottom: 1px solid #fff;
+    z-index: 2;
+    background: #fff;
+    font-weight: bold;
+}
+
+.b-tab {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #cbcbcb;
+    display: none;
+    z-index: 1;
+    top: -1px;
+}
+
+.b-tab.active {
+    display: block;
+}
+
+/**
+ * Фин. сводка
+ */
+.top-table{
+    display: flex;
+    padding: 10px 0;
+}
+.top-table div{
+    flex: 0 0 auto;
+    width: 33.3333333333%;
+}
+
+/**
+ * таблица отчетов
+ */
 .report_table{
     border-collapse: collapse;
     border-width: 1px;
@@ -57,6 +105,26 @@ th[role=columnheader]:not(.no-sort):hover:after {
 span.red{
     color: #ff3838;
     font-weight: 500;
+}
+
+
+/**
+ * Настройки
+ */
+.list_settings{
+    list-style: none;
+    padding: 0;
+}
+.list_settings label{
+    display: flex;
+    align-content: center;
+}
+.list_settings input[type=checkbox] {
+    margin: 3px 3px 3px 0;
+}
+.form-text{
+    font-size: .875em;
+    color: #6c757d;
 }
 
 

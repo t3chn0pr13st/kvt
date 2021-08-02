@@ -8,17 +8,39 @@
 <body>
 	<div class="popup-content">
 		
-		<input type="datetime-local" id="fromDate">
-		<input type="datetime-local" id="toDate">
+		<a href="#reports" data-tab="reports" class="b-nav-tab active">
+			Отчеты
+		</a>
+		<a href="#settings" data-tab="settings" class="b-nav-tab">
+			Настройки
+		</a>
 		
-		<button id="kvShowReport">Показать отчет</button>
+		<!-- отчеты -->
+		<div id="reports" class="b-tab active">
+			<input type="datetime-local" id="fromDate">
+			<input type="datetime-local" id="toDate">
+			
+			<button id="kvShowReport">Показать отчет</button>
+			
+			<div id="reportWindow"></div>
+		</div>
 		
-		<div id="reportWindow"></div>
+		<!-- настройки -->
+		<div id="settings" class="b-tab">
+			<ul class="list list_settings">
+				<li>
+					<label for="compactStyle"><input type="checkbox" name="compactStyle" id="compactStyle"> Компактные стили терминала</label>
+					<div class="form-text">Больше свободного места на экране. Окно заявки, список заявок, таблица инструментов станет уже, список сделок и чуть чуть шапка :)</div>
+				</li>
+			</ul>
+		</div>
+		
 	</div>
 </body>
 
 <script src="/libs/tablesort/tablesort.js"></script>
 <script src="/libs/tablesort/tablesort.number.js"></script>
+<script src="/libs/tabs.js"></script>
 <script src="popup.js"></script>
 
 </html>

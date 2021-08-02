@@ -3,7 +3,27 @@
 }
 
 .jpt-tools{
-    margin-top: 0px !important;
+    margin-top: 0 !important;
+}
+
+/**
+ * Шапка, вкладки
+ */
+.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-addBtn-]{
+    padding: 0 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.kvt-root [class*=packages-core-lib-components-SpaceTab-styles-remove-] {
+    padding: 2px 6px;
+}
+.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-tabs-] [class*=packages-core-lib-containers-SpacesTabs-styles-tab-] {
+    height: 22px;
+    line-height: 20px;
+}
+.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-tabs-]:before {
+    height: 22px;
 }
 
 
@@ -23,6 +43,18 @@
 .kvt-root [class*=src-components-Forms-commonStyles-description-]{
     padding-right: 0 !important;
     min-width: 10px !important;
+}
+
+/* шапка тикера в заявке */
+.kvt-root [class*=src-components-TickerInfo-TickerInfo-line1-] {
+    line-height: 15px;
+}
+.kvt-root [class*=src-components-TickerInfo-TickerInfo-line2-] {
+    line-height: 13px;
+    font-size: 12px;
+}
+.kvt-root [class*=src-components-OrderHeader-styles-price-] {
+    line-height: 16px;
 }
 
 /* комиссия + цена сделки */
@@ -47,13 +79,22 @@
 
 
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-]{
-    padding: 5px 5px 0 !important;
+    padding: 0 4px !important;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-assetCard-] {
     margin-bottom: 7px !important;
 }
 .kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
-    padding: 0 7px !important;
+    padding: 0 !important;
+    background: none;
+    margin-bottom: 0 !important;
+    min-height: 30px;
+}
+.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global [class*=src-components-TickerInfo-TickerInfo-container] {
+    padding: 4px 0 !important;
+}
+.kvt-root .pt-input-group input{
+    padding: 0 5px;
 }
 
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-]{
@@ -64,7 +105,7 @@
     margin: 1px;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
-    padding: 0 5px !important;
+    padding: 0 !important;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-]{
     padding: 4px !important;
@@ -196,7 +237,7 @@
  * История операций
  */
 .kvt-root [class*=src-components-TickerInfo-TickerInfo-container-] {
-    padding: 4px 0 !important;
+    padding: 3px 0 !important;
 }
 .kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
     margin-top: 2px !important;
@@ -220,9 +261,12 @@
 
 }
 .kvt-root table[class*=src-modules-Market-containers-styles-table-] thead>tr>th[class*=src-modules-Market-containers-styles-name-],
-.kvt-root .draggableTable[class*=src-modules-Market-containers-styles-table-] tr>td[data-type=instrument]{
-    width: 65px !important;
-    padding: 4px!important;
+.kvt-root td[data-type=instrument]{
+    width: 68px !important;
+    padding: 4px 1px 4px 3px !important;
+}
+.kvt-root .table thead>tr>th{
+    padding: 4px;
 }
 .kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logoAndName-]:hover [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-ticker-] {
     opacity: 1;
@@ -237,7 +281,7 @@
 }
 
 .kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logo-] {
-    margin-right: 6px;
+    margin-right: 4px;
 }
 .kvt-root [class*=src-components-Logo-Logo-logoSmall-] {
     min-width: 18px;

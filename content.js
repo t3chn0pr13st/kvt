@@ -18,7 +18,13 @@ chrome.runtime.onMessage.addListener(function (e, t, n) {
     }
 });
 
-setTimeout(function () {
-    document.getElementById("root").classList.add("kvt-root");
-}, 2000)
+
+chrome.storage.local.get('compactStyle', (result) => {
+    if(result['compactStyle']) {
+        setTimeout(function () {
+            document.getElementById("root").classList.add("kvt-root");
+        }, 2000)
+    }
+});
+
 

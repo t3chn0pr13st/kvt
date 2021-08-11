@@ -202,6 +202,8 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                 new Tablesort(document.getElementById('sortable'));
 
                 return result;
+            } else {
+                reportWindow.innerHTML = 'Нет сделок за выбранный период или ТИ вернул фигу';
             }
         }).catch(function (error) {
             reportWindow.innerHTML = '';

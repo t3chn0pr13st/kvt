@@ -38,9 +38,13 @@
 /**
  * Фин. сводка
  */
+#reportWindow {
+    padding-top: 5px;
+    display: block;
+}
 .top-table{
     display: flex;
-    padding: 10px 0;
+    padding: 0 0 10px;
 }
 .top-table div{
     flex: 0 0 auto;

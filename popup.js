@@ -3,12 +3,17 @@
 let storage = chrome.storage.local;
 
 // input settings
-let settingsInput = ['fromDate', 'toDate'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
         if(result[st]) {
             t.value = result[st];
+        }
+        t.onchange = function () {
+            var obj= {};
+            obj[st] = t.value || '';
+            storage.set(obj);
         }
     });
 });
@@ -54,9 +59,6 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 
         fromDate = fromDate ? fromDate.replace(" ", "T") : m.getFullYear() + "-" + c + "-" + l + "T00:00:00";
         toDate = toDate ? toDate.replace(" ", "T") : m.getFullYear() + "-" + c + "-" + l + "T23:59:59";
-
-        // установим дату из кеша
-        chrome.storage.local.set({fromDate: fromDate, toDate: toDate});
 
         fromDate += i;
         toDate += i;

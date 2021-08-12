@@ -119,12 +119,18 @@ span.red{
     list-style: none;
     padding: 0;
 }
+.list_settings li{
+    margin-bottom: 12px;
+}
 .list_settings label{
     display: flex;
     align-content: center;
 }
 .list_settings input[type=checkbox] {
     margin: 3px 3px 3px 0;
+}
+.list_settings input[type=text] {
+    margin-top: 2px;
 }
 .form-text{
     font-size: .875em;

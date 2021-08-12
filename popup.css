@@ -1,3 +1,11 @@
+*, :after, :before {
+    box-sizing: inherit;
+}
+
+body, html {
+    overflow: hidden;
+}
+
 .popup-content{
     min-width: 550px;
 }

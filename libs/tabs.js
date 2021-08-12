@@ -22,6 +22,10 @@ function Tabs() {
         e.target.classList.add('active');
         var id = e.currentTarget.getAttribute('data-tab');
         document.getElementById(id).classList.add('active');
+
+        setInterval(function(){
+            document.documentElement.scrollTop = 0
+        },1);
     }
 
     bindAll();

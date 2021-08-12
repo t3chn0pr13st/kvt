@@ -1,6 +1,7 @@
 'use strict';
 
-let storage = chrome.storage.local;
+let storage = chrome.storage.local,
+    settings = {};
 
 // input settings
 let settingsInput = ['fromDate', 'toDate', 'telegramId'];
@@ -19,17 +20,17 @@ settingsInput.forEach(function (st) {
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle'];
+let settingsSwitch = ['compactStyle', 'showNullOperation'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
 
         if(result[st]) {
-            t.checked = true
+            t.checked = settings[st] = true;
         }
         t.onchange = function () {
             var obj= {};
-            obj[st] = t.checked || '';
+            obj[st] = settings[st] = t.checked || false;
             storage.set(obj);
         }
     });
@@ -134,18 +135,15 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                     e["Финансовый результат"] = e["Сумма продаж"] - e["Сумма покупок"]
                     e["Финансовый результат с учётом комиссии"] = e["Сумма продаж"] - e["Сумма покупок"] - e["Комиссия"]
 
-                    if(e["Финансовый результат"] === 0) {
-                        return false;
-                    }
-
                     if(void 0 === total[e['Валюта']]) {
-                        total[e['Валюта']] = {commission: 0, result: 0, buyCount: 0, sellCount: 0, buySum: 0, sellSum: 0}
+                        total[e['Валюта']] = {commission: 0, result: 0, buyCount: 0, sellCount: 0, declineCount: 0, buySum: 0, sellSum: 0}
                     }
 
                     total[e['Валюта']].result += e["Финансовый результат с учётом комиссии"]
                     total[e['Валюта']].commission += e["Комиссия"]
                     total[e['Валюта']].buyCount += e['Сделок покупки']
                     total[e['Валюта']].sellCount += e['Сделок продажи']
+                    total[e['Валюта']].declineCount += e['Отмененных сделок']
                     total[e['Валюта']].buySum += e['Сумма покупок']
                     total[e['Валюта']].sellSum += e['Сумма продаж']
 
@@ -166,7 +164,8 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                         '<div>' +
                         'Чистыми: ' + _ft(e.result) + ' ' + _c(e.currency) + '<br/>' +
                         'Комиссия: '+ _ft(e.commission) + ' ' + _c(e.currency) + '<br/>' +
-                        'Оборот: '+ _ft(e.buySum + e.sellSum) + ' ' + _c(e.currency) +
+                        'Оборот: '+ _ft(e.buySum + e.sellSum) + ' ' + _c(e.currency) + '<br/>' +
+                        '<span title="buy/sell (совершенных/отмененных)">Сделок:</span> '+ e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount+e.sellCount) + ' / ' + e.declineCount + ') ' +
                         '</div>'
                     ;
                 });
@@ -184,7 +183,7 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                     '<th></th>' +
                     '</tr></thead><tbody>';
                 result.forEach(function (e) {
-                    if(e["Финансовый результат"] === 0) {
+                    if(!settings.showNullOperation && e["Финансовый результат"] === 0) {
                         return false;
                     }
 

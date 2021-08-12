@@ -2,6 +2,7 @@
 'use strict';
 
 let versionApi = "2.0.0";
+let storage = chrome.storage.local;
 
 function getCookies(e) {
 	e = RegExp(e + "[^;]+").exec(document.cookie);
@@ -19,12 +20,10 @@ chrome.runtime.onMessage.addListener(function (e, t, n) {
 });
 
 
-chrome.storage.local.get('compactStyle', (result) => {
+storage.get('compactStyle', (result) => {
     if(result['compactStyle']) {
         setTimeout(function () {
             document.getElementById("root").classList.add("kvt-root");
         }, 2000)
     }
 });
-
-

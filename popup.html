@@ -6,21 +6,24 @@
 	<link rel="stylesheet" href="popup.css">
 </head>
 <body>
-	<div class="popup-content">
-		
+	<div class="nav-tabs">
 		<a href="#reports" data-tab="reports" class="b-nav-tab active">
 			Отчеты
 		</a>
 		<a href="#settings" data-tab="settings" class="b-nav-tab">
 			Настройки
 		</a>
-		
+	</div>
+	
+	<div class="content-tabs">
 		<!-- отчеты -->
 		<div id="reports" class="b-tab active">
-			<input type="datetime-local" id="fromDate">
-			<input type="datetime-local" id="toDate">
-			
-			<button id="kvShowReport">Показать отчет</button>
+			<div class="date-panel">
+				<input type="datetime-local" id="fromDate">
+				<input type="datetime-local" id="toDate">
+				
+				<button id="kvShowReport">Загрузить</button>
+			</div>
 			
 			<div id="reportWindow"></div>
 		</div>
@@ -43,7 +46,6 @@
 				</li>
 			</ul>
 		</div>
-		
 	</div>
 </body>
 

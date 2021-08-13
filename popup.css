@@ -4,15 +4,30 @@
 
 body, html {
     overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
 
-.popup-content{
-    min-width: 550px;
+body{
+    width: 510px;
+    max-height: 600px;
 }
 
 /**
  * табы
  */
+.nav-tabs {
+    position: sticky;
+    z-index: 5;
+    top: 0;
+    padding: 10px;
+    background: #eee;
+    box-shadow: 0 1px 1px #cdcdcd;
+}
+.content-tabs{
+    padding: 10px 5px 10px 10px;
+}
+
 .b-nav-tab {
     display: inline-block;
     cursor: pointer;
@@ -20,43 +35,89 @@ body, html {
     position: relative;
     color: black;
     text-decoration: none;
+    opacity: 0.7;
+    border: 1px solid #939393;
+    margin-right: 2px;
 }
 
 .b-nav-tab.active {
-    border: 1px solid #cbcbcb;
-    border-bottom: 1px solid #fff;
     z-index: 2;
-    background: #fff;
     font-weight: bold;
+    opacity: 1;
+    background: #e0e0e0;
+    border-color: #646464;
 }
 
 .b-tab {
     position: relative;
-    padding: 10px;
-    border: 1px solid #cbcbcb;
     display: none;
     z-index: 1;
-    top: -1px;
+
+    padding-right: 6px;
+    max-height: 534px;
+    overflow-y: auto;
 }
 
 .b-tab.active {
     display: block;
 }
 
+
+.b-tab::-webkit-scrollbar {
+    width: 10px;
+    border-radius: 3px
+}
+/* Track */
+.b-tab::-webkit-scrollbar-track {
+    background: #EBEEF0;
+    border-radius: 3px
+}
+/* Handle */
+.b-tab::-webkit-scrollbar-thumb {
+    background: #C4C4C4;
+    border-radius: 3px;
+    border: 2px solid #EBEEF0;
+}
+/* Handle on hover */
+.b-tab::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
 /**
  * Фин. сводка
  */
+.date-panel{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
 #reportWindow {
-    padding-top: 5px;
-    display: block;
+    padding-top: 7px;
+    width: calc(100% - 2px);
 }
 .top-table{
     display: flex;
     padding: 0 0 10px;
+    margin-left: -7px;
 }
 .top-table div{
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    padding: 0 7px;
+}
+
+#reports input[type="datetime-local"] {
+    border: 1px solid #cbcbcb;
+    border-radius: 0;
+    max-width: 176px;
+    padding: .175rem;
+    margin-right: 8px
+}
+#reports button{
+    background: #eee;
+    border: 1px solid #939393;
+    cursor: pointer;
+    padding: .275rem .475rem;
 }
 
 /**
@@ -65,6 +126,7 @@ body, html {
 .report_table{
     border-collapse: collapse;
     border-width: 1px;
+    width: 100%;
 }
 .report_table th{
     font-weight: bold;
@@ -72,10 +134,14 @@ body, html {
 
 .report_table td,
 .report_table th{
-    padding: .1rem .3rem;
+    padding: .1rem .25rem;
     border-width: 1px;
     border-color: #cbcbcb;
     border-style: solid;
+    text-align: left;
+}
+.report_table thead tr{
+    background: #eee;
 }
 
 th[role=columnheader]:not(.no-sort) {
@@ -87,7 +153,7 @@ th[role=columnheader]:not(.no-sort):after {
     content: '';
     float: right;
     margin-top: 7px;
-    margin-left: 4px;
+    margin-left: 2px;
     border-width: 0 4px 4px;
     border-style: solid;
     border-color: #404040 transparent;

@@ -176,8 +176,8 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
                 let table = '<table class="report_table" id="sortable">' +
                     '<thead><tr>' +
                     '<th>тикер</th>' +
-                    '<th>прибыль</th>' +
-                    '<th>комиссия</th>' +
+                    '<th>профит</th>' +
+                    '<th>comm</th>' +
                     '<th title="buy/sell (совершенных/отмененных)">кол-во сделок</th>' +
                     '<th>сумма buy/sell</th>' +
                     '<th></th>' +

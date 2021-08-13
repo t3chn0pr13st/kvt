@@ -1,8 +1,8 @@
-.UIText, .UITextSmall{
+.kvt-root .UIText, .kvt-root .UITextSmall{
     line-height: 11px !important;
 }
 
-.jpt-tools{
+.kvt-root .jpt-tools{
     margin-top: 0 !important;
 }
 
@@ -31,7 +31,7 @@
  * Заявка
  */
 /* поля ввода и плюс/минус */
-.pt-numeric-input .pt-button-group.pt-vertical>.pt-button {
+.kvt-root .pt-numeric-input .pt-button-group.pt-vertical>.pt-button {
     width: 20px !important
 }
 .kvt-root [class*=src-components-Forms-NumericInput-styles-rightElement-][class*=src-components-Forms-NumericInput-styles-withBtn-] {
@@ -112,7 +112,7 @@
     margin-bottom: 4px !important;
 }
 /* меньше кнопочки */
-.pt-button.pt-fill{
+.kvt-root .pt-button.pt-fill{
     min-height: 24px !important;
     padding: 1px !important;
 }
@@ -122,7 +122,7 @@
 /**
  * список заявок
  */
-.UICard{
+.kvt-root .UICard{
     padding: 5px 7px !important;
 }
 
@@ -293,6 +293,6 @@
     width: 18px;
     height: 18px;
 }
-.table tbody>tr>td>div{
+.kvt-root .table tbody>tr>td>div{
     font-size: 12px !important;
 }

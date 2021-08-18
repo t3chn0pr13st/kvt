@@ -11,6 +11,9 @@
     "notifications",
     "https://*.tinkoff.ru/terminal/*"
   ],
+  "web_accessible_resources": [
+    "page.js"
+  ],
   "background": {
     "scripts": ["background.js"],
     "persistent": false

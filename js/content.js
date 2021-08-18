@@ -1,8 +1,7 @@
 
 'use strict';
 
-let versionApi = "2.0.0",
-    storage = chrome.storage.local;
+let versionApi = "2.0.0";
 
 function getCookies(e) {
 	e = RegExp(e + "[^;]+").exec(document.cookie);
@@ -20,7 +19,7 @@ chrome.runtime.onMessage.addListener(function (e, t, n) {
 });
 
 
-storage.get('compactStyle', (result) => {
+chrome.storage.local.get('compactStyle', (result) => {
     if(result['compactStyle']) {
         setTimeout(function () {
             document.getElementById("root").classList.add("kvt-root");
@@ -29,16 +28,16 @@ storage.get('compactStyle', (result) => {
 });
 
 
-
-function injectScript(url, tag) {
+function injectScript(url, tag, setExtId) {
     var tagName = document.getElementsByTagName(tag)[0],
         element = document.createElement("script");
 
     element.setAttribute("type", "text/javascript")
     element.setAttribute("src", url)
+    setExtId && element.setAttribute("data-kvt-extension-id", chrome.runtime.id)
     tagName.appendChild(element)
 }
 
 setTimeout(function () {
-    return injectScript(chrome.extension.getURL("page.js?t" + Date.now()), "body")
+    return injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
 });

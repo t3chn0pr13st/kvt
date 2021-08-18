@@ -12,10 +12,10 @@
     "https://*.tinkoff.ru/terminal/*"
   ],
   "web_accessible_resources": [
-    "page.js"
+    "js/page.js"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
   "content_scripts": [
@@ -23,8 +23,8 @@
       "matches": [
         "https://*.tinkoff.ru/terminal/*"
       ],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "js": ["js/content.js"],
+      "css": ["css/content.css"],
       "run_at":  "document_start"
     }
   ],

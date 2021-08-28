@@ -174,8 +174,6 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
                 total[e['Валюта']].sellSum += e['Сумма продаж']
             });
 
-            reportWindow.innerHTML = '';
-
             // Итоговая таблица
             Object.keys(total).forEach(function (e) {
                 total[e].currency = e;
@@ -195,7 +193,7 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
             });
             topTable += '</div>';
 
-            reportWindow.innerHTML += topTable;
+            reportWindow.innerHTML = topTable;
 
             /*
              * Итоговая таблица по тикерам
@@ -281,3 +279,67 @@ function _c(currency) {
 }
 
 
+/**
+ * Загружаем группы тикеров
+  */
+let tickersWindow = document.getElementById('tickersWindow'),
+    tickersGroups = document.getElementById('tickersGroups'),
+    groupTickersList = document.getElementById('groupTickersList'),
+    listTickersDelete = [];
+
+// загрузить группы тикеров
+document.getElementById('kvLoadGroupsTicker').addEventListener('click', function (e) {
+    fetch("https://www.tinkoff.ru/api/invest/favorites/groups/list?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {})
+        .then(res => res.json())
+        .then(res => {
+            res.payload.groups.forEach(s => {
+                const option = document.createElement("option");
+                option.value = s.id;
+                option.text = s.name;
+                tickersGroups.appendChild(option);
+            })
+
+            tickersWindow.classList.remove("d-none");
+        })
+});
+
+// загрузить тикеры группы
+tickersGroups.addEventListener('change', opt => {
+
+    fetch("https://www.tinkoff.ru/api/invest/favorites/groups/instruments/get?tag=All&sortType=Custom&groupId=" + opt.target.value + "&limit=1000&offset=0&appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid)
+        .then(res => res.json())
+        .then(e => {
+            listTickersDelete.splice(0, listTickersDelete.length)
+            groupTickersList.value = e.payload.instruments.map(item => listTickersDelete.push(item.ticker) && item.ticker).join(' ');
+        })
+})
+
+// сохранить тикеры группы
+document.getElementById('saveGroupTickers').addEventListener('click', function (e) {
+
+    let groupId = tickersGroups.value,
+        items = groupTickersList.value.split(' ').map(item => item.toUpperCase());
+
+    fetch("https://www.tinkoff.ru/api/invest/favorites/groups/instruments/delete?groupId=" + groupId + "&appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({instruments: listTickersDelete})
+    }).then(
+        res => res.json()
+    ).then(res => {
+        fetch("https://www.tinkoff.ru/api/invest/favorites/groups/instruments/add?groupId=" + groupId + "&appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({instruments: items})
+        }).then(
+            res => res.json()
+        ).then(e => {
+            chrome.notifications.create("", {
+                title: "Тикеры",
+                message: e.status === 'Ok' ? 'Успешно сохранено' : e.payload.message,
+                type: "basic",
+                iconUrl: "icons/icon48.png"
+            })
+        });
+    })
+})

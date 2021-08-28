@@ -1,5 +1,5 @@
 *, :after, :before {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 body, html {
@@ -11,6 +11,82 @@ body, html {
 body{
     width: 510px;
     max-height: 600px;
+    font-size: 12px;
+}
+
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.d-block{
+    display: block;
+}
+
+.d-none{
+    display: none;
+}
+.form-group {
+    margin-bottom: 13px;
+}
+label {
+    display: inline-block;
+}
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+}
+.form-control{
+    padding: .175rem;
+    line-height: 1.5;
+    background-clip: padding-box;
+    border: 1px solid #cbcbcb;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: #000;
+}
+.form-control:focus{
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+}
+.form-text{
+    font-size: .975em;
+    color: #949494;
+    margin-top: .25rem;
+}
+
+.form-check{
+    display: block;
+    padding-left: 1.5em;
+    margin-bottom: .125rem;
+}
+.form-check-input {
+    width: 1em;
+    height: 1em;
+    margin-top: .25em;
+    vertical-align: top;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid rgba(0,0,0,.25);
+    color-adjust: exact;
+}
+.form-check .form-check-input {
+    float: left;
+    margin-left: -1.5em;
+}
+
+.btn{
+    background: #eee;
+    border: 1px solid #939393;
+    cursor: pointer;
+    padding: .275rem .475rem;
+}
+.btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 /**
@@ -25,7 +101,7 @@ body{
     box-shadow: 0 1px 1px #cdcdcd;
 }
 .content-tabs{
-    padding: 10px 5px 10px 10px;
+    padding: 5px 5px 10px 5px;
 }
 
 .b-nav-tab {
@@ -52,8 +128,7 @@ body{
     position: relative;
     display: none;
     z-index: 1;
-
-    padding-right: 6px;
+    padding: 5px 6px 0 5px;
     max-height: 534px;
     overflow-y: auto;
 }
@@ -94,7 +169,6 @@ body{
 }
 #reportWindow {
     padding-top: 7px;
-    width: calc(100% - 2px);
 }
 .top-table{
     display: flex;
@@ -107,17 +181,9 @@ body{
 }
 
 #reports input[type="datetime-local"] {
-    border: 1px solid #cbcbcb;
-    border-radius: 0;
     max-width: 176px;
     padding: .175rem;
     margin-right: 8px
-}
-#reports button{
-    background: #eee;
-    border: 1px solid #939393;
-    cursor: pointer;
-    padding: .275rem .475rem;
 }
 
 /**
@@ -192,30 +258,11 @@ span.red{
     font-weight: 500;
 }
 
-
 /**
- * Настройки
+ * Тикеры
  */
-.list_settings{
-    list-style: none;
-    padding: 0;
+#groupTickersList{
+    width: 100%;
+    resize: vertical;
+    min-height: 180px;
 }
-.list_settings li{
-    margin-bottom: 12px;
-}
-.list_settings label{
-    display: flex;
-    align-content: center;
-}
-.list_settings input[type=checkbox] {
-    margin: 3px 3px 3px 0;
-}
-.list_settings input[type=text] {
-    margin-top: 2px;
-}
-.form-text{
-    font-size: .875em;
-    color: #6c757d;
-}
-
-

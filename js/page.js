@@ -2,17 +2,14 @@ let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute
 
 chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegramId) {
     if (telegramId) {
-        connect(telegramId)
+        kvt_connect(telegramId)
     } else {
         console.warn('[kvt] - telegramId не установлен')
     }
 });
 
-/*
-0: "ticker"
-1: {m: "ticker", t: "LYV", g: 3, p: "", v: ""}
-*/
-function connect(telegramId) {
+let kvt_timeout = 1000;
+function kvt_connect(telegramId) {
     var ws = new WebSocket(`wss://kvalood.ru?id=${telegramId}`);
 
     ws.onopen = (e) => {
@@ -27,16 +24,16 @@ function connect(telegramId) {
 
     ws.onclose = (event) => {
         if (event.wasClean) {
-            console.log(`[kvt][ws close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+            console.log('[kvt][ws close]', `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
         } else {
             // например, сервер убил процесс или сеть недоступна
             // обычно в этом случае event.code 1006
-            console.log('[kvt][ws close] Соединение прервано');
-        }
+            console.log('[kvt][ws close]', 'Соединение прервано');
 
-        setTimeout(function() {
-            connect(telegramId);
-        }, 5000);
+            setTimeout(function() {
+                kvt_connect(telegramId);
+            }, Math.min(50000, kvt_timeout += kvt_timeout));
+        }
     };
 
     ws.onerror = (error) => {
@@ -46,23 +43,23 @@ function connect(telegramId) {
 
 
 function setTickerInGroup(ticker, group_id) {
-    let orderWidgetObject=getGroupWidget(group_id);
+    let widget = getGroupWidget(group_id);
 
-    if (!orderWidgetObject) {
+    if (!widget) {
         console.error('[kvt]', 'Виджет не найден')
-        return 0;
+        return null;
     }
-    let reactObjectName = Object.keys(orderWidgetObject).find(function (key) {
+    let reactObjectName = Object.keys(widget).find(function (key) {
         return key.startsWith("__reactInternalInstance$")
     });
 
-    let target = orderWidgetObject[reactObjectName].memoizedProps.children.find(function (child) {
+    let target = widget[reactObjectName].memoizedProps.children.find(function (child) {
         return Array.isArray(child)
     }).find(function (item) {
-        return item._owner.memoizedProps.selectSymbol
+        return !!((item._owner || {}).memoizedProps || {}).selectSymbol
     });
 
-    target._owner.memoizedProps.selectSymbol(ticker)
+    target && target._owner.memoizedProps.selectSymbol(ticker.toUpperCase())
 }
 
 function getGroupWidget(group_id){

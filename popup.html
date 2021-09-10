@@ -10,6 +10,9 @@
 		<a href="#reports" data-tab="reports" class="b-nav-tab active">
 			Отчеты
 		</a>
+		<a href="#prints" data-tab="prints" class="b-nav-tab">
+			Принты
+		</a>
 		<a href="#tickers" data-tab="tickers" class="b-nav-tab">
 			Тикеры
 		</a>
@@ -29,6 +32,16 @@
 			</div>
 			
 			<div id="reportWindow"></div>
+		</div>
+		
+		<!-- принты -->
+		<div id="prints" class="b-tab">
+			<div class="form-group">
+				<input type="text" id="printTicker" class="form-control" placeholder="введите тикер СПБ">
+				<button id="kvLoadPrintsTicker" class="btn">Загрузить все сделки по тикеру</button>
+			</div>
+			
+			<div id="printsWindow"></div>
 		</div>
 		
 		<!-- тикеры -->
@@ -73,6 +86,12 @@
 				<label for="telegramId" class="form-label">Телеграм ID</label>
 				<input type="text" name="telegramId" id="telegramId" class="form-control">
 				<div class="form-text">Для переключения стаканов из приватных ботов</div>
+			</div>
+			
+			<div class="form-group">
+				<label for="alorToken" class="form-label">Алор токен</label>
+				<input type="text" name="telegramId" id="alorToken" class="form-control">
+				<div class="form-text">Для загрузки всех принтов по тикеру. Токен получать тут - <b>https://alor.dev/open-api-tokens</b></div>
 			</div>
 		</div>
 	</div>

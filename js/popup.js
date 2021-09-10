@@ -20,16 +20,16 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 });
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
         if(result[st]) {
-            t.value = result[st];
+            t.value = settings[st] = result[st];
         }
         t.onchange = function () {
             var obj= {};
-            obj[st] = t.value || '';
+            obj[st] = settings[st] = t.value || '';
             storage.set(obj);
         }
     });
@@ -278,6 +278,17 @@ function _c(currency) {
     return symbols[currency] || currency;
 }
 
+function _tsToTime(timestamp) {
+    let m = new Date(timestamp);
+    return [m.getHours(), m.getMinutes(), m.getSeconds()].map(function (x) {
+            return x < 10 ? "0" + x : x
+        }).join(":")
+}
+
+function _errW(text) {
+    return `<div class="note-error">⚠ ${text}</div>`;
+}
+
 
 /**
  * Загружаем группы тикеров
@@ -343,3 +354,116 @@ document.getElementById('saveGroupTickers').addEventListener('click', function (
         });
     })
 })
+
+
+/**
+ * Принты
+ */
+let jwt;
+document.getElementById('kvLoadPrintsTicker').addEventListener('click', function (e) {
+    loadPrintsTicker()
+});
+
+document.getElementById('printTicker').addEventListener("keydown", function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        loadPrintsTicker()
+    }
+});
+
+function loadPrintsTicker() {
+    let printsWindow = document.getElementById('printsWindow'),
+        printTicker = document.getElementById('printTicker').value;
+
+    if (printTicker) {
+        printsWindow.innerHTML  = 'Загрузка...';
+
+        const loadAlltrades = async () => {
+            await syncAlorAccessToken();
+            if(jwt) {
+                return await getAlltradesByTicker(printTicker.toUpperCase())
+            }
+        }
+
+        loadAlltrades().then(r => {
+            if(r && r.length) {
+                r.reverse();
+
+                let table = '<table class="report_table">' +
+                    '<thead><tr>' +
+                    '<th>цена</th>' +
+                    '<th>объем шт</th>' +
+                    '<th>объём $</th>' +
+                    '<th>время</th>' +
+                    '</tr></thead><tbody>';
+
+                r.forEach(function (e) {
+                    table += '<tr' + (e.side === 'sell' ? ' class="side-sell"' : ' class="side-buy"') + '>' +
+                        '<td>' + _ft(e.price) + '</td>' +
+                        '<td>' + e.qty + '</td>' +
+                        '<td>' + _ft(e.qty * e.price) + '</td>' +
+                        '<td>' + _tsToTime(e.timestamp) + '</td>' +
+                        '</tr>';
+                });
+                table += '</tbody></table>';
+
+                printsWindow.innerHTML = table;
+            } else {
+                printsWindow.innerHTML  = 'Нет сделок';
+            }
+        }).catch(err => {
+            let error;
+            console.log(typeof err.status)
+            switch (err.status) {
+                case 404: error = err.statusText + ', такого тикера нет'; break;
+                case 403: error = err.statusText + ', проверьте токен в настройках'; break;
+                default: error = err.status + ' ' + err.statusText;
+            }
+            printsWindow.innerHTML = _errW(error);
+        })
+    } else {
+        printsWindow.innerHTML  = 'укажите тикер';
+    }
+}
+
+async function syncAlorAccessToken() {
+    if (jwt && !isTokenExpired(jwt)) return;
+    return await fetch('https://oauth.alor.ru/refresh?token=' + settings.alorToken, {method: 'POST'}).then(e => {
+        if (e.ok === true && e.status === 200) {
+            return e.json()
+        } else {
+            throw e
+        }
+    }).then(e => {
+        jwt = e.AccessToken;
+    })
+}
+
+async function getAlltradesByTicker(ticker) {
+    return await fetch('https://api.alor.ru/md/v2/Securities/SPBX/' + ticker + '/alltrades', {
+        headers: {
+            'Authorization': 'Bearer ' + jwt
+        }
+    }).then(e => {
+        if (e.ok === true && e.status === 200) {
+            return e.json()
+        } else {
+            throw e
+        }
+    });
+}
+
+function isTokenExpired(token) {
+    if (token) {
+        try {
+            const [, bs] = token.split('.');
+            const {exp: exp} = JSON.parse(window.atob(bs).toString())
+            if (typeof exp === 'number') {
+                return Date.now() + 1000 >= exp * 1000;
+            }
+        } catch {
+            return true;
+        }
+    }
+    return true;
+}

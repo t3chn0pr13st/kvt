@@ -99,21 +99,22 @@ label {
     padding: 10px;
     background: #eee;
     box-shadow: 0 1px 1px #cdcdcd;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
 }
 .content-tabs{
     padding: 5px 5px 10px 5px;
 }
 
 .b-nav-tab {
-    display: inline-block;
     cursor: pointer;
-    padding: 4px 14px;
+    padding: 4px 8px;
     position: relative;
     color: black;
     text-decoration: none;
     opacity: 0.7;
     border: 1px solid #939393;
-    margin-right: 2px;
 }
 
 .b-nav-tab.active {
@@ -216,6 +217,11 @@ label {
     padding: 2px 0;
     color: #b2b2b2;
 }
+.note-error{
+    padding: 4px 8px;
+    color: #ffffff;
+    background: red;
+}
 
 th[role=columnheader]:not(.no-sort) {
     cursor: pointer;
@@ -252,6 +258,14 @@ th[role=columnheader]:not(.no-sort):hover:after {
     visibility: visible;
     opacity: 1;
 }
+
+tr.side-sell{
+    background: #ffecec;
+}
+tr.side-buy{
+    background: #ecffeb;
+}
+
 
 span.red{
     color: #ff3838;

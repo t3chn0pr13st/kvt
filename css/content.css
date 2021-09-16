@@ -1,3 +1,22 @@
+/**
+ * Общие стили
+ */
+/*быстрый переход к окну заявки по группам*/
+.kvt-stigButtons{
+    display: flex;
+    padding: 6px 12px 0;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+.kvt-stig-item{
+    display: inline-flex;
+    cursor: pointer;
+}
+
+
+/**
+ * Компактные стили
+ */
 .kvt-root .UIText, .kvt-root .UITextSmall{
     line-height: 11px !important;
 }

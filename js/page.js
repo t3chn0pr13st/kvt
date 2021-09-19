@@ -4,7 +4,7 @@ chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegram
     if (telegramId) {
         kvt_connect(telegramId)
     } else {
-        console.warn('[kvt] - telegramId не установлен')
+        console.warn('[kvt]', 'telegramId не установлен')
     }
 });
 

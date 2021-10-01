@@ -143,7 +143,6 @@ function createSTIG(ticker) {
         }
 
         for (let i of a) {
-            console.log(i);
             let vel = document.createElement('div')
             vel.className = 'kvt-stig-item';
             vel.style.cssText = "color: " + kvtGroups[i];

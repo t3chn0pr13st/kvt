@@ -12,7 +12,9 @@
     display: inline-flex;
     cursor: pointer;
 }
-
+.kvt-stig-item:hover {
+    opacity: 0.7;
+}
 
 /**
  * Компактные стили
@@ -135,8 +137,22 @@
     min-height: 24px !important;
     padding: 1px !important;
 }
-
-
+/* отложки */
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-stopOrderTypeSelector-] {
+    margin-bottom: 3px;
+}
+.kvt-root [class*=src-components-Forms-commonStyles-label-] {
+    margin-bottom: 3px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 12px;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-secondRow-] {
+    margin-top: 3px;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] {
+    margin-left: 0;
+}
 
 /**
  * список заявок

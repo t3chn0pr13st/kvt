@@ -132,6 +132,9 @@
     padding: 4px !important;
     margin-bottom: 4px !important;
 }
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
+    font-size: 12px;
+}
 /* меньше кнопочки */
 .kvt-root .pt-button.pt-fill{
     min-height: 24px !important;

@@ -4,4 +4,10 @@ chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResp
             sendResponse(result.telegramId)
         })
     }
+
+    if (request.type === "rcktMonConnect") {
+        chrome.storage.local.get('rcktMonConnect', function (result) {
+            sendResponse(result.rcktMonConnect)
+        })
+    }
 });

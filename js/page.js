@@ -1,5 +1,5 @@
-let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim();
-let rcktMonSocket = null;
+let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim(),
+    rcktMonSocket = null;
 
 chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegramId) {
     if (telegramId) {
@@ -9,7 +9,13 @@ chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegram
     }
 });
 
-rcktMonConnect();
+chrome.runtime.sendMessage(extensionId, {type: "rcktMonConnect"}, function (e) {
+    if (e) {
+        rcktMonConnect();
+    } else {
+        console.warn('[kvt]', 'rcktMonConnect не включен')
+    }
+});
 
 let kvt_timeout = 1000;
 function kvt_connect(telegramId) {
@@ -46,7 +52,7 @@ function kvt_connect(telegramId) {
 
 function rcktMonConnect() {
 
-    if (rcktMonSocket){
+    if (rcktMonSocket) {
         rcktMonSocket.onmessage = null;
         rcktMonSocket.onclose = null;
         rcktMonSocket.onerror = null;
@@ -62,7 +68,7 @@ function rcktMonConnect() {
             console.log('[RcktMon][Message]', msg);
             setTickerInGroup(msg.ticker, msg.group);
         }
-    
+
         rcktMonSocket.onclose = () => {
             setTimeout(() => rcktMonConnect(), 5000);
         }

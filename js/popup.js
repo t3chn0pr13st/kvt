@@ -36,7 +36,7 @@ settingsInput.forEach(function (st) {
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle', 'showNullOperation'];
+let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);

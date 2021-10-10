@@ -1,4 +1,5 @@
 let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim();
+let rcktMonSocket = null;
 
 chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegramId) {
     if (telegramId) {
@@ -7,6 +8,8 @@ chrome.runtime.sendMessage(extensionId, {type: "telegramId"}, function (telegram
         console.warn('[kvt]', 'telegramId не установлен')
     }
 });
+
+rcktMonConnect();
 
 let kvt_timeout = 1000;
 function kvt_connect(telegramId) {
@@ -41,6 +44,37 @@ function kvt_connect(telegramId) {
     };
 }
 
+function rcktMonConnect() {
+
+    if (rcktMonSocket){
+        rcktMonSocket.onmessage = null;
+        rcktMonSocket.onclose = null;
+        rcktMonSocket.onerror = null;
+        rcktMonSocket = null;
+    }
+
+    try {
+
+        rcktMonSocket = new WebSocket('ws://localhost:51337');
+
+        rcktMonSocket.onmessage = (message) => {
+            const msg = JSON.parse(message.data);
+            console.log('[RcktMon][Message]', msg);
+            setTickerInGroup(msg.ticker, msg.group);
+        }
+    
+        rcktMonSocket.onclose = () => {
+            setTimeout(() => rcktMonConnect(), 5000);
+        }
+
+        rcktMonSocket.onerror = () => {
+            setTimeout(() => rcktMonConnect(), 5000);
+        }
+
+    } catch {
+        setTimeout(() => rcktMonConnect(), 5000);
+    }
+}
 
 function setTickerInGroup(ticker, group_id) {
     let widget = getGroupWidget(group_id);

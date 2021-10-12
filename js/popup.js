@@ -255,7 +255,7 @@ function createUTCOffset(e) {
 
 let formatter = new Intl.NumberFormat("ru");
 function _ft(e) {
-    return formatter.format(e.toFixed(2))
+    return formatter.format(Number(e).toFixed(2))
 }
 
 function _style(e) {
@@ -280,7 +280,7 @@ function _c(currency) {
 
 function _tsToTime(timestamp) {
     let m = new Date(timestamp);
-    return [m.getHours(), m.getMinutes(), m.getSeconds()].map(function (x) {
+    return [m.getHours(), m.getMinutes(), m.getSeconds(), m.getMilliseconds()].map(function (x) {
             return x < 10 ? "0" + x : x
         }).join(":")
 }

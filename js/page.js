@@ -17,7 +17,6 @@ chrome.runtime.sendMessage(extensionId, {type: "rcktMonConnect"}, function (e) {
     }
 });
 
-let kvt_timeout = 1000;
 function kvt_connect(telegramId) {
     var ws = new WebSocket(`wss://kvalood.ru?id=${telegramId}`);
 
@@ -41,7 +40,7 @@ function kvt_connect(telegramId) {
 
             setTimeout(function() {
                 kvt_connect(telegramId);
-            }, Math.min(50000, kvt_timeout += kvt_timeout));
+            }, 5000);
         }
     };
 

@@ -69,6 +69,7 @@
 /* шапка тикера в заявке */
 .kvt-root [class*=src-components-TickerInfo-TickerInfo-line1-] {
     line-height: 15px;
+    align-items: center;
 }
 .kvt-root [class*=src-components-TickerInfo-TickerInfo-line2-] {
     line-height: 13px;
@@ -129,8 +130,8 @@
     padding: 0 !important;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-]{
-    padding: 4px !important;
-    margin-bottom: 4px !important;
+    padding: 2px 4px !important;
+    margin-bottom: 6px !important;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
     font-size: 12px;
@@ -170,6 +171,7 @@
 
 .kvt-root [class*=src-modules-Orders-containers-components-styles-main-]{
     min-width: 210px !important;
+    margin-bottom: 5px;
 }
 
 .kvt-root [class*=src-components-TabButton-styles-wrapper-] {
@@ -188,9 +190,10 @@
     margin: 0 5px !important;
 }
 .kvt-root [class*=src-modules-Orders-containers-components-styles-header-]{
-    padding-right: 27px;
+    padding-right: 20px;
+    padding-bottom: 0 !important;
     border-bottom: none !important;
-    padding-bottom: 2px !important;
+    margin: -4px 0 -2px -3px;
 }
 .kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] {
     align-items: center;
@@ -215,13 +218,19 @@
 
 .kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-]{
     position: absolute !important;
-    right: 5px !important;
+    height: 100%;
+    right: 1px;
     width: 24px !important;
     margin: 0 !important;
     padding: 0 !important;
     top: 0 !important;
 }
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] {flex-direction: column;flex-wrap: nowrap;align-content: center;}
+.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] {
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 1px 0;
+}
 .kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-] > [class*=src-modules-Orders-containers-components-styles-secondary-] {
     display: none !important;
 }
@@ -231,13 +240,12 @@
 .kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *{
     overflow: hidden !important;
     width: 24px !important;
-    height: 19px !important;
-    margin: 3px 0 !important;
+    height: 18px !important;
 }
 .kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(1):before,
 .kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(3):before{
     width: 24px !important;
-    height: 19px !important;
+    height: 18px !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -257,15 +265,15 @@
 
 /* логотип в заявке и списке заявок */
 .kvt-root [class*=src-components-Logo-Logo-logoLarge-]{
-    min-width: 20px;
-    min-height: 20px;
-    width: 20px;
-    height: 20px;
+    min-width: 18px;
+    min-height: 18px;
+    width: 18px;
+    height: 18px;
     margin-right: 5px;
 }
 .kvt-root [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-]{
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 

@@ -1,7 +1,9 @@
 ## Расширение для веб-терминала Тинькофф Инвестиции
 
 
-Информацию об обновлениях пишу тут - [t.me/kvaloodTools](https://t.me/kvaloodTools)
+➡️ Информацию об обновлениях пишу в [t.me/kvaloodTools](https://t.me/kvaloodTools)
+
+⚠️ Инструкции по работе с расширением в [WIKI](https://github.com/kvalood/kvt/wiki)
 
 ### Особенности:
 * <details>

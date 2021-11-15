@@ -89,7 +89,7 @@ function setTickerInGroup(ticker, group_id) {
         return null;
     }
     let reactObjectName = Object.keys(widget).find(function (key) {
-        return key.startsWith("__reactInternalInstance$")
+        return key.startsWith("__reactFiber$")
     });
 
     let target = widget[reactObjectName].memoizedProps.children.find(function (child) {

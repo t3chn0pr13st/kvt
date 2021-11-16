@@ -1,5 +1,7 @@
 'use strict';
 
+let kvth = new kvtHelper();
+
 let storage = chrome.storage.local,
     settings = {},
     config = {};
@@ -20,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 });
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'kvtFastVolume'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
@@ -36,7 +38,7 @@ settingsInput.forEach(function (st) {
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect'];
+let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumeRound'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
@@ -57,7 +59,7 @@ settingsSwitch.forEach(function (st) {
 document.getElementById('kvShowReport').addEventListener('click', function (e){
     let reportWindow = document.getElementById('reportWindow'),
         m = new Date(),
-        i = createUTCOffset(m),
+        i = kvth.createUTCOffset(m),
         fromDate = document.getElementById('fromDate').value,
         toDate = document.getElementById('toDate').value,
         c = (m.getMonth() + 1 + "").padStart(2, "0"), l = (m.getDate() + "").padStart(2, "0");
@@ -184,9 +186,9 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
             currencies.forEach(function (e) {
                 topTable += '' +
                     '<div>' +
-                    '<span>Чистыми:</span> ' + _ft(e.result) + ' ' + _c(e.currency) + '<br/>' +
-                    'Комиссия: ' + _ft(e.commission) + ' ' + _c(e.currency) + '<br/>' +
-                    'Оборот: ' + _ft(e.buySum + e.sellSum) + ' ' + _c(e.currency) + '<br/>' +
+                    '<span>Чистыми:</span> ' + kvth._ft(e.result) + ' ' + kvth._c(e.currency) + '<br/>' +
+                    'Комиссия: ' + kvth._ft(e.commission) + ' ' + kvth._c(e.currency) + '<br/>' +
+                    'Оборот: ' + kvth._ft(e.buySum + e.sellSum) + ' ' + kvth._c(e.currency) + '<br/>' +
                     '<span title="buy/sell (совершенных/отмененных)">Сделок:</span> ' + e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount + e.sellCount) + ' / ' + e.declineCount + ') ' +
                     '</div>'
                 ;
@@ -215,11 +217,11 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
 
                 table += '<tr' + (e['Количество'] !== 0 ? ' class="open-ticker"' : '') + '>' +
                     '<td>' + e['Тикер'] + '</td>' +
-                    '<td data-sort="' + _rt(e['Финансовый результат с учётом комиссии']) + '">' + _style(e['Финансовый результат с учётом комиссии']) + '</td>' +
-                    '<td data-sort="' + _rt(e['Комиссия']) + '">' + _ft(e['Комиссия']) + '</td>' +
+                    '<td data-sort="' + kvth._rt(e['Финансовый результат с учётом комиссии']) + '">' + kvth._style(e['Финансовый результат с учётом комиссии']) + '</td>' +
+                    '<td data-sort="' + kvth._rt(e['Комиссия']) + '">' + kvth._ft(e['Комиссия']) + '</td>' +
                     '<td>' + e['Сделок покупки'] + ' / ' + e['Сделок продажи'] + ' (' + (e['Сделок покупки'] + e['Сделок продажи']) + ' / ' + e["Отмененных сделок"] + ')</td>' +
-                    '<td data-sort="' + _rt(e['Сумма покупок'] + e['Сумма продаж']) + '">' + _ft(e['Сумма покупок']) + ' / ' + _ft(e['Сумма продаж']) + '</td>' +
-                    '<td data-sort="' + e['Валюта'] + '">' + _c(e['Валюта']) + '</td>' +
+                    '<td data-sort="' + kvth._rt(e['Сумма покупок'] + e['Сумма продаж']) + '">' + kvth._ft(e['Сумма покупок']) + ' / ' + kvth._ft(e['Сумма продаж']) + '</td>' +
+                    '<td data-sort="' + e['Валюта'] + '">' + kvth._c(e['Валюта']) + '</td>' +
                     '</tr>';
             });
             table += '</tbody></table><div class="note">* открытые позиции не учитываются в результате и помечаются в таблице <span class="open-ticker">цветом</span></div>';
@@ -243,51 +245,6 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
         })
     });
 });
-
-function _pad(e) {
-    return e < 10 ? "0" + e : e
-}
-
-function createUTCOffset(e) {
-    var t = 0 < e.getTimezoneOffset() ? "-" : "+", e = Math.abs(e.getTimezoneOffset());
-    return t + _pad(Math.floor(e / 60)) + ":" + _pad(e % 60)
-}
-
-let formatter = new Intl.NumberFormat("ru");
-function _ft(e) {
-    return formatter.format(Number(e).toFixed(2))
-}
-
-function _style(e) {
-    if(e < 0) {
-        return '<span class="red">' + _ft(e) + '</span>';
-    } else {
-        return _ft(e)
-    }
-}
-
-function _rt(e) {
-    return e.toFixed(2)
-}
-
-function _c(currency) {
-    let symbols = {
-        'USD': '$', 'RUB': '₽', 'EUR': '€'
-    };
-
-    return symbols[currency] || currency;
-}
-
-function _tsToTime(timestamp) {
-    let m = new Date(timestamp);
-    return [m.getHours(), m.getMinutes(), m.getSeconds(), m.getMilliseconds()].map(function (x) {
-            return x < 10 ? "0" + x : x
-        }).join(":")
-}
-
-function _errW(text) {
-    return `<div class="note-error">⚠ ${text}</div>`;
-}
 
 
 /**
@@ -359,7 +316,6 @@ document.getElementById('saveGroupTickers').addEventListener('click', function (
 /**
  * Принты
  */
-let jwt;
 document.getElementById('kvLoadPrintsTicker').addEventListener('click', function (e) {
     loadPrintsTicker()
 });
@@ -399,10 +355,10 @@ function loadPrintsTicker() {
 
                 r.forEach(function (e) {
                     table += '<tr' + (e.side === 'sell' ? ' class="side-sell"' : ' class="side-buy"') + '>' +
-                        '<td>' + _ft(e.price) + '</td>' +
+                        '<td>' + kvth._ft(e.price) + '</td>' +
                         '<td>' + e.qty + '</td>' +
-                        '<td>' + _ft(e.qty * e.price) + '</td>' +
-                        '<td>' + _tsToTime(e.timestamp) + '</td>' +
+                        '<td>' + kvth._ft(e.qty * e.price) + '</td>' +
+                        '<td>' + kvth._tsToTime(e.timestamp) + '</td>' +
                         '</tr>';
                 });
                 table += '</tbody></table>';
@@ -419,51 +375,11 @@ function loadPrintsTicker() {
                 case 403: error = err.statusText + ', проверьте токен в настройках'; break;
                 default: error = err.status + ' ' + err.statusText;
             }
-            printsWindow.innerHTML = _errW(error);
+            printsWindow.innerHTML = kvth._errW(error);
         })
     } else {
         printsWindow.innerHTML  = 'укажите тикер';
     }
 }
 
-async function syncAlorAccessToken() {
-    if (jwt && !isTokenExpired(jwt)) return;
-    return await fetch('https://oauth.alor.ru/refresh?token=' + settings.alorToken, {method: 'POST'}).then(e => {
-        if (e.ok === true && e.status === 200) {
-            return e.json()
-        } else {
-            throw e
-        }
-    }).then(e => {
-        jwt = e.AccessToken;
-    })
-}
 
-async function getAlltradesByTicker(ticker) {
-    return await fetch('https://api.alor.ru/md/v2/Securities/SPBX/' + ticker + '/alltrades', {
-        headers: {
-            'Authorization': 'Bearer ' + jwt
-        }
-    }).then(e => {
-        if (e.ok === true && e.status === 200) {
-            return e.json()
-        } else {
-            throw e
-        }
-    });
-}
-
-function isTokenExpired(token) {
-    if (token) {
-        try {
-            const [, bs] = token.split('.');
-            const {exp: exp} = JSON.parse(window.atob(bs).toString())
-            if (typeof exp === 'number') {
-                return Date.now() + 1000 >= exp * 1000;
-            }
-        } catch {
-            return true;
-        }
-    }
-    return true;
-}

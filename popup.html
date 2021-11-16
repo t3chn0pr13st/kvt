@@ -37,7 +37,7 @@
 		<!-- принты -->
 		<div id="prints" class="b-tab">
 			<div class="form-group">
-				<input type="text" id="printTicker" class="form-control" placeholder="введите тикер СПБ">
+				<input type="text" id="printTicker" class="form-control" placeholder="введите тикер СПБ" style="width: 90px;">
 				<button id="kvLoadPrintsTicker" class="btn">Загрузить все сделки по тикеру</button>
 			</div>
 			
@@ -82,10 +82,29 @@
 				</div>
 				<div class="form-text">Отображать бумаги с нулевым фин.результатом (выставили заявку - убрали)</div>
 			</div>
+			
+			<hr/>
+			
+			<div class="form-group">
+				<label for="kvtFastVolume" class="form-label">Кнопки быстрого объема в $</label>
+				<input type="text" name="kvtFastVolume" id="kvtFastVolume" class="form-control" placeholder="100000,50000,25000,10000,5000">
+				<div class="form-text">Быстрое заполнение объема в $, в виджете заявки. <b>Указывать через запятую</b>, например "100000,50000"</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="kvtFastVolumeRound" id="kvtFastVolumeRound" class="form-check-input">
+					<label for="kvtFastVolumeRound">Округлять до 100 кнопки быстрого объема</label>
+				</div>
+				<div class="form-text">Округление кол-ва бумаг до 100. <i>Прим. - не 547, а 500</i></div>
+			</div>
+			
+			<hr/>
+			
 			<div class="form-group">
 				<label for="telegramId" class="form-label">Телеграм ID</label>
 				<input type="text" name="telegramId" id="telegramId" class="form-control">
-				<div class="form-text">Для переключения стаканов из приватных ботов</div>
+				<div class="form-text">Для переключения стаканов из приватных инструментов</div>
 			</div>
 			
 			<div class="form-group">
@@ -108,6 +127,9 @@
 <script src="/libs/tablesort/tablesort.js"></script>
 <script src="/libs/tablesort/tablesort.number.js"></script>
 <script src="/libs/tabs.js"></script>
+
+<script src="/js/helpers.js"></script>
+<script src="/js/alor.js"></script>
 <script src="/js/popup.js"></script>
 
 </html>

@@ -39,5 +39,7 @@ function injectScript(url, tag, setExtId) {
 }
 
 setTimeout(function () {
-    return injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
+    injectScript(chrome.extension.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
+    injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
+
 });

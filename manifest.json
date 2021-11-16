@@ -1,6 +1,6 @@
 {
   "name": "Kvalood Tools",
-  "version": "0.1.9.1",
+  "version": "0.1.9.3",
   "description": "Helper for Tinkoff Investments",
   "manifest_version": 2,
   "permissions": [
@@ -14,7 +14,9 @@
     "https://*.tinkoff.ru/terminal/*"
   ],
   "web_accessible_resources": [
-    "js/page.js"
+    "js/page.js",
+    "js/helpers.js",
+    "js/alor.js"
   ],
   "background": {
     "scripts": [

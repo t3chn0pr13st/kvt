@@ -1,13 +1,8 @@
-chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResponse) {
-    if (request.type === "telegramId") {
-        chrome.storage.local.get('telegramId', function (result) {
-            sendResponse(result.telegramId)
-        })
-    }
+chrome.runtime.onMessageExternal.addListener(function (request, sender, response) {
 
-    if (request.type === "rcktMonConnect") {
-        chrome.storage.local.get('rcktMonConnect', function (result) {
-            sendResponse(result.rcktMonConnect)
+    if (request.type === "LOCALSTORAGE") {
+        chrome.storage.local.get(request.path, function (value) {
+            response(value[request.path])
         })
     }
 });

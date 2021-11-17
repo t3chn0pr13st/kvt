@@ -151,27 +151,6 @@ setTimeout(function(){
         return activeGroupsIds.sort((a, b) => a - b);
     }
 
-    new MutationObserver(function (mutationsList, observer) {
-        for (let mutation of mutationsList) {
-            if (mutation.target.tagName) {
-                let s = mutation.target.querySelector('[class*="src-components-Menu-styles-tag-"]')
-                if (s) {
-                    createSTIG(s.innerHTML)
-                    break
-                }
-            } else {
-                let s = mutation.target.parentElement.matches('[class*="src-components-Menu-styles-tag-"]')
-                if (s) {
-                    createSTIG(mutation.target.textContent);
-                }
-            }
-        }
-    }).observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: true
-    })
-
     function createSTIG(ticker) {
 
         let a = getActiveGroupsWidget()
@@ -287,11 +266,12 @@ setTimeout(function(){
     /**
      *
      */
-    // Добавлсяем в меню TS кнопку и открываем виджет при клике
     new MutationObserver(function (mutationsList, observer) {
         for (let mutation of mutationsList) {
             if (!mutation.removedNodes.length) {
                 if (mutation.target && mutation.type === 'childList') {
+
+                    // Добавляем в меню TS кнопку и открываем виджет при клике
                     let ptMenu = mutation.target.querySelector(".pt-menu")
                     if (ptMenu && !ptMenu.classList.contains("kvt-menu-load")) {
                         let items = Array.from(ptMenu.querySelectorAll('[class*="Menu-styles-textInner"]'))
@@ -319,6 +299,13 @@ setTimeout(function(){
                     }
 
                     //spbTS(mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]'))
+
+                    // Создаем кнопки быстрого перехода к стакану
+                    let s = mutation.target.querySelector('[class*="src-components-Menu-styles-tag-"]')
+                    if (s) {
+                        createSTIG(s.innerHTML)
+                        break
+                    }
                 }
 
                 if (mutation.target && mutation.type === 'characterData') {

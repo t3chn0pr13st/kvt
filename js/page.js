@@ -1,7 +1,6 @@
 "use strict";
 
-let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim(),
-    rcktMonSocket = null;
+let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim();
 
 let settings = {};
 
@@ -292,19 +291,20 @@ setTimeout(function(){
     new MutationObserver(function (mutationsList, observer) {
         for (let mutation of mutationsList) {
             if (!mutation.removedNodes.length) {
-                if (mutation.target && mutation.target.tagName) {
-                    let ptmenu = mutation.target.querySelector(".pt-menu")
-                    if (ptmenu && !ptmenu.classList.contains("kvt-menu-load")) {
-                        let items = Array.from(ptmenu.querySelectorAll('[class*="Menu-styles-textInner"]'))
+                if (mutation.target && mutation.type === 'childList') {
+                    let ptMenu = mutation.target.querySelector(".pt-menu")
+                    if (ptMenu && !ptMenu.classList.contains("kvt-menu-load")) {
+                        let items = Array.from(ptMenu.querySelectorAll('[class*="Menu-styles-textInner"]'))
                         for (let itemInner of items) {
-                            if (/история операций/gi.test(itemInner.textContent)) {
+                            if (/заявка/gi.test(itemInner.textContent)) {
                                 let itm = itemInner.parentNode.parentNode;
-                                ptmenu.classList.add('kvt-menu-load')
+                                ptMenu.classList.add('kvt-menu-load')
 
-                                var deliverySelector = ptmenu.querySelector('[class*="divider"]');
-                                ptmenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(!0));
+                                var deliverySelector = ptMenu.querySelector('[class*="divider"]');
+                                ptMenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(!0));
 
-                                var i = ptmenu.insertAdjacentElement("beforeend", itm.cloneNode(!0));
+                                var i = ptMenu.insertAdjacentElement("beforeend", itm.cloneNode(!0));
+                                i.querySelector('svg').innerHTML = '<path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="currentColor"></path>';
                                 i.querySelector('[class*="text"]').textContent = "Лента принтов СПБ";
 
                                 for (let itm of items) {
@@ -321,12 +321,13 @@ setTimeout(function(){
                     //spbTS(mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]'))
                 }
 
+                if (mutation.target && mutation.type === 'characterData') {
 
-                // Добавим быстрый объем в $. следим за input цены справа вверху в виджете заявки
-                if(mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
-                    add_kvtFastVolumeButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
+                    // Добавим быстрый объем в $. следим за input цены справа вверху в виджете заявки
+                    if (mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
+                        add_kvtFastVolumeButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
+                    }
                 }
-
             }
 
         }

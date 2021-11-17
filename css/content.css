@@ -44,6 +44,17 @@ span[data-kvt-volume]:hover {
 }
 
 /**
+ * Меню добавления виджетов
+ */
+.kvt-menu-load [class*=-components-Menu-styles-item-]{
+    height: 28px !important;
+    padding: 4px 12px !important;
+}
+.kvt-menu-load [class*=-components-Menu-styles-item-] [class*=-components-Menu-styles-text-] {
+    font-size: 12px !important;
+}
+
+/**
  * Шапка, вкладки
  */
 .kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-addBtn-]{

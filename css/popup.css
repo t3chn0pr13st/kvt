@@ -91,10 +91,21 @@ label {
     border: 1px solid #939393;
     cursor: pointer;
     padding: .275rem .475rem;
+    text-decoration: none;
 }
 .btn:focus {
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+}
+.btn-sm{
+    padding: 0.125rem 0.25rem;
+    line-height: 1;
+}
+
+.btn-secondary {
+    color: #767676;
+    background-color: #eeeeee;
+    border-color: #d0d0d0;
 }
 
 /**

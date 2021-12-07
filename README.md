@@ -37,3 +37,11 @@
    Ссылка на программу - https://github.com/t3chn0pr13st/RcktMon <br>
   <img src="https://user-images.githubusercontent.com/6376206/137429405-5cbf1c2e-7933-42b9-a76b-2b96eece801a.png" width="500">
 </details>
+
+* <details>
+  <summary>Кнопки быстрого объема в $ в виджете заявки</summary>
+
+  [Подробнее в релизе](https://github.com/kvalood/kvt/releases/tag/0.1.9.5)
+
+  <img src="https://user-images.githubusercontent.com/6376206/144976548-4b2b5bb3-d8b4-4a93-ac90-95e1872051b8.png" width="290">
+</details>

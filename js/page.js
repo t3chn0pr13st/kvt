@@ -5,7 +5,7 @@ let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute
 let settings = {};
 
 // get settings
-['kvtFastVolume', 'kvtFastVolumeRound', 'telegramId', 'rcktMonConnect'].forEach(function (st) {
+['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'telegramId', 'rcktMonConnect'].forEach(function (st) {
     chrome.runtime.sendMessage(extensionId, {type: "LOCALSTORAGE", path: st}, function (val) {
         settings[st] = val
     })
@@ -73,7 +73,7 @@ setTimeout(function(){
 
                     // Добавим быстрый объем в $. следим за input цены справа вверху в виджете заявки
                     if (mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
-                        add_kvtFastVolumeButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
+                        add_kvtFastVolumePriceButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
                     }
                 }
             }
@@ -85,13 +85,6 @@ setTimeout(function(){
         characterData: true
     })
 
-    function spbTS(widget) {
-
-    }
-
-    function subscribe_spb_TS(t, e, r) {
-
-    }
 }, 100);
 
 
@@ -253,11 +246,9 @@ function createSTIG(ticker) {
 
 let timeouts = {};
 
-function add_kvtFastVolumeButtons(widget) {
+function add_kvtFastVolumePriceButtons(widget) {
 
-    if (widget && settings.kvtFastVolume) {
-
-        //
+    if (widget && settings.kvtFastVolumePrice) {
         let widgetId = widget.getAttribute('data-widget-id'),
             ticker = widget.getAttribute('data-widget-symbol-id'),
             timeoutName = widgetId + '-' + ticker;
@@ -268,21 +259,19 @@ function add_kvtFastVolumeButtons(widget) {
                 let block = widget.querySelector('[class^="src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-"]'),
                     price = parseFloat(widget.querySelector('[class^="src-components-OrderHeader-styles-price-"] > div').innerHTML.replace(/\s+/g, '').replace(/[,]+/g, '.'))
 
-                console.log('price', price)
-
-                let insertBlock = widget.querySelector('.kvtFastVolume');
+                let insertBlock = widget.querySelector('.kvtFastVolumePrice');
                 if (!insertBlock) {
-                    block.insertAdjacentHTML("beforebegin", '<div class="kvtFastVolume"></div>');
-                    insertBlock = widget.querySelector('.kvtFastVolume');
+                    block.insertAdjacentHTML("beforebegin", '<div class="kvtFastVolumePrice"></div>');
+                    insertBlock = widget.querySelector('.kvtFastVolumePrice');
                 } else {
                     insertBlock.innerHTML = ''
                 }
 
                 let vols = [];
-                for (let i of settings.kvtFastVolume.split(',')) {
+                for (let i of settings.kvtFastVolumePrice.split(',')) {
                     let vol = (i / price).toFixed();
 
-                    if (settings.kvtFastVolumeRound) {
+                    if (settings.kvtFastVolumePriceRound) {
                         vol = customRound(vol)
                     }
 
@@ -303,6 +292,32 @@ function add_kvtFastVolumeButtons(widget) {
                 timeouts[timeoutName] = null
 
             }, 800);
+        }
+    }
+}
+
+function add_kvtFastVolumeSizeButtons(widget) {
+    if (widget && settings.kvtFastVolumeSize) {
+        let block = widget.querySelector('[class^="src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-"]')
+        let insertBlock = widget.querySelector('.kvtFastVolumeSize');
+
+        if (!insertBlock) {
+            block.insertAdjacentHTML("beforebegin", '<div class="kvtFastVolumeSize"></div>');
+            insertBlock = widget.querySelector('.kvtFastVolumeSize');
+        } else {
+            insertBlock.innerHTML = ''
+        }
+
+        for (let vol of settings.kvtFastVolumeSize.split(',')) {
+            vol = vol.replace(/\D/g,'')
+            let vel = document.createElement('span')
+            vel.setAttribute('data-kvt-volume', vol);
+            vel.innerHTML = vol;
+
+            insertBlock.insertAdjacentElement('beforeend', vel)
+            vel.onclick = e => {
+                set_kvtFastVolume(widget, vol)
+            }
         }
     }
 }
@@ -333,13 +348,14 @@ function customRound(val, n = 100) {
     return Math.round(val / n) * n;
 }
 
-// при загрузке страницы достаём виджеты
-let kvtTimer = setInterval(() => {
+// при загрузке страницы достаём виджеты цены
+let kvtFastVolumeButtons_TIMER = setInterval(() => {
     let widgets = document.querySelectorAll('[data-widget-type="COMBINED_ORDER_WIDGET"]')
     if (widgets.length) {
         widgets.forEach(function (widget) {
-            add_kvtFastVolumeButtons(widget)
+            add_kvtFastVolumePriceButtons(widget)
+            add_kvtFastVolumeSizeButtons(widget)
         })
-        clearInterval(kvtTimer)
+        clearInterval(kvtFastVolumeButtons_TIMER)
     }
 }, 1000);

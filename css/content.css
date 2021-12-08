@@ -17,8 +17,9 @@
 }
 
 /* быстрый объем в $ */
-.kvtFastVolume {
+.kvtFastVolumePrice, .kvtFastVolumeSize {
     margin-top: 5px;
+    margin-bottom: -2px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -26,10 +27,15 @@
 }
 span[data-kvt-volume] {
     cursor: pointer;
-    color: var(--color-green5);
 }
 span[data-kvt-volume]:hover {
     text-decoration: underline;
+}
+.kvtFastVolumePrice span[data-kvt-volume] {
+    color: var(--color-green5);
+}
+.kvtFastVolumeSize span[data-kvt-volume] {
+    color: var(--color-blue5);
 }
 
 /**
@@ -157,11 +163,16 @@ span[data-kvt-volume]:hover {
     padding: 0 !important;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-]{
-    padding: 2px 4px !important;
-    margin-bottom: 6px !important;
+    background: none;
+    padding: 0 !important;
+    margin: 5px 0 5px;
 }
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
     font-size: 12px;
+}
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] > span:nth-of-type(1) {
+    width: 48px;
+    text-overflow: clip;
 }
 /* меньше кнопочки */
 .kvt-root .pt-button.pt-fill{

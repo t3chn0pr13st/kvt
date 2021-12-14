@@ -37,7 +37,7 @@ setTimeout(function(){
 
 
                     // Создаем кнопки быстрого перехода к стакану
-                    let s = mutation.target.querySelector('[data-qa-tag="tag"] > .pro-tag-content')
+                    let s = mutation.target.querySelector('[data-qa-tag="menu-item"] [data-qa-tag="tag"] > .pro-tag-content')
                     if (s) {
                         createSTIG(s.innerHTML)
                         break

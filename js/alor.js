@@ -1,22 +1,22 @@
-let jwt;
+let kvtAlorJWT;
 
-async function syncAlorAccessToken() {
-    if (jwt && !isTokenExpired(jwt)) return;
-    return await fetch('https://oauth.alor.ru/refresh?token=' + settings.alorToken, {method: 'POST'}).then(e => {
+async function kvtSyncAlorAccessToken() {
+    if (kvtAlorJWT && !kvtIsTokenExpired(kvtAlorJWT)) return;
+    return await fetch('https://oauth.alor.ru/refresh?token=' + kvtSettings.alorToken, {method: 'POST'}).then(e => {
         if (e.ok === true && e.status === 200) {
             return e.json()
         } else {
             throw e
         }
     }).then(e => {
-        jwt = e.AccessToken;
+        kvtAlorJWT = e.AccessToken;
     })
 }
 
-async function getAlltradesByTicker(ticker) {
+async function kvtGetAlltradesByTicker(ticker) {
     return await fetch('https://api.alor.ru/md/v2/Securities/SPBX/' + ticker + '/alltrades', {
         headers: {
-            'Authorization': 'Bearer ' + jwt
+            'Authorization': 'Bearer ' + kvtAlorJWT
         }
     }).then(e => {
         if (e.ok === true && e.status === 200) {
@@ -27,7 +27,7 @@ async function getAlltradesByTicker(ticker) {
     });
 }
 
-function isTokenExpired(token) {
+function kvtIsTokenExpired(token) {
     if (token) {
         try {
             const [, bs] = token.split('.');
@@ -41,6 +41,3 @@ function isTokenExpired(token) {
     }
     return true;
 }
-
-
-

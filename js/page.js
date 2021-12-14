@@ -2,24 +2,25 @@
 
 let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim();
 
-let settings = {};
+let kvtSettings = {}
+let kvth = new kvtHelper();
 
 // get settings
-['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'telegramId', 'rcktMonConnect'].forEach(function (st) {
+['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'telegramId', 'rcktMonConnect', 'alorToken'].forEach(function (st) {
     chrome.runtime.sendMessage(extensionId, {type: "LOCALSTORAGE", path: st}, function (val) {
-        settings[st] = val
+        kvtSettings[st] = val
     })
 })
 
 setTimeout(function(){
 
-    if (settings.telegramId) {
-        kvt_connect(settings.telegramId)
+    if (kvtSettings.telegramId) {
+        kvt_connect(kvtSettings.telegramId)
     } else {
         console.warn('[kvt]', 'telegramId не установлен')
     }
 
-    if (settings.rcktMonConnect) {
+    if (kvtSettings.rcktMonConnect) {
         rcktMonConnect();
     } else {
         console.warn('[kvt]', 'rcktMonConnect не включен')
@@ -34,35 +35,9 @@ setTimeout(function(){
             if (!mutation.removedNodes.length) {
                 if (mutation.target && mutation.type === 'childList') {
 
-                    // Добавляем в меню TS кнопку и открываем виджет при клике
-                    let ptMenu = mutation.target.querySelector(".pt-menu")
-                    if (ptMenu && !ptMenu.classList.contains("kvt-menu-load")) {
-                        let items = Array.from(ptMenu.querySelectorAll('[class*="Menu-styles-textInner"]'))
-                        for (let itemInner of items) {
-                            if (/заявка/gi.test(itemInner.textContent)) {
-                                let itm = itemInner.parentNode.parentNode;
-                                ptMenu.classList.add('kvt-menu-load')
-
-                                var deliverySelector = ptMenu.querySelector('[class*="divider"]');
-                                ptMenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(!0));
-
-                                var i = ptMenu.insertAdjacentElement("beforeend", itm.cloneNode(!0));
-                                i.querySelector('svg').innerHTML = '<path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="currentColor"></path>';
-                                i.querySelector('[class*="text"]').textContent = "Лента принтов СПБ";
-
-                                for (let itm of items) {
-                                    if (/подписки/gi.test(itm.textContent)) {
-                                        i.onclick = e => {
-                                            itm.click()
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
 
                     // Создаем кнопки быстрого перехода к стакану
-                    let s = mutation.target.querySelector('[class*="src-components-Menu-styles-tag-"]')
+                    let s = mutation.target.querySelector('[data-qa-tag="tag"] > .pro-tag-content')
                     if (s) {
                         createSTIG(s.innerHTML)
                         break
@@ -163,37 +138,35 @@ function setTickerInGroup(ticker, group_id) {
     });
 
     let target = widget[reactObjectName].memoizedProps.children.find(function (child) {
-        return Array.isArray(child)
-    }).find(function (item) {
-        return !!((item._owner || {}).memoizedProps || {}).selectSymbol
-    });
+        return typeof child === 'object' && child !== null
+    })
 
     target && target._owner.memoizedProps.selectSymbol(ticker.toUpperCase())
 }
 
 let kvtGroups = {
-    1: "rgb(255, 212, 80);",
-    2: "rgb(255, 123, 118);",
-    3: "rgb(163, 129, 255);",
-    4: "rgb(77, 195, 247);",
-    5: "rgb(174, 213, 127);",
-    6: "rgb(77, 161, 151);",
-    7: "rgb(255, 183, 76);",
-    8: "rgb(248, 163, 77);",
-    9: "rgb(255, 136, 99);",
-    10: "rgb(238, 128, 93);",
-    11: "rgb(255, 120, 167);",
-    12: "rgb(212, 93, 140);",
-    13: "rgb(188, 113, 201);",
-    14: "rgb(124, 174, 255);",
-    15: "rgb(75, 208, 225);",
-    16: "rgb(115, 176, 119);",
+    1: "rgb(255, 212, 80)",
+    2: "rgb(255, 123, 118)",
+    3: "rgb(163, 129, 255)",
+    4: "rgb(77, 195, 247)",
+    5: "rgb(174, 213, 127)",
+    6: "rgb(77, 161, 151)",
+    7: "rgb(255, 183, 76)",
+    8: "rgb(248, 163, 77)",
+    9: "rgb(255, 136, 99)",
+    10: "rgb(238, 128, 93)",
+    11: "rgb(255, 120, 167)",
+    12: "rgb(212, 93, 140)",
+    13: "rgb(188, 113, 201)",
+    14: "rgb(124, 174, 255)",
+    15: "rgb(75, 208, 225)",
+    16: "rgb(115, 176, 119)",
 }
 
 function getGroupWidget(group_id){
     let orderWidgetObject;
     document.querySelectorAll('[data-widget-type="COMBINED_ORDER_WIDGET"]').forEach(function (widget) {
-        if (widget.querySelector('div[class^="packages-core-lib-containers-WidgetLayout-GroupMenu-styles-groupSelector"][style="color: ' + kvtGroups[group_id] + '"]')) {
+        if (widget.querySelector('div[class^="packages-core-lib-components-GroupMenu-GroupMenu-icon"][style*="color: ' + kvtGroups[group_id] + '"]')) {
             orderWidgetObject = widget;
         }
     })
@@ -206,7 +179,7 @@ function getActiveGroupsWidget() {
 
     document.querySelectorAll('[data-widget-type="COMBINED_ORDER_WIDGET"]').forEach(function (widget) {
         for (var group_id in kvtGroups) {
-            if (widget.querySelector('div[class^="packages-core-lib-containers-WidgetLayout-GroupMenu-styles-groupSelector"][style="color: ' + kvtGroups[group_id] + '"]')) {
+            if (widget.querySelector('div[class^="packages-core-lib-components-GroupMenu-GroupMenu-icon"][style*="color: ' + kvtGroups[group_id] + '"]')) {
                 activeGroupsIds.push(group_id)
             }
         }
@@ -219,7 +192,7 @@ function createSTIG(ticker) {
     let a = getActiveGroupsWidget()
 
     if (a.length) {
-        let t = document.querySelector('[class*=src-components-Menu-styles-inactive-]'),
+        let t = document.querySelector('[class*=src-components-Menu-styles-item-]'),
             el = document.querySelector('.kvt-stigButtons');
 
         if (el != null) {
@@ -233,7 +206,7 @@ function createSTIG(ticker) {
         for (let i of a) {
             let vel = document.createElement('div')
             vel.className = 'kvt-stig-item';
-            vel.style.cssText = "color: " + kvtGroups[i];
+            vel.style.cssText = "color: " + kvtGroups[i] + " !important;";
             vel.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="7" fill="currentColor"></circle></svg>';
 
             el.insertAdjacentElement("beforeEnd", vel);
@@ -248,7 +221,7 @@ let timeouts = {};
 
 function add_kvtFastVolumePriceButtons(widget) {
 
-    if (widget && settings.kvtFastVolumePrice) {
+    if (widget && kvtSettings.kvtFastVolumePrice) {
         let widgetId = widget.getAttribute('data-widget-id'),
             ticker = widget.getAttribute('data-widget-symbol-id'),
             timeoutName = widgetId + '-' + ticker;
@@ -268,10 +241,10 @@ function add_kvtFastVolumePriceButtons(widget) {
                 }
 
                 let vols = [];
-                for (let i of settings.kvtFastVolumePrice.split(',')) {
+                for (let i of kvtSettings.kvtFastVolumePrice.split(',')) {
                     let vol = (i / price).toFixed();
 
-                    if (settings.kvtFastVolumePriceRound) {
+                    if (kvtSettings.kvtFastVolumePriceRound) {
                         vol = customRound(vol)
                     }
 
@@ -297,7 +270,7 @@ function add_kvtFastVolumePriceButtons(widget) {
 }
 
 function add_kvtFastVolumeSizeButtons(widget) {
-    if (widget && settings.kvtFastVolumeSize) {
+    if (widget && kvtSettings.kvtFastVolumeSize) {
         let block = widget.querySelector('[class^="src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-"]')
         let insertBlock = widget.querySelector('.kvtFastVolumeSize');
 
@@ -308,7 +281,7 @@ function add_kvtFastVolumeSizeButtons(widget) {
             insertBlock.innerHTML = ''
         }
 
-        for (let vol of settings.kvtFastVolumeSize.split(',')) {
+        for (let vol of kvtSettings.kvtFastVolumeSize.split(',')) {
             vol = vol.replace(/\D/g,'')
             let vel = document.createElement('span')
             vel.setAttribute('data-kvt-volume', vol);

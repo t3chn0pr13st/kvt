@@ -3,7 +3,7 @@
 let kvth = new kvtHelper();
 
 let storage = chrome.storage.local,
-    settings = {},
+    kvtSettings = {},
     config = {};
 
 // запрос на данные ТИ
@@ -22,33 +22,33 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 });
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'kvtFastVolume'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'kvtFastVolumePrice', 'kvtFastVolumeSize'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
         if(result[st]) {
-            t.value = settings[st] = result[st];
+            t.value = kvtSettings[st] = result[st];
         }
         t.onchange = function () {
             var obj= {};
-            obj[st] = settings[st] = t.value || '';
+            obj[st] = kvtSettings[st] = t.value || '';
             storage.set(obj);
         }
     });
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumeRound'];
+let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
 
         if(result[st]) {
-            t.checked = settings[st] = true;
+            t.checked = kvtSettings[st] = true;
         }
         t.onchange = function () {
             var obj= {};
-            obj[st] = settings[st] = t.checked || false;
+            obj[st] = kvtSettings[st] = t.checked || false;
             storage.set(obj);
         }
     });
@@ -211,7 +211,7 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
                 '</tr></thead><tbody>';
 
             result.forEach(function (e) {
-                if (!settings.showNullOperation && e["Финансовый результат"] === 0/* || e['Сумма открытой позы']*/) {
+                if (!kvtSettings.showNullOperation && e["Финансовый результат"] === 0/* || e['Сумма открытой позы']*/) {
                     return false;
                 }
 
@@ -335,9 +335,9 @@ function loadPrintsTicker() {
         printsWindow.innerHTML  = 'Загрузка...';
 
         const loadAlltrades = async () => {
-            await syncAlorAccessToken();
-            if(jwt) {
-                return await getAlltradesByTicker(printTicker.toUpperCase())
+            await kvtSyncAlorAccessToken();
+            if(kvtAlorJWT) {
+                return await kvtGetAlltradesByTicker(printTicker.toUpperCase())
             }
         }
 

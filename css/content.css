@@ -2,16 +2,18 @@
  * Общие стили
  */
 /*быстрый переход к окну заявки по группам*/
-.kvt-stigButtons{
+.kvt-stigButtons {
     display: flex;
     padding: 6px 12px 0;
     gap: 4px;
     flex-wrap: wrap;
 }
-.kvt-stig-item{
+
+.kvt-stig-item {
     display: inline-flex;
     cursor: pointer;
 }
+
 .kvt-stig-item:hover {
     opacity: 0.7;
 }
@@ -25,78 +27,115 @@
     flex-direction: row;
     gap: 2px 8px;
 }
+
 span[data-kvt-volume] {
     cursor: pointer;
 }
+
 span[data-kvt-volume]:hover {
     text-decoration: underline;
 }
+
 .kvtFastVolumePrice span[data-kvt-volume] {
-    color: var(--color-green5);
+    color: rgba(var(--pro-green-5), 1);
 }
+
 .kvtFastVolumeSize span[data-kvt-volume] {
-    color: var(--color-blue5);
-}
-
-/**
- * Компактные стили
- */
-.kvt-root .UIText, .kvt-root .UITextSmall{
-    line-height: 11px !important;
-}
-
-.kvt-root .jpt-tools{
-    margin-top: 0 !important;
+    color: rgba(var(--pro-blue-5), 1);
 }
 
 /**
  * Меню добавления виджетов
  */
-[class*=-components-Menu-styles-item-]{
+[class*=-components-Menu-styles-item-] {
     height: 28px !important;
     padding: 4px 12px !important;
 }
-[class*=-components-Menu-styles-item-] [class*=-components-Menu-styles-text-] {
-    font-size: 12px !important;
-}
 
-/**
- * Шапка, вкладки
- */
-.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-addBtn-]{
-    padding: 0 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.pro-menu-item > * {
+    margin-right: 10px;
 }
-.kvt-root [class*=packages-core-lib-components-SpaceTab-styles-remove-] {
-    padding: 2px 6px;
-}
-.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-tabs-] [class*=packages-core-lib-containers-SpacesTabs-styles-tab-] {
-    height: 22px;
-    line-height: 20px;
-}
-.kvt-root [class*=packages-core-lib-containers-SpacesTabs-styles-tabs-]:before {
-    height: 22px;
-}
-
 
 /**
  * Заявка
  */
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-] {
+    padding: 0 5px;
+}
+
+.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
+    padding: 0;
+    background: none;
+    margin-bottom: 0;
+    min-height: 30px;
+}
+
+.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global [class*=src-components-TickerInfo-TickerInfo-container] {
+    padding: 4px 0;
+}
+
+.kvt-root .pro-input-group input {
+    padding: 0 5px;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-] {
+    padding: 0 4px 0 !important;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-] {
+    border: none;
+    margin: 1px;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
+    padding: 0;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-] {
+    background: none;
+    padding: 0;
+    margin: 5px 0 5px;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
+    font-size: 12px;
+}
+
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] > span:nth-of-type(1) {
+    width: 48px;
+    text-overflow: clip;
+}
+
+/* меньше кнопочки */
+.kvt-root [class*=src-components-SMSConfirmation-styles-popover-] .pro-button {
+    padding: 2px 0;
+    min-height: 24px;
+}
+
 /* поля ввода и плюс/минус */
-.kvt-root .pt-numeric-input .pt-button-group.pt-vertical>.pt-button {
-    width: 20px !important
+.kvt-root .pro-numeric-input .pro-button-group.pro-vertical > .pro-button {
+    width: 20px !important;
+    min-width: 20px;
 }
-.kvt-root [class*=src-components-Forms-NumericInput-styles-rightElement-][class*=src-components-Forms-NumericInput-styles-withBtn-] {
-    right: 21px !important;
+.kvt-root .pro-button-group {
+    height: 26px;
 }
-.kvt-root [class*=src-components-Forms-commonStyles-rightElement-]{
-    padding-right: 3px !important
+.kvt-root [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-inputs-] {
+    min-height: 26px;
 }
-.kvt-root [class*=src-components-Forms-commonStyles-description-]{
-    padding-right: 0 !important;
-    min-width: 10px !important;
+
+.kvt-root .pro-input-group .pro-input {
+    padding-right: 20px !important;
+    height: 26px !important;
+    padding-left: 5px !important;
+}
+
+.kvt-root .pro-input-group .pro-input-right-container {
+    padding-right: 2px;
+}
+
+.kvt-root .pro-input-group .pro-input-right-container-icon {
+    margin-left: 0;
 }
 
 /* шапка тикера в заявке */
@@ -104,279 +143,157 @@ span[data-kvt-volume]:hover {
     line-height: 15px;
     align-items: center;
 }
+
 .kvt-root [class*=src-components-TickerInfo-TickerInfo-line2-] {
     line-height: 13px;
     font-size: 12px;
 }
+
 .kvt-root [class*=src-components-OrderHeader-styles-price-] {
     line-height: 16px;
 }
 
 /* комиссия + цена сделки */
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-] {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: space-between !important;
-    margin-top: 7px !important;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-top: 7px;
     padding: 2px 7px;
 }
+
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
     padding: 1px 0 !important;
     border-bottom: none !important;
 }
+
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-caption] {
     display: none;
 }
+
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-value-] {
     margin-left: 0;
 }
 
-
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-]{
-    padding: 0 4px !important;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-assetCard-] {
-    margin-bottom: 7px !important;
-}
-.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
-    padding: 0 !important;
-    background: none;
-    margin-bottom: 0 !important;
-    min-height: 30px;
-}
-.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global [class*=src-components-TickerInfo-TickerInfo-container] {
-    padding: 4px 0 !important;
-}
-.kvt-root .pt-input-group input{
-    padding: 0 5px;
-}
-
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-]{
-    padding: 0 4px 0 !important;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-] {
-    border: none;
-    margin: 1px;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
-    padding: 0 !important;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-]{
-    background: none;
-    padding: 0 !important;
-    margin: 5px 0 5px;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
-    font-size: 12px;
-}
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] > span:nth-of-type(1) {
-    width: 48px;
-    text-overflow: clip;
-}
-/* меньше кнопочки */
-.kvt-root .pt-button.pt-fill{
-    min-height: 24px !important;
-    padding: 1px !important;
-}
 /* отложки */
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-stopOrderTypeSelector-] {
     margin-bottom: 3px;
 }
+
 .kvt-root [class*=src-components-Forms-commonStyles-label-] {
     margin-bottom: 3px;
     overflow: hidden;
     white-space: nowrap;
     font-size: 12px;
 }
+
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-secondRow-] {
     margin-top: 3px;
 }
+
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] {
     margin-left: 0;
 }
 
+
 /**
  * список заявок
  */
-.kvt-root .UICard{
-    padding: 5px 7px !important;
+/* tabs in header */
+.kvt-root [class*=src-modules-Orders-containers-components-styles-tabs] {
+    padding: 4px 5px;
 }
 
-.kvt-root [class*=src-components-TabPanel-styles-wrapper-] {
-    padding: 2px 5px !important;
+.kvt-root [class*=src-modules-Orders-containers-components-styles-tabs] .pro-tab-filter {
+    max-width: 60px;
+    padding: 2px 3px;
 }
 
-.kvt-root [class*=src-modules-Orders-containers-components-styles-main-]{
-    min-width: 210px !important;
-    margin-bottom: 5px;
+.kvt-root [class*=src-modules-Orders-containers-components-styles-ordersHeader-] {
+    margin-bottom: 0
 }
 
-.kvt-root [class*=src-components-TabButton-styles-wrapper-] {
-    padding: 4px 3px !important;
-    max-width: 44px !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
+/* inner items block */
+.kvt-root [class*=src-modules-Orders-containers-styles-item-] {
+    margin: 0 0;
+    padding-top: 4px;
 }
-.kvt-root [class*=src-components-TabButton-styles-wrapper-]:not(:first-child) {
-    margin-left: 4px !important;
+
+.kvt-root .UICard {
+    padding: 3px 6px;
+    min-width: 200px;
 }
 
 /* item заявки */
-.kvt-root [class*=src-modules-Orders-containers-styles-inner-]{
-    margin: 0 5px !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-header-]{
-    padding-right: 20px;
-    padding-bottom: 0 !important;
-    border-bottom: none !important;
-    margin: -4px 0 -2px -3px;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] {
-    align-items: center;
-    max-width: 60%;
-    position: relative;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] [class*=src-modules-Orders-containers-components-styles-logo-] {
-    position: absolute;
-    top: 0;
+.kvt-root [class*=src-modules-Orders-containers-styles-inner-] {
+    margin: 0 5px;
 }
 
-.kvt-root [class*=src-modules-Orders-containers-components-styles-flex-] [class*=src-modules-Orders-containers-components-styles-primary-]{
-    padding-left: 26px;
-}
-
-.kvt-root [class*=src-modules-Orders-containers-components-styles-secondary-] {
-    max-width: 100%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-top: 3px;
-}
-
-.kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-]{
-    position: absolute !important;
-    height: 100%;
-    right: 1px;
-    width: 24px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    top: 0 !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] {
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 1px 0;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-bottom-] > [class*=src-modules-Orders-containers-components-styles-secondary-] {
-    display: none !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-divider-] {
-    display: none !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *{
-    overflow: hidden !important;
-    width: 24px !important;
-    height: 18px !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(1):before,
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(3):before{
-    width: 24px !important;
-    height: 18px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    font-size: 13px !important;
-    border-radius: 4px !important;
-    color: var(--text-primary-inverse)!important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(1):before{
-    content: "✎" !important;
-    background-color: var(--color-blue3) !important;
-}
-.kvt-root [class*=src-modules-Orders-containers-components-styles-actions-] > *:nth-of-type(3):before{
-    content: '🗙' !important;
-    background-color: var(--color-red2) !important;
+/* item заявки + item истории операций */
+.kvt-root [class*=src-components-TickerInfo-TickerInfo-container-] {
+    padding: 0;
 }
 
 
-/* логотип в заявке и списке заявок */
-.kvt-root [class*=src-components-Logo-Logo-logoLarge-]{
+/**
+ * логотип в виджете заявки в шапке, списке активных заявок, истории операций
+ */
+.kvt-root [class*=src-components-Logo-Logo-logoLarge-] {
     min-width: 18px;
     min-height: 18px;
     width: 18px;
     height: 18px;
     margin-right: 5px;
 }
-.kvt-root [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-]{
+
+.kvt-root [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-] {
     width: 18px;
     height: 18px;
 }
 
-
-
+.kvt-root [class*=src-components-Logo-Logo-logoLarge-] svg {
+    width: 18px;
+    height: 18px;
+}
 
 /**
  * История операций
  */
-.kvt-root [class*=src-components-TickerInfo-TickerInfo-container-] {
-    padding: 3px 0 !important;
+.kvt-root [class*=src-components-VirtualList-VirtualList-list_cssScrollbars-][class*=src-components-VirtualList-VirtualList-list_withMargin-] > div > div {
+    padding: 0 5px;
 }
+
 .kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
-    margin-top: 2px !important;
+    margin-top: 2px;
 }
-.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-main] {
-    margin-top: 4px !important;
-    padding: 0 7px !important;
-}
-.kvt-root [class*=src-components-SmartList-styles-withMargin-] {
-    margin: 0 5px !important;
-}
+
 .kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-main-] {
-    padding: 0 5px!important;
+    margin-top: 4px;
+    padding: 0 6px !important;
 }
 
 
 /**
  * Список инструментов
  */
-.kvt-root [class*=src-modules-Market-containers-styles-name-] {
-
-}
-.kvt-root table[class*=src-modules-Market-containers-styles-table-] thead>tr>th[class*=src-modules-Market-containers-styles-name-],
-.kvt-root td[data-type=instrument]{
-    width: 68px !important;
-    padding: 4px 1px 4px 3px !important;
-}
-.kvt-root .table thead>tr>th{
-    padding: 4px;
-}
-.kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logoAndName-]:hover [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-ticker-] {
-    opacity: 1;
-}
-.kvt-root [class*=rc-components-SymbolLogoAndName-SymbolLogoAndName-fullName-]{
-    display: none !important;
-}
-.kvt-root [class*=src-modules-Market-containers-styles-table-] th div {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
 .kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logo-] {
     margin-right: 4px;
 }
+
 .kvt-root [class*=src-components-Logo-Logo-logoSmall-] {
     min-width: 18px;
     min-height: 18px;
     width: 18px;
     height: 18px;
 }
+
 .kvt-root [class*=src-components-Logo-Logo-logoSmall-] [class*=src-components-Logo-Logo-logoImage-] {
     width: 18px;
     height: 18px;
 }
-.kvt-root .table tbody>tr>td>div{
+
+.kvt-root .table tbody > tr > td > div {
     font-size: 12px !important;
 }
+

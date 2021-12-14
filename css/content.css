@@ -59,6 +59,15 @@ span[data-kvt-volume]:hover {
 /**
  * Заявка
  */
+/* табы сверху */
+.kvt-root [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tabs{
+    padding: 3px 1px;
+    height: 24px;
+}
+.kvt-root [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tab{
+    padding: 3px 1px;
+    height: 24px;
+}
 .kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-] {
     padding: 0 5px;
 }
@@ -110,6 +119,11 @@ span[data-kvt-volume]:hover {
 .kvt-root [class*=src-components-SMSConfirmation-styles-popover-] .pro-button {
     padding: 2px 0;
     min-height: 24px;
+}
+.kvt-root .jpt-button-container .pro-button {
+    padding: 2px 0 !important;
+    min-height: 24px;
+    min-width: 10px;
 }
 
 /* поля ввода и плюс/минус */
@@ -206,12 +220,13 @@ span[data-kvt-volume]:hover {
 }
 
 .kvt-root [class*=src-modules-Orders-containers-components-styles-tabs] .pro-tab-filter {
-    max-width: 60px;
-    padding: 2px 3px;
+    max-width: 50px;
+    padding: 2px 2px;
 }
 
 .kvt-root [class*=src-modules-Orders-containers-components-styles-ordersHeader-] {
-    margin-bottom: 0
+    margin-bottom: 0;
+    justify-content: flex-start;
 }
 
 /* inner items block */

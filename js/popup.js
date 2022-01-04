@@ -38,7 +38,7 @@ settingsInput.forEach(function (st) {
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound'];
+let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);

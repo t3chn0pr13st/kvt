@@ -60,115 +60,110 @@ span[data-kvt-volume]:hover {
  * Заявка
  */
 /* табы сверху */
-.kvt-root [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tabs{
+.kvt-compactStyle [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tabs{
     padding: 3px 1px;
     height: 24px;
 }
-.kvt-root [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tab{
+.kvt-compactStyle [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tab{
     padding: 3px 1px;
     height: 24px;
 }
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-] {
     padding: 0 5px;
 }
 
-.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
+.kvt-compactStyle [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
     padding: 0;
     background: none;
     margin-bottom: 0;
     min-height: 30px;
 }
 
-.kvt-root [class*=src-components-AssetCard-AssetCard-container-].ignore-global [class*=src-components-TickerInfo-TickerInfo-container] {
+.kvt-compactStyle [class*=src-components-AssetCard-AssetCard-container-].ignore-global [class*=src-components-TickerInfo-TickerInfo-container] {
     padding: 4px 0;
 }
 
-.kvt-root .pro-input-group input {
+.kvt-compactStyle .pro-input-group input {
     padding: 0 5px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footer-] {
     padding: 0 4px 0 !important;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-] {
     border: none;
     margin: 1px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-itemContainer-] {
     padding: 0;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-container-] {
     background: none;
     padding: 0;
     margin: 5px 0 5px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] {
     font-size: 12px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderButton-OrderLimits-OrderLimits-item-] > span:nth-of-type(1) {
-    width: 48px;
-    text-overflow: clip;
-}
-
 /* меньше кнопочки */
-.kvt-root [class*=src-components-SMSConfirmation-styles-popover-] .pro-button {
+.kvt-compactStyle [class*=src-components-SMSConfirmation-styles-popover-] .pro-button {
     padding: 2px 0;
     min-height: 24px;
 }
-.kvt-root .jpt-button-container .pro-button {
+.kvt-compactStyle .jpt-button-container .pro-button {
     padding: 2px 0 !important;
     min-height: 24px;
     min-width: 10px;
 }
 
 /* поля ввода и плюс/минус */
-.kvt-root .pro-numeric-input .pro-button-group.pro-vertical > .pro-button {
+.kvt-compactStyle .pro-numeric-input .pro-button-group.pro-vertical > .pro-button {
     width: 20px !important;
     min-width: 20px;
 }
-.kvt-root .pro-button-group {
+.kvt-compactStyle .pro-button-group {
     height: 26px;
 }
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-inputs-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-inputs-] {
     min-height: 26px;
 }
 
-.kvt-root .pro-input-group .pro-input {
+.kvt-compactStyle .pro-input-group .pro-input {
     padding-right: 20px !important;
     height: 26px !important;
     padding-left: 5px !important;
 }
 
-.kvt-root .pro-input-group .pro-input-right-container {
+.kvt-compactStyle .pro-input-group .pro-input-right-container {
     padding-right: 2px;
 }
 
-.kvt-root .pro-input-group .pro-input-right-container-icon {
+.kvt-compactStyle .pro-input-group .pro-input-right-container-icon {
     margin-left: 0;
 }
 
 /* шапка тикера в заявке */
-.kvt-root [class*=src-components-TickerInfo-TickerInfo-line1-] {
+.kvt-compactStyle [class*=src-components-TickerInfo-TickerInfo-line1-] {
     line-height: 15px;
     align-items: center;
 }
 
-.kvt-root [class*=src-components-TickerInfo-TickerInfo-line2-] {
+.kvt-compactStyle [class*=src-components-TickerInfo-TickerInfo-line2-] {
     line-height: 13px;
     font-size: 12px;
 }
 
-.kvt-root [class*=src-components-OrderHeader-styles-price-] {
+.kvt-compactStyle [class*=src-components-OrderHeader-styles-price-] {
     line-height: 16px;
 }
 
 /* комиссия + цена сделки */
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-orderSummary-] {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -177,36 +172,36 @@ span[data-kvt-volume]:hover {
     padding: 2px 7px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
     padding: 1px 0 !important;
     border-bottom: none !important;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-caption] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-caption] {
     display: none;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-value-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-value-] {
     margin-left: 0;
 }
 
 /* отложки */
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-stopOrderTypeSelector-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-stopOrderTypeSelector-] {
     margin-bottom: 3px;
 }
 
-.kvt-root [class*=src-components-Forms-commonStyles-label-] {
+.kvt-compactStyle [class*=src-components-Forms-commonStyles-label-] {
     margin-bottom: 3px;
     overflow: hidden;
     white-space: nowrap;
     font-size: 12px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-secondRow-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-secondRow-] {
     margin-top: 3px;
 }
 
-.kvt-root [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] {
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] {
     margin-left: 0;
 }
 
@@ -215,38 +210,38 @@ span[data-kvt-volume]:hover {
  * список заявок
  */
 /* tabs in header */
-.kvt-root [class*=src-modules-Orders-containers-components-styles-tabs] {
+.kvt-compactStyle [class*=src-modules-Orders-containers-components-styles-tabs] {
     padding: 4px 5px;
 }
 
-.kvt-root [class*=src-modules-Orders-containers-components-styles-tabs] .pro-tab-filter {
+.kvt-compactStyle [class*=src-modules-Orders-containers-components-styles-tabs] .pro-tab-filter {
     max-width: 50px;
     padding: 2px 2px;
 }
 
-.kvt-root [class*=src-modules-Orders-containers-components-styles-ordersHeader-] {
+.kvt-compactStyle [class*=src-modules-Orders-containers-components-styles-ordersHeader-] {
     margin-bottom: 0;
     justify-content: flex-start;
 }
 
 /* inner items block */
-.kvt-root [class*=src-modules-Orders-containers-styles-item-] {
+.kvt-compactStyle [class*=src-modules-Orders-containers-styles-item-] {
     margin: 0 0;
     padding-top: 4px;
 }
 
-.kvt-root .UICard {
+.kvt-compactStyle .UICard {
     padding: 3px 6px;
     min-width: 200px;
 }
 
 /* item заявки */
-.kvt-root [class*=src-modules-Orders-containers-styles-inner-] {
+.kvt-compactStyle [class*=src-modules-Orders-containers-styles-inner-] {
     margin: 0 5px;
 }
 
 /* item заявки + item истории операций */
-.kvt-root [class*=src-components-TickerInfo-TickerInfo-container-] {
+.kvt-compactStyle [class*=src-components-TickerInfo-TickerInfo-container-] {
     padding: 0;
 }
 
@@ -254,7 +249,7 @@ span[data-kvt-volume]:hover {
 /**
  * логотип в виджете заявки в шапке, списке активных заявок, истории операций
  */
-.kvt-root [class*=src-components-Logo-Logo-logoLarge-] {
+.kvt-compactStyle [class*=src-components-Logo-Logo-logoLarge-] {
     min-width: 18px;
     min-height: 18px;
     width: 18px;
@@ -262,12 +257,12 @@ span[data-kvt-volume]:hover {
     margin-right: 5px;
 }
 
-.kvt-root [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-] {
+.kvt-compactStyle [class*=src-components-Logo-Logo-logoLarge-] [class*=src-components-Logo-Logo-logoImage-] {
     width: 18px;
     height: 18px;
 }
 
-.kvt-root [class*=src-components-Logo-Logo-logoLarge-] svg {
+.kvt-compactStyle [class*=src-components-Logo-Logo-logoLarge-] svg {
     width: 18px;
     height: 18px;
 }
@@ -275,15 +270,15 @@ span[data-kvt-volume]:hover {
 /**
  * История операций
  */
-.kvt-root [class*=src-components-VirtualList-VirtualList-list_cssScrollbars-][class*=src-components-VirtualList-VirtualList-list_withMargin-] > div > div {
+.kvt-compactStyle [class*=src-components-VirtualList-VirtualList-list_cssScrollbars-][class*=src-components-VirtualList-VirtualList-list_withMargin-] > div > div {
     padding: 0 5px;
 }
 
-.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
+.kvt-compactStyle [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
     margin-top: 2px;
 }
 
-.kvt-root [class*=src-modules-Timeline-containers-components-TimelineList-styles-main-] {
+.kvt-compactStyle [class*=src-modules-Timeline-containers-components-TimelineList-styles-main-] {
     margin-top: 4px;
     padding: 0 6px !important;
 }
@@ -292,23 +287,154 @@ span[data-kvt-volume]:hover {
 /**
  * Список инструментов
  */
-.kvt-root [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logo-] {
+.kvt-compactStyle [class*=src-components-SymbolLogoAndName-SymbolLogoAndName-logo-] {
     margin-right: 4px;
 }
 
-.kvt-root [class*=src-components-Logo-Logo-logoSmall-] {
+.kvt-compactStyle [class*=src-components-Logo-Logo-logoSmall-] {
     min-width: 18px;
     min-height: 18px;
     width: 18px;
     height: 18px;
 }
 
-.kvt-root [class*=src-components-Logo-Logo-logoSmall-] [class*=src-components-Logo-Logo-logoImage-] {
+.kvt-compactStyle [class*=src-components-Logo-Logo-logoSmall-] [class*=src-components-Logo-Logo-logoImage-] {
     width: 18px;
     height: 18px;
 }
 
-.kvt-root .table tbody > tr > td > div {
+.kvt-compactStyle .table tbody > tr > td > div {
     font-size: 12px !important;
 }
 
+
+/**
+ * Бумага доступнна в шорт у брокеров
+ */
+.kvt-IsShortTicker{
+    z-index: 1;
+    display: flex;
+    gap: 5px;
+    padding: 0 5px;
+    align-items: center;
+    background: rgba(var(--pro-base-02),1);
+    height: 20px;
+    font-size: 12px;
+}
+
+/**
+ * Лента принтов СПБ
+ */
+.kvt-spb-ts {
+    display: flex;
+    flex-direction: column;
+    padding: 0 2px 2px 0;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+.kvt-spb-ts-inner{
+    position: absolute;
+    overflow-y: scroll;
+    inset: 0;
+    width: 100%;
+    transform: translate3d(0px, 0px, 0px);
+}
+.kvt-spb-ts-table{
+    border-collapse: collapse;
+    min-width: 140px;
+    width: 100%;
+    text-align: right;
+}
+.kvt-spb-ts-table tbody::before {
+    content: '';
+    display: block;
+    height: 2px;
+}
+.kvt-spb-ts-table thead th{
+    text-align: left;
+    padding: 2px 3px !important;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 25%;
+    height: 28px;
+    font-weight: 500;
+    color: rgba(var(--pro-text-color),1);
+    font-size: 13px;
+    line-height: 20px;
+    white-space: nowrap;
+    background: rgba(var(--pro-base-01),1);
+}
+.kvt-spb-ts-table thead th:nth-of-type(2) {
+    width: 15%;
+}
+.kvt-spb-ts-table thead th:last-of-type{
+    width: 15%;
+    text-align: right;
+}
+.kvt-spb-ts-table thead th:before {
+    top: -1px;
+    height: 2px !important;
+}
+.kvt-spb-ts-table thead th:after {
+    bottom: 0;
+}
+.kvt-spb-ts-table thead th:after, .kvt-spb-ts-table thead th:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    display: block;
+    background-color: rgba(var(--pro-base-03),1);
+}
+
+
+.kvt-spb-ts-table tbody td{
+    padding: 1px 3px !important;
+    text-align: left;
+    position: relative;
+    border-top: 1px solid rgba(var(--pro-base-00),1);
+}
+.kvt-spb-ts-table tr.type-buy td {
+    background: rgba(21, 90, 74, 0.25);
+}
+.kvt-spb-ts-table tr.type-sell td{
+    background: #9d2b3840
+}
+.kvt-spb-ts-table tbody tr td:first-of-type{
+
+}
+.kvt-spb-ts-table tbody tr td:nth-of-type(2){
+    font-weight: 500;
+}
+.kvt-spb-ts-table tbody tr td:nth-of-type(3){
+
+}
+.kvt-spb-ts-table tbody tr td:last-of-type{
+    font-size: 12px;
+    color: rgba(var(--pro-text-03), 0.8);
+    padding-right: 5px !important;
+    text-align: right;
+}
+.kvt-spb-ts-inner::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px
+}
+/* Track */
+.kvt-spb-ts-inner::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+/* Handle */
+.kvt-spb-ts-inner::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+
+}
+/* Handle on hover */
+.kvt-spb-ts-inner::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}

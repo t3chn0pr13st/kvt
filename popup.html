@@ -83,6 +83,19 @@
 				<div class="form-text">Отображать бумаги с нулевым фин.результатом (выставили заявку - убрали)</div>
 			</div>
 			
+			<div class="form-group">
+				<label for="telegramId" class="form-label">Телеграм ID</label>
+				<input type="text" name="telegramId" id="telegramId" class="form-control" placeholder="123456789">
+				<div class="form-text">Для приватных инструментов</div>
+			</div>
+			
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="IsShortTicker" id="IsShortTicker" class="form-check-input">
+					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки</label>
+				</div>
+			</div>
+			
 			<hr/>
 			
 			<div class="form-group">
@@ -94,7 +107,7 @@
 			<div class="form-group">
 				<div class="form-check">
 					<input type="checkbox" name="kvtFastVolumePriceRound" id="kvtFastVolumePriceRound" class="form-check-input">
-					<label for="kvtFastVolumePriceRound">Округлять до 100 кнопки быстрого объема</label>
+					<label for="kvtFastVolumePriceRound">Округлять до 100 кнопки быстрого объема в $</label>
 				</div>
 				<div class="form-text">Округление кол-ва бумаг до 100. <i>Прим. - не 547, а 500</i></div>
 			</div>
@@ -110,16 +123,12 @@
 			<hr/>
 			
 			<div class="form-group">
-				<label for="telegramId" class="form-label">Телеграм ID</label>
-				<input type="text" name="telegramId" id="telegramId" class="form-control">
-				<div class="form-text">Для переключения стаканов из приватных инструментов</div>
-			</div>
-			
-			<div class="form-group">
 				<label for="alorToken" class="form-label">Алор токен</label>
 				<input type="text" name="telegramId" id="alorToken" class="form-control">
-				<div class="form-text">Для загрузки всех принтов по тикеру. Токен получать тут - <b>https://alor.dev/open-api-tokens</b></div>
+				<div class="form-text">Для работы ленты принтов. Токен получать тут - <b>https://alor.dev/open-api-tokens</b></div>
 			</div>
+			
+			<hr/>
 			
 			<div class="form-group">
 				<div class="form-check">

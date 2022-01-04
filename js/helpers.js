@@ -22,7 +22,7 @@ class kvtHelper {
 
     _tsToTime(timestamp) {
         let m = new Date(timestamp);
-        return [m.getHours(), m.getMinutes(), m.getSeconds(), m.getMilliseconds()].map(function (x) {
+        return [m.getHours(), m.getMinutes(), m.getSeconds()/*, m.getMilliseconds()*/].map(function (x) {
             return x < 10 ? "0" + x : x
         }).join(":")
     }
@@ -56,5 +56,10 @@ class kvtHelper {
 
     _errW(text) {
         return `<div class="note-error">⚠ ${text}</div>`;
+    }
+
+
+    getKeyByValue(object, value) {
+        return Object.keys(object).find(key => object[key] === value);
     }
 }

@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (e, t, n) {
 chrome.storage.local.get('compactStyle', (result) => {
     if(result['compactStyle']) {
         setTimeout(function () {
-            document.getElementById("root").classList.add("kvt-root");
+            document.getElementById("root").classList.add("kvt-compactStyle");
         }, 2000)
     }
 });
@@ -38,8 +38,9 @@ function injectScript(url, tag, setExtId) {
     tagName.appendChild(element)
 }
 
-setTimeout(function () {
-    injectScript(chrome.extension.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
-    injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
+injectScript(chrome.extension.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
+injectScript(chrome.extension.getURL("js/alor.js?t=" + Date.now()), "body", 1)
 
-});
+setTimeout(function () {
+    injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
+}, 1);

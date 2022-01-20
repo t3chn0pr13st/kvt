@@ -61,15 +61,15 @@ span[data-kvt-volume]:hover {
  */
 /* табы сверху */
 .kvt-compactStyle [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tabs{
-    padding: 3px 1px;
-    height: 24px;
+    padding: 1px 1px;
+    height: 22px;
 }
 .kvt-compactStyle [data-widget-type="COMBINED_ORDER_WIDGET"] .pro-tab{
-    padding: 3px 1px;
-    height: 24px;
+    padding: 1px 1px;
+    height: 22px;
 }
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-scrollContent-] {
-    padding: 0 5px;
+    padding: 0 3px;
 }
 
 .kvt-compactStyle [class*=src-components-AssetCard-AssetCard-container-].ignore-global {
@@ -169,7 +169,7 @@ span[data-kvt-volume]:hover {
     flex-wrap: nowrap;
     justify-content: space-between;
     margin-top: 7px;
-    padding: 2px 7px;
+    padding: 2px 4px;
 }
 
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
@@ -211,7 +211,7 @@ span[data-kvt-volume]:hover {
  */
 /* tabs in header */
 .kvt-compactStyle [class*=src-modules-Orders-containers-components-styles-tabs] {
-    padding: 4px 5px;
+    padding: 3px;
 }
 
 .kvt-compactStyle [class*=src-modules-Orders-containers-components-styles-tabs] .pro-tab-filter {
@@ -237,7 +237,7 @@ span[data-kvt-volume]:hover {
 
 /* item заявки */
 .kvt-compactStyle [class*=src-modules-Orders-containers-styles-inner-] {
-    margin: 0 5px;
+    margin: 0 3px;
 }
 
 /* item заявки + item истории операций */
@@ -271,7 +271,7 @@ span[data-kvt-volume]:hover {
  * История операций
  */
 .kvt-compactStyle [class*=src-components-VirtualList-VirtualList-list_cssScrollbars-][class*=src-components-VirtualList-VirtualList-list_withMargin-] > div > div {
-    padding: 0 5px;
+    padding: 0 3px;
 }
 
 .kvt-compactStyle [class*=src-modules-Timeline-containers-components-TimelineList-styles-date-] {
@@ -279,8 +279,10 @@ span[data-kvt-volume]:hover {
 }
 
 .kvt-compactStyle [class*=src-modules-Timeline-containers-components-TimelineList-styles-main-] {
-    margin-top: 4px;
     padding: 0 6px !important;
+}
+.kvt-compactStyle [class*=src-modules-Timeline-containers-components-TimelineList-styles-wrapper] {
+    padding-top: 4px;
 }
 
 
@@ -320,6 +322,22 @@ span[data-kvt-volume]:hover {
     background: rgba(var(--pro-base-02),1);
     height: 20px;
     font-size: 12px;
+}
+
+/**
+ * Лёгкий график
+ */
+.kvt-compactStyle  [class*=src-modules-LightChartTV-containers-components-SettingsPanel-styles-panel-] {
+    padding: 5px;
+}
+.kvt-compactStyle [class*=src-modules-LightChartTV-containers-components-Tooltip-FixedTooltip-tooltip] {
+    margin: 0;
+    line-height: inherit;
+}
+.kvt-compactStyle [class*=src-modules-LightChartTV-containers-components-Tooltip-FixedTooltip-tooltip] span:nth-of-type(6) {
+    background: rgba(var(--pro-app-background-color),1);
+    padding: 2px 3px;
+    display: inline-block;
 }
 
 /**

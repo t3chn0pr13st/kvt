@@ -67,45 +67,37 @@ function kvtRun() {
                     // Добавляем в меню T&S SPBX кнопку
                     let ptMenu = mutation.target.querySelector(".pro-menu")
                     if (ptMenu && !ptMenu.classList.contains("kvt-menu-load")) {
-                        let items = Array.from(ptMenu.querySelectorAll('[class*="pro-text-overflow-ellipsis"]'))
-                        for (let itemInner of items) {
-                            if (/заявка/gi.test(itemInner.textContent)) {
-                                let itm = itemInner.parentNode;
-                                ptMenu.classList.add('kvt-menu-load')
+                        ptMenu.classList.add('kvt-menu-load')
+                        let modelItem = Array.from(ptMenu.querySelectorAll('[class*="pro-text-overflow-ellipsis"]'))
+                            .find(item => /^подписк/gi.test(item.textContent))
 
-                                var deliverySelector = ptMenu.querySelector('[class*="divider"]');
-                                ptMenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(true));
+                        if (modelItem && modelItem.parentNode) {
+                            modelItem = modelItem.parentNode
 
-                                let itmNew = itm.cloneNode(true)
-                                itmNew.querySelector('.pro-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>';
-                                itmNew.querySelector('[class*="text"]').textContent = "T&S SPBX";
-                                var i = ptMenu.insertAdjacentElement("beforeend", itmNew);
+                            var deliverySelector = ptMenu.querySelector('[class*="divider"]');
+                            ptMenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(true));
 
-                                for (let itm of items) {
-                                    if (/подписк/gi.test(itm.textContent)) {
-                                        i.onclick = e => {
-                                            window[`__kvtNewWidget_spbTS`] = true
-                                            itm.click()
-                                        }
-                                    }
-                                }
+                            let newItem = ptMenu.insertAdjacentElement('beforeend', modelItem.parentNode.cloneNode(true))
+
+                            newItem.querySelector('.pro-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>';
+                            newItem.querySelector('[class*="text"]').textContent = '"T&S SPBX'
+
+                            newItem.onclick = function () {
+                                window['__kvtNewWidget_spbTS'] = true
+                                modelItem.click()
                             }
-                        }
 
-                        // Создаем кнопки быстрого перехода к стакану
-                        let s = mutation.target.querySelector('[data-qa-tag="menu-item"] [data-qa-tag="tag"] > .pro-tag-content')
-                        if (s) {
-                            createSTIG(s.innerHTML)
-                            break
+                            // Создаем кнопки быстрого перехода к стакану
+                            let s = mutation.target.querySelector('[data-qa-tag="menu-item"] [data-qa-tag="tag"] > .pro-tag-content')
+                            if (s) {
+                                createSTIG(s.innerHTML)
+                                break
+                            }
                         }
                     }
 
                     // Создаём СПБ ленту принтов
-                    let r = mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]')
-                    if (r && (window[`__kvtNewWidget_spbTS`] || !r.getAttribute('data-kvt-widget-load'))) {
-                        window[`__kvtNewWidget_spbTS`] = false;
-                        spbTS(r)
-                    }
+                    spbTS(mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]'))
 
                     // Если добавили новый виджет заявки
                     let el = mutation.target.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]')
@@ -146,7 +138,6 @@ function kvtRun() {
             add_kvtFastVolumeSizeButtons(widget)
             add_kvtFastVolumePriceButtons(widget)
             add_IsShortTicker(widget)
-            console.log('[kvt][IsShortTicker]', '22222222')
         })
     }
 
@@ -157,11 +148,7 @@ function kvtRun() {
                     let symbol = mutation.target.getAttribute('data-symbol-id')
                     let prevSymbol = mutation.oldValue
 
-                    console.log('[kvt][observeWidgetChangeTicker COMBINED_ORDER_WIDGET]', 'newTicker', symbol)
-                    console.log('[kvt][observeWidgetChangeTicker COMBINED_ORDER_WIDGET]', 'prevTicker', prevSymbol)
-
                     if (prevSymbol !== symbol) {
-                        console.log('[kvt][IsShortTicker]', '33333333')
                         add_IsShortTicker(mutation.target)
                     }
                 }
@@ -574,35 +561,40 @@ function kvtWidgetsLoad() {
 
 function spbTS(widget) {
 
-    console.log('[kvt][spbTS]', 'вызвали изменение виджета')
-
     if (widget && !widget.getAttribute('data-kvt-widget-load')) {
-        widget.setAttribute('data-kvt-widget-load', 'SpbTS')
+        let kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}"),
+            widgetID = widget.getAttribute("data-widget-id")
 
-        let widgetID = widget.getAttribute("data-widget-id"),
-            symbol = widget.getAttribute("data-symbol-id") || '',
-            kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}")
+        console.log('[kvt][spbTS]', 'вызвали изменение виджета', widgetID)
 
-        kvtWidgets[widgetID] = symbol
-        localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
+        if (window[`__kvtNewWidget_spbTS`] || typeof kvtWidgets[widgetID] !== 'undefined') {
+            window[`__kvtNewWidget_spbTS`] = false;
 
-        initSpbTS(widget, symbol)
-        console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
-        if (symbol) {
-            subscribe_spb_TS(widgetID, symbol)
-        } else {
-            console.log('[kvt][spbTS]', 'symbol ПУСТОЙ', symbol)
-        }
+            widget.setAttribute('data-kvt-widget-load', 'SpbTS')
 
-        observeWidgetChangeTicker(widget)
+            let symbol = widget.getAttribute("data-symbol-id") || ''
 
-        // отписка при закрытии виджета
-        widget.querySelector('[class*="packages-core-lib-components-WidgetBody-WidgetBody-icons"]').addEventListener("click", function () {
-            unsubscribe_spb_TS(widgetID)
-            kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}")
-            delete kvtWidgets[widgetID]
+            kvtWidgets[widgetID] = symbol
             localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
-        })
+
+            initSpbTS(widget, symbol)
+            console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
+            if (symbol) {
+                subscribe_spb_TS(widgetID, symbol)
+            } else {
+                console.log('[kvt][spbTS]', 'symbol ПУСТОЙ', symbol)
+            }
+
+            observeWidgetChangeTicker(widget)
+
+            // отписка при закрытии виджета
+            widget.querySelector('[class*="packages-core-lib-components-WidgetBody-WidgetBody-icons"]').addEventListener("click", function () {
+                unsubscribe_spb_TS(widgetID)
+                kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}")
+                delete kvtWidgets[widgetID]
+                localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
+            })
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "Kvalood Tools",
-  "version": "0.1.12",
+  "version": "0.1.14",
   "description": "Helper for Tinkoff Investments",
   "manifest_version": 2,
   "permissions": [
@@ -34,8 +34,7 @@
       ],
       "css": [
         "css/content.css"
-      ],
-      "run_at":  "document_start"
+      ]
     }
   ],
   "externally_connectable":   {

@@ -43,4 +43,4 @@ injectScript(chrome.extension.getURL("js/alor.js?t=" + Date.now()), "body", 1)
 
 setTimeout(function () {
     injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
-}, 1);
+});

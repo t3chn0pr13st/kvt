@@ -247,6 +247,45 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
 });
 
 
+// Установка времени
+document.querySelectorAll('[data-set-time]').forEach(function (el) {
+    el.addEventListener('click', function () {
+
+        let m = new Date(),
+            fromDate = document.getElementById('fromDate'),
+            toDate = document.getElementById('toDate'),
+            year = m.getFullYear(),
+            mount = (m.getMonth() + 1 + "").padStart(2, "0"),
+            day = (m.getDate() + "").padStart(2, "0");
+
+        let time = year + "-" + mount + "-" + day + "T";
+
+        switch (el.getAttribute('data-set-time')) {
+            case 'from_morning':
+            default:
+                fromDate.value = time + '06:59'
+                toDate.value = ''
+                break
+
+            case 'from_week' :
+                let day = getMonday(m)
+                fromDate.value = year + "-" + mount + "-" + day + "T" + '06:59'
+                toDate.value = ''
+                break
+        }
+
+        fromDate.onchange()
+        toDate.onchange()
+    })
+})
+
+function getMonday(d) {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day === 0 ? -6:1); // adjust when day is sunday
+    return (diff + "").padStart(2, "0");
+}
+
 /**
  * Загружаем группы тикеров
   */

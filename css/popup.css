@@ -205,6 +205,12 @@ label {
     padding: .175rem;
     margin-right: 8px
 }
+.date-sub-panel{
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    margin-top: 7px;
+}
 
 /**
  * таблица отчетов

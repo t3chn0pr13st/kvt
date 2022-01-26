@@ -80,7 +80,7 @@ function kvtRun() {
                             let newItem = ptMenu.insertAdjacentElement('beforeend', modelItem.parentNode.cloneNode(true))
 
                             newItem.querySelector('.pro-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>';
-                            newItem.querySelector('[class*="text"]').textContent = '"T&S SPBX'
+                            newItem.querySelector('[class*="text"]').textContent = 'T&S SPBX'
 
                             newItem.onclick = function () {
                                 window['__kvtNewWidget_spbTS'] = true
@@ -218,6 +218,7 @@ function alor_connect() {
 
 function kvt_connect(telegramId) {
     window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}`);
+    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}`);
 
     window.__kvtWS.onopen = (e) => {
         console.log("[kvt][ws]", "connected to kvts");
@@ -231,9 +232,11 @@ function kvt_connect(telegramId) {
                     setTickerInGroup(msg.ticker, msg.group)
                     break
 
-                case 'lastTrades': {
+                case 'getLastTrades': {
                     let widgetId = kvth.getKeyByValue(window.__kvtTs, msg.guid)
-                    insetItemsSpbTS(widgetId, msg.data.reverse())
+                    if (msg.data) {
+                        insetItemsSpbTS(widgetId, msg.data.reverse())
+                    }
 
                     break;
                 }
@@ -244,9 +247,15 @@ function kvt_connect(telegramId) {
 
                     if (widget && msg.data) {
                         let block = widget.querySelector('.kvt-IsShortTicker span'),
-                            arr = Object.keys(msg.data).filter((i) => msg.data[i] === true);
+                            arr = Object.keys(msg.data).filter((i) => msg.data[i] === true),
+                            blockVal = arr.length > 0 ? arr.join(", ") : '—';
 
-                        block.innerHTML = arr.length > 0 ? arr.join(", ") : '—'
+                        if (block) {
+                            block.innerHTML = blockVal;
+                        } else {
+                            let OrderBody = widget.querySelector('[class*="OrderBody-OrderBody-scrollContainer-"]');
+                            OrderBody.insertAdjacentHTML("beforeend", '<div class="kvt-IsShortTicker">🩳 <span>' + blockVal +'</span></div>')
+                        }
                     }
 
                     break;
@@ -496,13 +505,8 @@ function add_IsShortTicker (widget) {
                     guid: window.__kvtIsShortTickers[widgetId]
                 }));
 
-                let block = widget.querySelector('.kvt-IsShortTicker span')
-                if (block) {
-                    block.innerHTML = '—';
-                } else {
-                    block = widget.querySelector('[class*="OrderBody-OrderBody-scrollContainer-"]');
-                    block.insertAdjacentHTML("beforeend", '<div class="kvt-IsShortTicker">🩳 <span>—</span></div>')
-                }
+                let block = widget.querySelector('.kvt-IsShortTicker')
+                if (block) block.remove()
             }
         }, 1)
     }
@@ -623,7 +627,7 @@ function insetItemsSpbTS(widgetId, data) {
         if (lenta) {
             for (let jd of data) {
                 lenta.insertAdjacentHTML('afterbegin', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
-                if (99 < lenta.children.length) {
+                if (199 < lenta.children.length) {
                     lenta.lastChild.remove();
                 }
             }

@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 });
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'kvtFastVolumePrice', 'kvtFastVolumeSize'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
@@ -38,7 +38,7 @@ settingsInput.forEach(function (st) {
 });
 
 // checkbox settings
-let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker'];
+let settingsSwitch = ['compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker', 'alorStats'];
 settingsSwitch.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
@@ -56,7 +56,7 @@ settingsSwitch.forEach(function (st) {
 
 
 // Кнопка загрузить отчет
-document.getElementById('kvShowReport').addEventListener('click', function (e){
+document.getElementById('kvShowReport').addEventListener('click', async function (e) {
     let reportWindow = document.getElementById('reportWindow'),
         m = new Date(),
         i = kvth.createUTCOffset(m),
@@ -64,13 +64,17 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
         toDate = document.getElementById('toDate').value,
         c = (m.getMonth() + 1 + "").padStart(2, "0"), l = (m.getDate() + "").padStart(2, "0");
 
+    if (kvtSettings.alorStats) {
+
+    }
+
     fromDate = fromDate ? fromDate.replace(" ", "T") : m.getFullYear() + "-" + c + "-" + l + "T00:00:00";
     toDate = toDate ? toDate.replace(" ", "T") : m.getFullYear() + "-" + c + "-" + l + "T23:59:59";
 
     fromDate += i;
     toDate += i;
 
-    reportWindow.innerHTML  = 'Загрузка...';
+    reportWindow.innerHTML = 'Загрузка...';
 
     fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
         method: "POST",
@@ -156,7 +160,15 @@ document.getElementById('kvShowReport').addEventListener('click', function (e){
             result.forEach(function (e) {
 
                 if (void 0 === total[e['Валюта']]) {
-                    total[e['Валюта']] = {commission: 0, result: 0, buyCount: 0, sellCount: 0, declineCount: 0, buySum: 0, sellSum: 0}
+                    total[e['Валюта']] = {
+                        commission: 0,
+                        result: 0,
+                        buyCount: 0,
+                        sellCount: 0,
+                        declineCount: 0,
+                        buySum: 0,
+                        sellSum: 0
+                    }
                 }
                 if (e["Количество"] > 0) {
                     e["Сумма покупок"] -= e["Сумма открытой позы"]

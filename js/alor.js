@@ -41,3 +41,58 @@ function kvtIsTokenExpired(token) {
     }
     return true;
 }
+
+async function kvtAlorGetStatsToday(portfolio) {
+    await kvtSyncAlorAccessToken()
+
+    return await fetch(`https://api.alor.ru/md/v2/Clients/SPBX/${portfolio}/trades`, {
+        headers: {
+            'Authorization': 'Bearer ' + kvtAlorJWT
+        }
+    }).then(e => {
+        if (e.ok === true && e.status === 200) {
+            return e.json()
+        } else {
+            throw e
+        }
+    }).catch(err => {
+        return {result: 'error', status: err.status};
+    })
+}
+
+async function kvtAlorGetStatsHistory(portfolio, dateFrom, tradeNumFrom) {
+
+    await kvtSyncAlorAccessToken()
+
+    const url = new URL(`https://api.alor.ru/md/stats/SPBX/${portfolio}/history/trades`);
+
+    if (dateFrom) {
+        url.searchParams.append("dateFrom", dateFrom);
+    }
+
+    if (tradeNumFrom) {
+        url.searchParams.append("from", tradeNumFrom);
+    }
+
+    return await fetch(url.toString(), {
+        headers: {
+            'Authorization': 'Bearer ' + kvtAlorJWT
+        }
+    }).then(e => {
+        if (e.ok === true && e.status === 200) {
+            return e.json()
+        } else {
+            throw e
+        }
+    }).then(items => {
+        if (tradeNumFrom) {
+            return items.filter(item => {
+                return item.id !== tradeNumFrom
+            })
+        } else {
+            return items
+        }
+    }).catch(err => {
+        return {result: 'error', status: err.status};
+    })
+}

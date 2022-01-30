@@ -1,9 +1,8 @@
 "use strict";
 
-let extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim();
-
-let kvtSettings = {}
-let kvth = new kvtHelper();
+let kvth = new kvtHelper(),
+    extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim(),
+    kvtSettings = {};
 
 // get settings
 ['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
@@ -677,7 +676,7 @@ function subscribe_spb_TS(widgetId, ticker, guid) {
 
     console.log('[kvt][T&S][subscribe]', 'subscribe_spb_TS', widgetId, ticker)
 
-    // Запросим 100 последних принтов
+    // Запросим 200 последних принтов
     if (window.__kvtWS && window.__kvtWS.readyState === 1) {
         window.__kvtWS.send(JSON.stringify({
             user_id: kvtSettings.telegramId,

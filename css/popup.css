@@ -85,6 +85,18 @@ label {
     float: left;
     margin-left: -1.5em;
 }
+.form-inline {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+.form-inline .form-group {
+    display: flex;
+    flex: 0 0 auto;
+    flex-flow: row wrap;
+    align-items: center;
+    margin-bottom: 0;
+}
 
 .btn{
     background: #eee;
@@ -182,10 +194,7 @@ label {
  * Фин. сводка
  */
 .date-panel{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
+    gap: 8px;
 }
 #reportWindow {
     padding-top: 7px;
@@ -202,8 +211,6 @@ label {
 
 #reports input[type="datetime-local"] {
     max-width: 176px;
-    padding: .175rem;
-    margin-right: 8px
 }
 .date-sub-panel{
     display: flex;

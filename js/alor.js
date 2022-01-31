@@ -56,7 +56,7 @@ async function kvtAlorGetStatsToday(portfolio) {
             throw e
         }
     }).catch(err => {
-        return {result: 'error', status: err.status};
+        return {result: 'error', status: err.status + ' ' + err.statusText};
     })
 }
 
@@ -93,6 +93,6 @@ async function kvtAlorGetStatsHistory(portfolio, dateFrom, tradeNumFrom) {
             return items
         }
     }).catch(err => {
-        return {result: 'error', status: err.status};
+        return {result: 'error', status: err.status + ' ' + err.statusText};
     })
 }

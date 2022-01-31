@@ -35,14 +35,14 @@ function kvtInit() {
 }
 
 setTimeout(function(){
-    if(kvtSettings.alorToken) {
-        alor_connect()
-    } else {
-        console.log('[kvt][alor]', 'Токена нет');
-    }
-
     if (kvtSettings.telegramId) {
         kvt_connect(kvtSettings.telegramId)
+
+        if(kvtSettings.alorToken) {
+            alor_connect()
+        } else {
+            console.log('[kvt][alor]', 'Токена нет');
+        }
     } else {
         console.warn('[kvt]', 'telegramId не установлен')
     }
@@ -85,13 +85,13 @@ function kvtRun() {
                                 window['__kvtNewWidget_spbTS'] = true
                                 modelItem.click()
                             }
+                        }
 
-                            // Создаем кнопки быстрого перехода к стакану
-                            let s = mutation.target.querySelector('[data-qa-tag="menu-item"] [data-qa-tag="tag"] > .pro-tag-content')
-                            if (s) {
-                                createSTIG(s.innerHTML)
-                                break
-                            }
+                        // Создаем кнопки быстрого перехода к стакану
+                        let s = mutation.target.querySelector('[data-qa-tag="menu-item"] [data-qa-tag="tag"] > .pro-tag-content')
+                        if (s) {
+                            createSTIG(s.innerHTML)
+                            break
                         }
                     }
 

@@ -512,8 +512,8 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
                 break
 
             case 'from_week' :
-                let day = getMonday(m)
-                fromDate.value = year + "-" + mount + "-" + day + "T" + '06:59'
+                let monday = getMonday()
+                fromDate.value = monday.getFullYear() + "-" + (monday.getMonth() + 1 + "").padStart(2, "0") + "-" + (monday.getDate() + "").padStart(2, "0") + "T" + '06:59'
                 toDate.value = ''
                 break
         }
@@ -523,11 +523,15 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
     })
 })
 
-function getMonday(d) {
-    d = new Date(d);
-    var day = d.getDay(),
-        diff = d.getDate() - day + (day === 0 ? -6:1); // adjust when day is sunday
-    return (diff + "").padStart(2, "0");
+function getMonday() {
+    let today = new Date(),
+        day = today.getDay() || 7;
+
+    if( day !== 1 ) {
+        today.setHours(-24 * (day - 1));
+    }
+
+    return today
 }
 
 /**

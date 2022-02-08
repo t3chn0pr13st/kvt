@@ -257,6 +257,10 @@ function kvt_connect(telegramId) {
                         }
                     }
 
+                    if (msg.tickerDetails.smallCap) {
+                        widget.querySelector('[class^=src-components-TickerInfo-TickerInfo-firstColumn-]').insertAdjacentHTML('afterbegin', msg.tickerDetails.smallCap ? '<span title="Компания малой капитализации с повышенной комиссией СПБ биржи">⚠️</span>' : '')
+                    }
+
                     break;
                 }
             }

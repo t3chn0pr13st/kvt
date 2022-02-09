@@ -430,12 +430,23 @@ span[data-kvt-volume]:hover {
 .kvt-spb-ts-table tbody tr td:nth-of-type(3){
 
 }
-.kvt-spb-ts-table tbody tr td:last-of-type{
+.kvt-spb-ts-table tbody tr:not(.type-separator) td:last-of-type{
     font-size: 12px;
     color: rgba(var(--pro-text-03), 0.8);
     padding-right: 5px !important;
     text-align: right;
 }
+
+.kvt-spb-ts-table tr.type-separator {
+
+}
+.kvt-spb-ts-table tr.type-separator td {
+    padding: 2px !important;
+    text-align: center;
+    font-size: 11px;
+}
+
+/* scroll */
 .kvt-spb-ts-inner::-webkit-scrollbar {
     width: 6px;
     height: 6px;

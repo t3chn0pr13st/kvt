@@ -234,7 +234,7 @@ function kvt_connect(telegramId) {
                 case 'getLastTrades': {
                     let widgetId = kvth.getKeyByValue(window.__kvtTs, msg.guid)
                     if (msg.data) {
-                        insetItemsSpbTS(widgetId, msg.data.reverse())
+                        insetItemsSpbTS(widgetId, msg.data)
                     }
 
                     break;
@@ -628,10 +628,28 @@ function insetItemsSpbTS(widgetId, data) {
         let lenta = widget.querySelector('.kvt-spb-ts-table tbody')
 
         if (lenta) {
-            for (let jd of data) {
-                lenta.insertAdjacentHTML('afterbegin', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
-                if (199 < lenta.children.length) {
-                    lenta.lastChild.remove();
+            if (data.length > 1) {
+
+                let todayDate = new Date().getUTCDate(),
+                    sepDate = todayDate;
+
+                for (let jd of data) {
+                    let jdTime = new Date(jd.timestamp),
+                        jdDate = jdTime.getUTCDate();
+
+                    if (jdDate !== todayDate && sepDate !== jdDate) {
+                        sepDate = jdDate
+                        lenta.insertAdjacentHTML('beforeend', `<tr class="type-separator"><td colspan="4"">🔸🔸🔹🔹 ${(jdTime.getUTCDate() + "").padStart(2, "0")}-${(jdTime.getUTCMonth() + 1 + "").padStart(2, "0")}-${jdTime.getUTCFullYear()} 🔹🔹🔸🔸</td></tr>`)
+                    }
+
+                    lenta.insertAdjacentHTML('beforeend', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
+                }
+            } else {
+                for (let jd of data) {
+                    lenta.insertAdjacentHTML('afterbegin', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
+                    if (299 < lenta.children.length) {
+                        lenta.lastChild.remove();
+                    }
                 }
             }
         }

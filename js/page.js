@@ -5,7 +5,7 @@ let kvth = new kvtHelper(),
     kvtSettings = {};
 
 // get settings
-['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
+['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
     chrome.runtime.sendMessage(extensionId, {type: "LOCALSTORAGE", path: st}, function (val) {
         kvtSettings[st] = val
     })
@@ -228,7 +228,7 @@ function kvt_connect(telegramId) {
 
             switch (msg.type) {
                 case 'setTicker':
-                    setTickerInGroup(msg.ticker, msg.group)
+                    setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumBot')
                     break
 
                 case 'getLastTrades': {
@@ -295,7 +295,7 @@ function rcktMonConnect() {
         RcktMonWS.onmessage = (message) => {
             const msg = JSON.parse(message.data);
             console.log('[kvt][RcktMon][Message]', msg);
-            setTickerInGroup(msg.ticker, msg.group);
+            setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumRcktMon');
         }
     };
 
@@ -317,7 +317,8 @@ function rcktMonConnect() {
     };
 }
 
-function setTickerInGroup(ticker, group_id) {
+// STIG
+function setTickerInGroup(ticker, group_id, type) {
     let widget = getGroupWidget(group_id);
 
     if (!widget) {
@@ -333,6 +334,10 @@ function setTickerInGroup(ticker, group_id) {
     })
 
     target && target._owner.memoizedProps.selectSymbol(ticker.toUpperCase())
+
+    if (type && kvtSettings[type]) {
+        set_kvtFastSum(widget, kvtSettings[type])
+    }
 }
 
 let kvtGroups = {
@@ -535,6 +540,23 @@ function set_kvtFastVolume(widget, vol) {
         target: {value: vol},
         currentTarget: {value: vol}
     })
+}
+
+function set_kvtFastSum (widget, sum) {
+
+    let timeoutName = widget.getAttribute('data-widget-id') + widget.getAttribute('data-symbol-id') + 'fast'
+
+    if (!timeouts[timeoutName]) {
+        timeouts[timeoutName] = setTimeout(function(){
+            // TODO: Найти более адекватный источник данных (мб запрос ttps://api-invest.tinkoff.ru/trading/stocks/get?ticker=*)
+            let price = parseFloat(widget.querySelector('[class^="src-components-OrderHeader-styles-price-"] > div').innerHTML.replace(/\s+/g, '').replace(/[,]+/g, '.'))
+
+            set_kvtFastVolume(widget, (sum / price).toFixed())
+
+            timeouts[timeoutName] = null
+
+        }, 500);
+    }
 }
 
 function customRound(val, n = 100) {

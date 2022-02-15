@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function (e, t, o) {
 });
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);
@@ -82,7 +82,8 @@ document.getElementById('kvShowReport').addEventListener('click', async function
                 operationsHistory = await kvtAlorGetStatsHistory(kvtSettings.alorPortfolio, df),
                 result = [];
 
-            //console.log(operationsToday)
+            console.log('сегодняшние', operationsToday)
+            console.log('operationsHistory', operationsHistory)
             //console.log(df)
 
             if (operationsToday.result === 'error') {
@@ -208,7 +209,6 @@ document.getElementById('kvShowReport').addEventListener('click', async function
                         result: 0,
                         buyCount: 0,
                         sellCount: 0,
-                        declineCount: 0,
                         buySum: 0,
                         sellSum: 0
                     }
@@ -240,7 +240,7 @@ document.getElementById('kvShowReport').addEventListener('click', async function
                     '<div>' +
                     '<span>Чистыми:</span> ' + kvth._ft(e.result) + ' ' + kvth._c(e.currency) + '<br/>' +
                     'Оборот: ' + kvth._ft(e.buySum + e.sellSum) + ' ' + kvth._c(e.currency) + '<br/>' +
-                    '<span title="buy/sell (совершенных/отмененных)">Сделок:</span> ' + e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount + e.sellCount) + ' / ' + e.declineCount + ') ' +
+                    '<span title="buy/sell (совершенных)">Сделок:</span> ' + e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount + e.sellCount) + ') ' +
                     '</div>'
                 ;
             });

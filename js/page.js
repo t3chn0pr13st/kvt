@@ -376,7 +376,9 @@ function getActiveGroupsWidget() {
     document.querySelectorAll('[data-widget-type="COMBINED_ORDER_WIDGET"]').forEach(function (widget) {
         for (var group_id in kvtGroups) {
             if (widget.querySelector('div[class^="packages-core-lib-components-GroupMenu-GroupMenu-icon"][style*="color: ' + kvtGroups[group_id] + '"]')) {
-                activeGroupsIds.push(group_id)
+                if (!activeGroupsIds.includes(group_id)) {
+                    activeGroupsIds.push(group_id)
+                }
             }
         }
     })
@@ -597,6 +599,7 @@ function spbTS(widget) {
         console.log('[kvt][spbTS]', 'вызвали изменение виджета', widgetID)
 
         if (window[`__kvtNewWidget_spbTS`] || typeof kvtWidgets[widgetID] !== 'undefined') {
+            console.log('ИЗМЕНЯЕМ ВИДЖЕТ?')
             window[`__kvtNewWidget_spbTS`] = false;
 
             widget.setAttribute('data-kvt-widget-load', 'SpbTS')

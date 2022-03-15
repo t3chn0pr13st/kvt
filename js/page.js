@@ -333,7 +333,7 @@ function setTickerInGroup(ticker, group_id, type) {
         return typeof child === 'object' && child !== null
     })
 
-    target && target._owner.memoizedProps.selectSymbol(ticker.toUpperCase())
+    target && target._owner.memoizedProps.selectSymbol(ticker)
 
     if (type && kvtSettings[type]) {
         set_kvtFastSum(widget, kvtSettings[type])

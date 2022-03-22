@@ -123,8 +123,8 @@ span[data-kvt-volume]:hover {
 
 /* поля ввода и плюс/минус */
 .kvt-compactStyle .pro-numeric-input .pro-button-group.pro-vertical > .pro-button {
-    width: 20px !important;
-    min-width: 20px;
+    width: 16px !important;
+    min-width: 16px;
 }
 .kvt-compactStyle .pro-button-group {
     height: 26px;
@@ -341,6 +341,13 @@ span[data-kvt-volume]:hover {
 }
 
 /**
+ * Портфель
+ */
+.kvt-compactStyle [class*=src-modules-Portfolio-containers-components-PortfolioHeader-PortfolioHeader-main-] > div:not(:last-of-type) {
+    margin-right: 10px;
+}
+
+/**
  * Лента принтов СПБ
  */
 .kvt-spb-ts {
@@ -357,6 +364,7 @@ span[data-kvt-volume]:hover {
     inset: 0;
     width: 100%;
     transform: translate3d(0px, 0px, 0px);
+    z-index: 2022;
 }
 .kvt-spb-ts-table{
     border-collapse: collapse;

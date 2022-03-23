@@ -20,12 +20,12 @@
 
 /* быстрый объем в $ */
 .kvtFastVolumePrice, .kvtFastVolumeSize {
-    margin-top: 5px;
+    margin-top: 4px;
     margin-bottom: -2px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    gap: 2px 8px;
+    gap: 2px 7px;
 }
 
 span[data-kvt-volume] {
@@ -132,6 +132,9 @@ span[data-kvt-volume]:hover {
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-inputs-] {
     min-height: 26px;
 }
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderForm-OrderForm-leftInput-] {
+    margin-right: 4px;
+}
 
 .kvt-compactStyle .pro-input-group .pro-input {
     padding-right: 20px !important;
@@ -185,9 +188,18 @@ span[data-kvt-volume]:hover {
     margin-left: 0;
 }
 
+/* блоки с дефолтными кнопками купить/продать */
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderButtons-OrderButtons-orderButton-] {
+    margin-right: 6px;
+}
+
 /* отложки */
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-stopOrderTypeSelector-] {
     margin-bottom: 3px;
+}
+
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderBody-OrderBody-footerShadow-]:after {
+    display: none;
 }
 
 .kvt-compactStyle [class*=src-components-Forms-commonStyles-label-] {
@@ -307,6 +319,27 @@ span[data-kvt-volume]:hover {
 
 .kvt-compactStyle .table tbody > tr > td > div {
     font-size: 12px !important;
+}
+
+/**
+ * Подписки
+ */
+.kvt-compactStyle [class*=src-modules-Subscriptions-containers-Subscriptions-inner] {
+    padding: 4px 4px 0;
+}
+
+.kvt-compactStyle [class*=src-modules-Subscriptions-components-Card-container-] {
+    padding: 6px;
+}
+.kvt-compactStyle [class*=src-modules-Subscriptions-components-Card-header-] {
+    padding: 0 0 6px;
+}
+.kvt-compactStyle [class*=src-modules-Subscriptions-components-Card-content-] {
+    padding-top: 4px;
+}
+.kvt-compactStyle [class*=src-modules-Subscriptions-components-Form-container_withBorderTop-] {
+    margin-top: 6px;
+    padding: 6px 0 0;
 }
 
 

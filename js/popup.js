@@ -502,7 +502,8 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
             mount = (m.getMonth() + 1 + "").padStart(2, "0"),
             day = (m.getDate() + "").padStart(2, "0");
 
-        let time = year + "-" + mount + "-" + day + "T";
+        let time = year + "-" + mount + "-" + day + "T",
+            monday = getMonday()
 
         switch (el.getAttribute('data-set-time')) {
             case 'from_morning':
@@ -512,8 +513,12 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
                 break
 
             case 'from_week' :
-                let monday = getMonday()
                 fromDate.value = monday.getFullYear() + "-" + (monday.getMonth() + 1 + "").padStart(2, "0") + "-" + (monday.getDate() + "").padStart(2, "0") + "T" + '06:59'
+                toDate.value = ''
+                break
+
+            case 'from_mount' :
+                fromDate.value = monday.getFullYear() + "-" + (monday.getMonth() + 1 + "").padStart(2, "0") + "-" + "1".padStart(2, "0") + "T" + '06:59'
                 toDate.value = ''
                 break
         }

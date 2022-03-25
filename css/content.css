@@ -172,7 +172,7 @@ span[data-kvt-volume]:hover {
     flex-wrap: nowrap;
     justify-content: space-between;
     margin-top: 7px;
-    padding: 2px 4px;
+    padding: 0;
 }
 
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-row-] {
@@ -215,6 +215,14 @@ span[data-kvt-volume]:hover {
 
 .kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] {
     margin-left: 0;
+    margin-right: 1px;
+}
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-hint-] svg{
+    width: 10px !important;
+    height: 16px !important;
+}
+.kvt-compactStyle [class*=src-modules-CombinedOrder-components-OrderSummary-OrderSummary-value] {
+    font-size: 11px !important;
 }
 
 
@@ -388,6 +396,20 @@ span[data-kvt-volume]:hover {
 .kvt-compactStyle [class*=src-modules-Portfolio-containers-components-PortfolioHeader-PortfolioHeader-main-] > div:not(:last-of-type) {
     margin-right: 10px;
 }
+
+/**
+ * Шапка виджетов
+ */
+.kvt-compactStyle [class*=packages-core-lib-components-WidgetBody-WidgetBody-dragPanel-] {
+    height: 22px;
+}
+.kvt-compactStyle [class*=packages-core-lib-components-GroupMenu-GroupMenu-groupCircle-] {
+    height: 22px;
+}
+.kvt-compactStyle [class*=packages-core-lib-components-WidgetBody-WidgetBody-title-] {
+    padding: 0 4px;
+}
+
 
 /**
  * Лента принтов СПБ

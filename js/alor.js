@@ -10,6 +10,8 @@ async function kvtSyncAlorAccessToken() {
         }
     }).then(e => {
         kvtAlorJWT = e.AccessToken;
+    }).catch(err => {
+        return err
     })
 }
 

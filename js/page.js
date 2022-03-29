@@ -2,7 +2,13 @@
 
 let kvth = new kvtHelper(),
     extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim(),
-    kvtSettings = {};
+    extensionVer = document.querySelector("[data-kvt-extension-ver]").getAttribute("data-kvt-extension-ver").trim(),
+    kvtSettings = {},
+    kvtStates = {
+        alor: {},
+        kvts: {},
+        rcktMon: {}
+    };
 
 // get settings
 ['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
@@ -14,10 +20,10 @@ let kvth = new kvtHelper(),
 
 let kvtInit_TIMER = setInterval(() => {
     if (kvtInit()) {
-        console.log('[kvt]', 'init TIMER TRUE')
+        //console.log('[kvt]', 'init TIMER TRUE')
         clearInterval(kvtInit_TIMER)
     } else {
-        console.log('[kvt]', 'init TIMER FALSE')
+        //console.log('[kvt]', 'init TIMER FALSE')
     }
 }, 100);
 
@@ -34,12 +40,18 @@ function kvtInit() {
     }
 }
 
-setTimeout(function(){
+setTimeout(function () {
     if (kvtSettings.telegramId) {
         kvt_connect(kvtSettings.telegramId)
 
-        if(kvtSettings.alorToken) {
-            alor_connect()
+        if (kvtSettings.alorToken) {
+            kvtSyncAlorAccessToken().then(res => {
+                if (kvtAlorJWT) {
+                    alor_connect()
+                } else {
+                    kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
+                }
+            })
         } else {
             console.log('[kvt][alor]', 'Токена нет');
         }
@@ -54,6 +66,13 @@ function kvtRun() {
     } else {
         console.warn('[kvt]', 'rcktMonConnect не включен')
     }
+
+    // STATE: Индикация соединений
+    document.querySelector('[class*=src-containers-Profile-styles-buttons-]').insertAdjacentHTML('afterbegin', '<div class="kvt-state"></div>')
+    let kvtState = document.querySelector('.kvt-state')
+    Object.keys(kvtStates).forEach(i => {
+        kvtState.insertAdjacentHTML('beforeend', `<div data-kvt-state-name="${i}" data-kvt-state-value="${(kvtStates[i].state || 0)}" title="${i} - ${(kvtStates[i].msg || 'no attempts to connect')}"></div>`)
+    });
 
     /**
      *
@@ -162,12 +181,11 @@ function kvtRun() {
 }
 
 function alor_connect() {
-    kvtSyncAlorAccessToken().then(r => {})
-
     window.__alorws = new WebSocket('wss://api.alor.ru/ws');
 
     window.__alorws.onopen = (e) => {
         console.log('[kvt][alor ws]', 'connected to Alor ws');
+        kvtSetState('alor', 2, `connected to Alor ws`)
 
         if (window.__kvtTs) {
             // TODO: Сделать переподписку
@@ -180,8 +198,14 @@ function alor_connect() {
     window.__alorws.onmessage = (message) => {
         let json = JSON.parse(message.data)
 
-        if(json && json.httpCode === 200) {
+        if (json) {
+            if (json.httpCode === 200) {
 
+            }
+
+            if (json.httpCode === 400) {
+
+            }
         }
 
         if (json.data && json.guid) {
@@ -190,7 +214,7 @@ function alor_connect() {
                 jd = json.data
 
             insetItemsSpbTS(widgetId, [jd])
-            console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price) ,jd.qty, kvth._tsToTime(jd.timestamp))
+            console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
         } else {
             console.warn('[kvt][alor ws]', json)
         }
@@ -202,7 +226,8 @@ function alor_connect() {
         } else {
             // например, сервер убил процесс или сеть недоступна
             // обычно в этом случае event.code 1006
-            console.log('[kvt][alor ws][close] Соединение прервано');
+            console.log('[kvt][alor ws][close] Соединение прервано', event);
+            kvtSetState('alor', 0, `Соединение прервано`)
 
             setTimeout(function() {
                 alor_connect();
@@ -216,15 +241,16 @@ function alor_connect() {
 }
 
 function kvt_connect(telegramId) {
-    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}`);
-    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}`);
+    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}&ver=${extensionVer}`);
+    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}&ver=${extensionVer}`);
 
     window.__kvtWS.onopen = (e) => {
-        console.log("[kvt][ws]", "connected to kvts");
+        console.log("[kvt][kvts ws]", "connected to kvts");
+        kvtSetState('kvts', 2, `connected to kvts`)
 
         window.__kvtWS.onmessage = (message) => {
             let msg = JSON.parse(message.data);
-            console.log('[kvt][ws]', 'Message', msg);
+            console.log('[kvt][kvts ws]', 'Message', msg);
 
             switch (msg.type) {
                 case 'setTicker':
@@ -268,52 +294,60 @@ function kvt_connect(telegramId) {
     };
 
     window.__kvtWS.onclose = (event) => {
+        let msg
         if (event.wasClean) {
-            console.log('[kvt][ws]', `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+            msg = `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`
         } else {
             // например, сервер убил процесс или сеть недоступна
             // обычно в этом случае event.code 1006
-            console.log('[kvt][ws]', 'Соединение прервано');
+            msg = `Соединение прервано, код=${event.code} причина=${event.reason}`
 
             setTimeout(function() {
                 kvt_connect(telegramId);
             }, 5000);
         }
+
+        console.log('[kvt][kvts ws][close]', msg);
+        kvtSetState('kvts', 0, msg)
     };
 
     window.__kvtWS.onerror = (error) => {
-        console.warn('[kvt][ws]', 'error', error.message);
+        console.warn('[kvt][kvts ws][error]', error.message);
     };
 }
 
 function rcktMonConnect() {
-    let RcktMonWS = new WebSocket('ws://localhost:51337');
+    window.__RcktMonWS = new WebSocket('ws://localhost:51337');
 
-    RcktMonWS.onopen = (e) => {
-        console.log('[kvt][RcktMon]', 'connected to RcktMon');
-
-        RcktMonWS.onmessage = (message) => {
-            const msg = JSON.parse(message.data);
-            console.log('[kvt][RcktMon][Message]', msg);
-            setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumRcktMon');
-        }
+    window.__RcktMonWS.onopen = (e) => {
+        console.log('[kvt][RcktMon ws]', 'connected to RcktMon');
+        kvtSetState('rcktMon', 2, 'connected to RcktMon')
     };
 
-    RcktMonWS.onclose = (event) => {
-        if (event.code !== 1006) {
-            if (event.wasClean) {
-                console.log('[kvt][RcktMon][ws close]', `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
-            } else {
-                console.log('[kvt][RcktMon][ws close]', 'Соединение прервано');
-                setTimeout(function() {
+    window.__RcktMonWS.onmessage = (message) => {
+        const msg = JSON.parse(message.data);
+        console.log('[kvt][RcktMon ws][Message]', msg);
+        setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumRcktMon');
+    }
+
+    window.__RcktMonWS.onclose = (event) => {
+        let msg
+        if (event.wasClean) {
+            msg = `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`
+        } else {
+            msg = `Соединение прервано, код=${event.code} причина=${event.reason}`
+            if (event.code !== 1006) {
+                setTimeout(function () {
                     rcktMonConnect();
                 }, 5000);
             }
         }
+        console.log('[kvt][RcktMon ws][close]', msg);
+        kvtSetState('rcktMon', 0, msg)
     };
 
-    RcktMonWS.onerror = (error) => {
-        console.warn('[RcktMon][error]', error.message);
+    window.__RcktMonWS.onerror = (error) => {
+        console.warn('[kvt][RcktMon ws][error]', error.message);
     };
 }
 
@@ -570,15 +604,15 @@ function kvtWidgetsLoad() {
 
     if (Object.keys(kvtWidgets).length) {
         setTimeout(function() {
-            console.log('[kvt][kvtWidgetsLoad]', 'БД Есть виджеты')
+            //console.log('[kvt][kvtWidgetsLoad]', 'БД Есть виджеты')
             Object.keys(kvtWidgets).forEach(i => {
                 let widget = document.querySelector('[data-widget-id=' + i + ']')
 
                 if (widget) {
-                    console.log('[kvt][kvtWidgetsLoad]', 'widget YES', i, widget)
+                    //console.log('[kvt][kvtWidgetsLoad]', 'widget YES', i, widget)
                     spbTS(widget)
                 } else {
-                    console.log('[kvt][kvtWidgetsLoad]', 'widget NO', i, widget)
+                    //console.log('[kvt][kvtWidgetsLoad]', 'widget NO', i, widget)
                     //delete kvtWidgets[i]
                 }
             })
@@ -599,7 +633,7 @@ function spbTS(widget) {
         console.log('[kvt][spbTS]', 'вызвали изменение виджета', widgetID)
 
         if (window[`__kvtNewWidget_spbTS`] || typeof kvtWidgets[widgetID] !== 'undefined') {
-            console.log('ИЗМЕНЯЕМ ВИДЖЕТ?')
+            console.log('[kvt][spbTS]', 'ИЗМЕНЯЕМ ВИДЖЕТ?')
             window[`__kvtNewWidget_spbTS`] = false;
 
             widget.setAttribute('data-kvt-widget-load', 'SpbTS')
@@ -770,5 +804,15 @@ function unsubscribe_spb_TS(widgetId) {
         delete window.__kvtTsTickers[widgetId]
     } else {
         console.log('[kvt][T&S][unsubscribe]', 'такой подписки нет')
+    }
+}
+
+function kvtSetState(name, state, msg) {
+    kvtStates[name] = {state: state, msg: msg}
+
+    let st = document.querySelector(`[data-kvt-state-name=${name}]`)
+    if (st) {
+        st.setAttribute("data-kvt-state-value", state)
+        st.setAttribute("title", `${name} - ${msg}`)
     }
 }

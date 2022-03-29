@@ -57,6 +57,39 @@ span[data-kvt-volume]:hover {
 }
 
 /**
+ * Состояние подключений
+ */
+.kvt-state{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 7px;
+    margin-right: 12px;
+}
+[data-kvt-state-name] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border-width: 3px;
+    border-style: solid;
+}
+
+[data-kvt-state-value="0"] {
+    border-color: rgba(var(--pro-red-1),1);
+    background: rgba(var(--pro-red-5),1);
+}
+[data-kvt-state-value="1"] {
+    border-color: rgba(var(--pro-yellow-1),1);
+    background: rgba(var(--pro-yellow-5),1);
+}
+[data-kvt-state-value="2"] {
+    border-color: rgba(var(--pro-green-1),1);
+    background: rgba(var(--pro-green-5),1);
+}
+
+
+/**
  * Заявка
  */
 /* табы сверху */

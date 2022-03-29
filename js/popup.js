@@ -508,6 +508,7 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
         switch (el.getAttribute('data-set-time')) {
             case 'from_morning':
             default:
+                // if (m.getHours() < 7)
                 fromDate.value = time + '06:59'
                 toDate.value = ''
                 break

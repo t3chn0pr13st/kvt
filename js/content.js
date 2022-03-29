@@ -30,17 +30,19 @@ chrome.storage.local.get('compactStyle', (result) => {
 
 function injectScript(url, tag, setExtId) {
     var tagName = document.getElementsByTagName(tag)[0],
-        element = document.createElement("script");
+        el = document.createElement("script");
 
-    element.setAttribute("type", "text/javascript")
-    element.setAttribute("src", url)
-    setExtId && element.setAttribute("data-kvt-extension-id", chrome.runtime.id)
-    tagName.appendChild(element)
+    el.setAttribute("type", "text/javascript")
+    el.setAttribute("src", url)
+    el.setAttribute("data-kvt-extension-ver", chrome.runtime.getManifest().version)
+    setExtId && el.setAttribute("data-kvt-extension-id", chrome.runtime.id)
+
+    tagName.appendChild(el)
 }
 
-injectScript(chrome.extension.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
-injectScript(chrome.extension.getURL("js/alor.js?t=" + Date.now()), "body", 1)
+injectScript(chrome.runtime.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
+injectScript(chrome.runtime.getURL("js/alor.js?t=" + Date.now()), "body", 1)
 
 setTimeout(function () {
-    injectScript(chrome.extension.getURL("js/page.js?t=" + Date.now()), "body", 1)
+    injectScript(chrome.runtime.getURL("js/page.js?t=" + Date.now()), "body", 1)
 });

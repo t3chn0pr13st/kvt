@@ -1,28 +1,34 @@
 {
   "name": "Kvalood Tools",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Helper for Tinkoff Investments",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [
     "activeTab",
     "management",
     "declarativeContent",
     "storage",
     "notifications",
-    "webRequest",
-    "webRequestBlocking",
+    "webRequest"
+  ],
+  "host_permissions": [
     "https://*.tinkoff.ru/terminal/*"
   ],
   "web_accessible_resources": [
-    "js/page.js",
-    "js/helpers.js",
-    "js/alor.js"
+    {
+      "resources": [
+        "js/page.js",
+        "js/helpers.js",
+        "js/alor.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ],
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
-    "persistent": true
+    "service_worker": "/js/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -47,7 +53,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "browser_action": {
+  "action": {
     "default_title": "Kvalood Tools",
     "default_popup": "popup.html"
   }

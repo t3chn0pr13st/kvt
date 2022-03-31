@@ -20,10 +20,10 @@ let kvth = new kvtHelper(),
 
 let kvtInit_TIMER = setInterval(() => {
     if (kvtInit()) {
-        //console.log('[kvt]', 'init TIMER TRUE')
+        console.log('[kvt]', 'init TIMER TRUE')
         clearInterval(kvtInit_TIMER)
     } else {
-        //console.log('[kvt]', 'init TIMER FALSE')
+        console.log('[kvt]', 'init TIMER FALSE')
     }
 }, 100);
 
@@ -45,20 +45,14 @@ setTimeout(function () {
         kvt_connect(kvtSettings.telegramId)
 
         if (kvtSettings.alorToken) {
-            kvtSyncAlorAccessToken().then(res => {
-                if (kvtAlorJWT) {
-                    alor_connect()
-                } else {
-                    kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
-                }
-            })
+            alor_connect()
         } else {
             console.log('[kvt][alor]', 'Токена нет');
         }
     } else {
         console.warn('[kvt]', 'telegramId не установлен')
     }
-}, 100)
+}, 1000)
 
 function kvtRun() {
     if (kvtSettings.rcktMonConnect) {
@@ -124,7 +118,7 @@ function kvtRun() {
                         add_kvtFastVolumeSizeButtons(el)
                         add_kvtFastVolumePriceButtons(el)
                         add_IsShortTicker(el)
-                        console.log('[kvt][IsShortTicker]', '111111111')
+                        console.log('[kvt][IsShortTicker]')
                     }
                 }
 
@@ -181,6 +175,12 @@ function kvtRun() {
 }
 
 function alor_connect() {
+    kvtSyncAlorAccessToken().then(res => {
+        if (!kvtAlorJWT) {
+            kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
+        }
+    })
+
     window.__alorws = new WebSocket('wss://api.alor.ru/ws');
 
     window.__alorws.onopen = (e) => {
@@ -214,7 +214,7 @@ function alor_connect() {
                 jd = json.data
 
             insetItemsSpbTS(widgetId, [jd])
-            console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
+            // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
         } else {
             console.warn('[kvt][alor ws]', json)
         }

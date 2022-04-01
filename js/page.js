@@ -337,7 +337,6 @@ function kvt_connect(telegramId) {
 
                 case 'getdp': {
                     let widgetId = kvth.getKeyByValue(window.__kvtGetdp, msg.guid)
-                    console.warn(window.__kvtGetdp, msg)
                     if (msg.data) {
                         insetItemsContent(widgetId, msg.data)
                     }

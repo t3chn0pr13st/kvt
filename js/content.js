@@ -1,4 +1,3 @@
-
 'use strict';
 
 let versionApi = "2.0.0";

@@ -445,9 +445,9 @@ span[data-kvt-volume]:hover {
 
 
 /**
- * Лента принтов СПБ
+ * Виджеты kvt
  */
-.kvt-spb-ts {
+.kvt-widget {
     display: flex;
     flex-direction: column;
     padding: 0 2px 2px 0;
@@ -455,7 +455,7 @@ span[data-kvt-volume]:hover {
     overflow: hidden;
     height: 100%;
 }
-.kvt-spb-ts-inner{
+.kvt-widget-inner{
     position: absolute;
     overflow-y: scroll;
     inset: 0;
@@ -463,18 +463,18 @@ span[data-kvt-volume]:hover {
     transform: translate3d(0px, 0px, 0px);
     z-index: 2022;
 }
-.kvt-spb-ts-table{
+.kvt-widget-table{
     border-collapse: collapse;
     min-width: 140px;
     width: 100%;
     text-align: right;
 }
-.kvt-spb-ts-table tbody::before {
+.kvt-widget-table tbody::before {
     content: '';
     display: block;
     height: 2px;
 }
-.kvt-spb-ts-table thead th{
+.kvt-widget-table thead th{
     text-align: left;
     padding: 2px 3px !important;
     position: sticky;
@@ -489,21 +489,21 @@ span[data-kvt-volume]:hover {
     white-space: nowrap;
     background: rgba(var(--pro-base-01),1);
 }
-.kvt-spb-ts-table thead th:nth-of-type(2) {
+.kvt-widget-table thead th:nth-of-type(2) {
     width: 15%;
 }
-.kvt-spb-ts-table thead th:last-of-type{
+.kvt-widget-table thead th:last-of-type{
     width: 15%;
     text-align: right;
 }
-.kvt-spb-ts-table thead th:before {
+.kvt-widget-table thead th:before {
     top: -1px;
     height: 2px !important;
 }
-.kvt-spb-ts-table thead th:after {
+.kvt-widget-table thead th:after {
     bottom: 0;
 }
-.kvt-spb-ts-table thead th:after, .kvt-spb-ts-table thead th:before {
+.kvt-widget-table thead th:after, .kvt-widget-table thead th:before {
     content: "";
     position: absolute;
     left: 0;
@@ -513,62 +513,58 @@ span[data-kvt-volume]:hover {
     background-color: rgba(var(--pro-base-03),1);
 }
 
-
-.kvt-spb-ts-table tbody td{
+/* Лента принтов СПБ */
+.kvt-widget-content td{
     padding: 1px 3px !important;
     text-align: left;
     position: relative;
     border-top: 1px solid rgba(var(--pro-base-00),1);
 }
-.kvt-spb-ts-table tr.type-buy td {
+.kvt-widget-table tr.type-buy td {
     background: rgba(21, 90, 74, 0.25);
 }
-.kvt-spb-ts-table tr.type-sell td{
+.kvt-widget-table tr.type-sell td{
     background: #9d2b3840
 }
-.kvt-spb-ts-table tbody tr td:first-of-type{
+.kvt-widget-content tr td:first-of-type{
 
 }
-.kvt-spb-ts-table tbody tr td:nth-of-type(2){
+.kvt-widget-content tr td.item-ticker{
+    white-space: nowrap;
+}
+.kvt-widget-content tr td.item-total{
     font-weight: 500;
 }
-.kvt-spb-ts-table tbody tr td:nth-of-type(3){
-
-}
-.kvt-spb-ts-table tbody tr:not(.type-separator) td:last-of-type{
+.kvt-widget-content tr td.item-timestamp{
     font-size: 12px;
     color: rgba(var(--pro-text-03), 0.8);
     padding-right: 5px !important;
     text-align: right;
 }
-
-.kvt-spb-ts-table tr.type-separator {
-
-}
-.kvt-spb-ts-table tr.type-separator td {
+.kvt-widget-table tr.type-separator td {
     padding: 2px !important;
     text-align: center;
     font-size: 11px;
 }
 
 /* scroll */
-.kvt-spb-ts-inner::-webkit-scrollbar {
+.kvt-widget-inner::-webkit-scrollbar {
     width: 6px;
     height: 6px;
     border-radius: 3px
 }
 /* Track */
-.kvt-spb-ts-inner::-webkit-scrollbar-track {
+.kvt-widget-inner::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 3px;
 }
 /* Handle */
-.kvt-spb-ts-inner::-webkit-scrollbar-thumb {
+.kvt-widget-inner::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
 
 }
 /* Handle on hover */
-.kvt-spb-ts-inner::-webkit-scrollbar-thumb:hover {
+.kvt-widget-inner::-webkit-scrollbar-thumb:hover {
     background: #888;
 }

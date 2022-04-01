@@ -54,6 +54,46 @@ setTimeout(function () {
     }
 }, 1000)
 
+let kvtWidgets = {
+    spbTS: {
+        name: 'T&S SPBX',
+        icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>',
+        template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Price</th><th>Size</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
+        templateItem: (jd) => {
+            return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty * jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+        },
+        unsubscribe: unsubscribe_spbTS
+    },
+    getdp: {
+        name: 'GETDP',
+        icon: '',
+        template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Ticker</th><th>Size</th><th>Price</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
+        templateItem: (jd) => {
+            return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker">${(jd.text + jd.symbol)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+        },
+        unsubscribe: unsubscribe_getdp
+    }
+},
+    timeouts = {},
+    kvtGroups = {
+    1: "rgb(255, 212, 80)",
+    2: "rgb(255, 123, 118)",
+    3: "rgb(163, 129, 255)",
+    4: "rgb(77, 195, 247)",
+    5: "rgb(174, 213, 127)",
+    6: "rgb(77, 161, 151)",
+    7: "rgb(255, 183, 76)",
+    8: "rgb(248, 163, 77)",
+    9: "rgb(255, 136, 99)",
+    10: "rgb(238, 128, 93)",
+    11: "rgb(255, 120, 167)",
+    12: "rgb(212, 93, 140)",
+    13: "rgb(188, 113, 201)",
+    14: "rgb(124, 174, 255)",
+    15: "rgb(75, 208, 225)",
+    16: "rgb(115, 176, 119)",
+}
+
 function kvtRun() {
     if (kvtSettings.rcktMonConnect) {
         rcktMonConnect();
@@ -76,7 +116,7 @@ function kvtRun() {
             if (!mutation.removedNodes.length) {
                 if (mutation.target && mutation.type === 'childList') {
 
-                    // Добавляем в меню T&S SPBX кнопку
+                    // Добавляем в меню кнопку виджета
                     let ptMenu = mutation.target.querySelector(".pro-menu")
                     if (ptMenu && !ptMenu.classList.contains("kvt-menu-load")) {
                         ptMenu.classList.add('kvt-menu-load')
@@ -89,15 +129,16 @@ function kvtRun() {
                             var deliverySelector = ptMenu.querySelector('[class*="divider"]');
                             ptMenu.insertAdjacentElement("beforeend", deliverySelector.cloneNode(true));
 
-                            let newItem = ptMenu.insertAdjacentElement('beforeend', modelItem.parentNode.cloneNode(true))
+                            Object.keys(kvtWidgets).forEach(i => {
+                                let newItem = ptMenu.insertAdjacentElement('beforeend', modelItem.parentNode.cloneNode(true))
 
-                            newItem.querySelector('.pro-icon').innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>';
-                            newItem.querySelector('[class*="text"]').textContent = 'T&S SPBX'
-
-                            newItem.onclick = function () {
-                                window['__kvtNewWidget_spbTS'] = true
-                                modelItem.click()
-                            }
+                                newItem.querySelector('.pro-icon').innerHTML = kvtWidgets[i].icon;
+                                newItem.querySelector('[class*="text"]').textContent = kvtWidgets[i].name
+                                newItem.onclick = function () {
+                                    window['__kvtNewWidget'] = i
+                                    modelItem.click()
+                                }
+                            })
                         }
 
                         // Создаем кнопки быстрого перехода к стакану
@@ -108,8 +149,8 @@ function kvtRun() {
                         }
                     }
 
-                    // Создаём СПБ ленту принтов
-                    spbTS(mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]'))
+                    // Создаём Виджеты
+                    kvtCreateWidget(mutation.target.closest('[data-widget-type="SUBSCRIPTIONS_WIDGET"]'))
 
                     // Если добавили новый виджет заявки
                     let el = mutation.target.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]')
@@ -118,7 +159,6 @@ function kvtRun() {
                         add_kvtFastVolumeSizeButtons(el)
                         add_kvtFastVolumePriceButtons(el)
                         add_IsShortTicker(el)
-                        console.log('[kvt][IsShortTicker]')
                     }
                 }
 
@@ -209,11 +249,10 @@ function alor_connect() {
         }
 
         if (json.data && json.guid) {
-
             let widgetId = kvth.getKeyByValue(window.__kvtTs, json.guid),
                 jd = json.data
 
-            insetItemsSpbTS(widgetId, [jd])
+            insetItemsContent(widgetId, [jd])
             // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
         } else {
             console.warn('[kvt][alor ws]', json)
@@ -248,9 +287,15 @@ function kvt_connect(telegramId) {
         console.log("[kvt][kvts ws]", "connected to kvts");
         kvtSetState('kvts', 2, `connected to kvts`)
 
+        if (window.__kvtGetdp) {
+            Object.keys(window.__kvtGetdp).forEach(key => {
+                subscribe_getdp(key, '', window.__kvtGetdp[key])
+            });
+        }
+
         window.__kvtWS.onmessage = (message) => {
             let msg = JSON.parse(message.data);
-            console.log('[kvt][kvts ws]', 'Message', msg);
+            //console.log('[kvt][kvts ws]', 'Message', msg);
 
             switch (msg.type) {
                 case 'setTicker':
@@ -260,7 +305,7 @@ function kvt_connect(telegramId) {
                 case 'getLastTrades': {
                     let widgetId = kvth.getKeyByValue(window.__kvtTs, msg.guid)
                     if (msg.data) {
-                        insetItemsSpbTS(widgetId, msg.data)
+                        insetItemsContent(widgetId, msg.data)
                     }
 
                     break;
@@ -285,6 +330,16 @@ function kvt_connect(telegramId) {
 
                     if (msg.tickerDetails.smallCap) {
                         widget.querySelector('[class^=src-components-TickerInfo-TickerInfo-firstColumn-]').insertAdjacentHTML('afterbegin', msg.tickerDetails.smallCap ? '<span title="Компания малой капитализации с повышенной комиссией СПБ биржи">⚠️</span>' : '')
+                    }
+
+                    break;
+                }
+
+                case 'getdp': {
+                    let widgetId = kvth.getKeyByValue(window.__kvtGetdp, msg.guid)
+                    console.warn(window.__kvtGetdp, msg)
+                    if (msg.data) {
+                        insetItemsContent(widgetId, msg.data)
                     }
 
                     break;
@@ -351,7 +406,6 @@ function rcktMonConnect() {
     };
 }
 
-// STIG
 function setTickerInGroup(ticker, group_id, type) {
     let widget = getGroupWidget(group_id);
 
@@ -372,25 +426,6 @@ function setTickerInGroup(ticker, group_id, type) {
     if (type && kvtSettings[type]) {
         set_kvtFastSum(widget, kvtSettings[type])
     }
-}
-
-let kvtGroups = {
-    1: "rgb(255, 212, 80)",
-    2: "rgb(255, 123, 118)",
-    3: "rgb(163, 129, 255)",
-    4: "rgb(77, 195, 247)",
-    5: "rgb(174, 213, 127)",
-    6: "rgb(77, 161, 151)",
-    7: "rgb(255, 183, 76)",
-    8: "rgb(248, 163, 77)",
-    9: "rgb(255, 136, 99)",
-    10: "rgb(238, 128, 93)",
-    11: "rgb(255, 120, 167)",
-    12: "rgb(212, 93, 140)",
-    13: "rgb(188, 113, 201)",
-    14: "rgb(124, 174, 255)",
-    15: "rgb(75, 208, 225)",
-    16: "rgb(115, 176, 119)",
 }
 
 function getGroupWidget(group_id){
@@ -448,8 +483,6 @@ function createSTIG(ticker) {
         }
     }
 }
-
-let timeouts = {};
 
 function add_kvtFastVolumePriceButtons(widget) {
 
@@ -610,7 +643,7 @@ function kvtWidgetsLoad() {
 
                 if (widget) {
                     //console.log('[kvt][kvtWidgetsLoad]', 'widget YES', i, widget)
-                    spbTS(widget)
+                    kvtCreateWidget(widget)
                 } else {
                     //console.log('[kvt][kvtWidgetsLoad]', 'widget NO', i, widget)
                     //delete kvtWidgets[i]
@@ -624,118 +657,123 @@ function kvtWidgetsLoad() {
     }
 }
 
-function spbTS(widget) {
-
+function kvtCreateWidget(widget) {
     if (widget && !widget.getAttribute('data-kvt-widget-load')) {
         let kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}"),
-            widgetID = widget.getAttribute("data-widget-id")
+            widgetID = widget.getAttribute("data-widget-id"),
+            symbol = widget.getAttribute("data-symbol-id") || '',
+            widgetType,
+            onClose = function () {};
 
-        console.log('[kvt][spbTS]', 'вызвали изменение виджета', widgetID)
-
-        if (window[`__kvtNewWidget_spbTS`] || typeof kvtWidgets[widgetID] !== 'undefined') {
-            console.log('[kvt][spbTS]', 'ИЗМЕНЯЕМ ВИДЖЕТ?')
-            window[`__kvtNewWidget_spbTS`] = false;
-
-            widget.setAttribute('data-kvt-widget-load', 'SpbTS')
-
-            let symbol = widget.getAttribute("data-symbol-id") || ''
-
-            kvtWidgets[widgetID] = symbol
-            localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
-
-            initSpbTS(widget, symbol)
-            console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
-            if (symbol) {
-                subscribe_spb_TS(widgetID, symbol)
-            } else {
-                console.log('[kvt][spbTS]', 'symbol ПУСТОЙ', symbol)
-            }
-
-            observeWidgetChangeTicker(widget)
-
-            // отписка при закрытии виджета
-            widget.querySelector('[class*="packages-core-lib-components-WidgetBody-WidgetBody-icons"]').addEventListener("click", function () {
-                unsubscribe_spb_TS(widgetID)
-                kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}")
-                delete kvtWidgets[widgetID]
-                localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
-            })
+        if (typeof kvtWidgets[widgetID] !== 'undefined') {
+            widgetType = kvtWidgets[widgetID]
+        } else if (window[`__kvtNewWidget`]) {
+            widgetType = window[`__kvtNewWidget`]
+            window[`__kvtNewWidget`] = false;
         }
+
+        console.log('[kvt][kvtCreateWidget]', 'вызвали изменение виджета', widgetID)
+
+        if (widgetType) {
+            widget.setAttribute('data-kvt-widget-load', widgetType)
+            console.log('Установим seAttribute', 'data-kvt-widget-load', widgetType)
+            kvtWidgets[widgetID] = widgetType
+            localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
+        }
+
+        if (widgetType === 'spbTS') {
+            initWidget(widget, widgetType, symbol)
+            console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
+            if (symbol.length) {
+                subscribe_spb_TS(widgetID, symbol)
+            }
+            observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
+                unsubscribe_spbTS(widgetID);
+                subscribe_spb_TS(widgetID, newSymbol);
+            })
+            onClose = unsubscribe_spbTS
+        }
+
+        if (widgetType === 'getdp') {
+            initWidget(widget, widgetType, symbol)
+            subscribe_getdp(widgetID, symbol)
+            observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
+                subscribe_getdp(widgetID, newSymbol);
+            })
+            onClose = unsubscribe_getdp
+        }
+
+        // отписка при закрытии виджета
+        widget.querySelector('[class*="packages-core-lib-components-WidgetBody-WidgetBody-icons"]').addEventListener("click", function () {
+            onClose(widgetID)
+            kvtWidgets = JSON.parse(localStorage.getItem("_kvt-widgets") || "{}")
+            delete kvtWidgets[widgetID]
+            localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
+        })
     }
 }
 
-function initSpbTS(widget, symbol) {
-
-    widget.querySelector('[class*="-WidgetBody-title-"]').textContent = "T&S SPBX " + symbol
+function initWidget(widget, widgetType, symbol = '') {
+    widget.querySelector('[class*="-WidgetBody-title-"]').textContent = `${kvtWidgets[widgetType].name} ${symbol}`
 
     if (widget.getAttribute('data-kvt-widget-init')) {
-        widget.querySelector('.kvt-spb-ts tbody').innerHTML = ''
+        widget.querySelector('.kvt-widget-content').innerHTML = ''
     } else {
-        widget.setAttribute('data-kvt-widget-init', 'SpbTS')
+        widget.setAttribute('data-kvt-widget-init', widgetType)
         let widgetContent = widget.querySelector('.widget')
         widgetContent.parentNode.removeChild(widgetContent)
 
-        widget.lastElementChild.firstChild.insertAdjacentHTML("beforeend",
-            '<div class="kvt-spb-ts"><div class="kvt-spb-ts-inner"><table class="kvt-spb-ts-table"><thead><tr><th>Price</th><th>Size</th><th>Vol.$</th><th>Time</th></tr></thead><tbody></tbody></table></div></div>')
+        widget.lastElementChild.firstChild.insertAdjacentHTML("beforeend", kvtWidgets[widgetType].template)
     }
 }
 
-function insetItemsSpbTS(widgetId, data) {
-
+function insetItemsContent(widgetId, data) {
     let widget = document.querySelector('[data-widget-id="'+ widgetId +'"]')
-    if (widget) {
-        let lenta = widget.querySelector('.kvt-spb-ts-table tbody')
 
-        if (lenta) {
-            if (data.length > 1) {
+    let wType = widget.getAttribute('data-kvt-widget-load'),
+        wContent = widget.querySelector('.kvt-widget-content')
 
-                let todayDate = new Date().getUTCDate(),
-                    sepDate = todayDate;
+    if (widget && wContent) {
+        if (data.length > 1) {
+            let todayDate = new Date().getUTCDate(),
+                sepDate = todayDate;
 
-                for (let jd of data) {
-                    let jdTime = new Date(jd.timestamp),
-                        jdDate = jdTime.getUTCDate();
+            for (let jd of data) {
+                let jdTime = new Date(jd.timestamp),
+                    jdDate = jdTime.getUTCDate();
 
-                    if (jdDate !== todayDate && sepDate !== jdDate) {
-                        sepDate = jdDate
-                        lenta.insertAdjacentHTML('beforeend', `<tr class="type-separator"><td colspan="4"">🔸🔸🔹🔹 ${(jdTime.getUTCDate() + "").padStart(2, "0")}-${(jdTime.getUTCMonth() + 1 + "").padStart(2, "0")}-${jdTime.getUTCFullYear()} 🔹🔹🔸🔸</td></tr>`)
-                    }
-
-                    lenta.insertAdjacentHTML('beforeend', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
+                if (jdDate !== todayDate && sepDate !== jdDate) {
+                    sepDate = jdDate
+                    wContent.insertAdjacentHTML('beforeend', `<tr class="type-separator"><td colspan="100%">🔸🔸🔹🔹 ${(jdTime.getUTCDate() + "").padStart(2, "0")}-${(jdTime.getUTCMonth() + 1 + "").padStart(2, "0")}-${jdTime.getUTCFullYear()} 🔹🔹🔸🔸</td></tr>`)
                 }
-            } else {
-                for (let jd of data) {
-                    lenta.insertAdjacentHTML('afterbegin', `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty *jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`)
-                    if (299 < lenta.children.length) {
-                        lenta.lastChild.remove();
-                    }
+
+                wContent.insertAdjacentHTML('beforeend', kvtWidgets[wType].templateItem(jd))
+            }
+        } else {
+            for (let jd of data) {
+                wContent.insertAdjacentHTML('afterbegin', kvtWidgets[wType].templateItem(jd))
+                if (299 < wContent.children.length) {
+                    wContent.lastChild.remove();
                 }
             }
         }
     } else {
-        unsubscribe_spb_TS(widgetId)
+        kvtWidgets[wType].unsubscribe(widgetId)
     }
-
 }
 
-function observeWidgetChangeTicker(widget) {
-
-    console.log('[kvt][observeWidgetChangeTicker]')
-
+function observeWidgetChangeTicker(widget, widgetType, callback) {
     new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             if (mutation.type === 'attributes') {
                 let symbol = mutation.target.getAttribute('data-symbol-id')
                 let prevSymbol = mutation.oldValue
 
-                console.log('[kvt][observeWidgetChangeTicker]', 'newTicker', symbol)
-                console.log('[kvt][observeWidgetChangeTicker]', 'prevTicker', prevSymbol)
+                console.log('[kvt][observeWidgetChangeTicker]', `newTicker: ${symbol}`, `prevTicker: ${prevSymbol}`)
 
                 if (prevSymbol !== symbol) {
-                    initSpbTS(widget, symbol)
-                    let widgetID = mutation.target.getAttribute("data-widget-id")
-                    unsubscribe_spb_TS(widgetID)
-                    subscribe_spb_TS(widgetID, symbol)
+                    initWidget(widget, widgetType, symbol)
+                    callback(symbol)
                 }
             }
         })
@@ -783,9 +821,9 @@ function subscribe_spb_TS(widgetId, ticker, guid) {
     }
 }
 
-function unsubscribe_spb_TS(widgetId) {
+function unsubscribe_spbTS(widgetId) {
 
-    console.log('[kvt][T&S][unsubscribe]', '', widgetId)
+    console.log('[kvt][T&S][unsubscribe]', widgetId)
 
     if (window.__kvtTs && window.__kvtTs[widgetId]) {
         if (window.__alorws && window.__alorws.readyState === 1) {
@@ -814,5 +852,52 @@ function kvtSetState(name, state, msg) {
     if (st) {
         st.setAttribute("data-kvt-state-value", state)
         st.setAttribute("title", `${name} - ${msg}`)
+    }
+}
+
+function subscribe_getdp(widgetId, ticker, guid) {
+    !window.__kvtGetdp ? window.__kvtGetdp = [] : 0
+
+    if (!guid) {
+        window.__kvtGetdp[widgetId] = kvth.uuidv4()
+    }
+
+    console.log('[kvt][getdp][subscribe]', 'subscribe_getdp', widgetId)
+
+    // Запросим последние getdp записи
+    if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+        window.__kvtWS.send(JSON.stringify({
+            user_id: kvtSettings.telegramId,
+            type: 'getdp',
+            ticker: ticker,
+            guid: window.__kvtGetdp[widgetId]
+        }));
+
+        console.log('[kvt][getdp][subscribe]', 'подписался')
+    } else {
+        console.log('[kvt][getdp][subscribe]', 'Не подписался, сокет не готов')
+    }
+}
+
+function unsubscribe_getdp(widgetId) {
+
+    console.log('[kvt][getdp][unsubscribe]', widgetId)
+
+    if (window.__kvtGetdp && window.__kvtGetdp[widgetId]) {
+        if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+            window.__kvtWS.send(JSON.stringify({
+                user_id: kvtSettings.telegramId,
+                type: 'unsubscribe',
+                guid: window.__kvtGetdp[widgetId]
+            }));
+
+            console.log('[kvt][getdp][unsubscribe]', 'отписался от ', widgetId)
+        } else {
+            console.log('[kvt][getdp][unsubscribe]', 'Не отписался, сокет не готов')
+        }
+
+        delete window.__kvtGetdp[widgetId]
+    } else {
+        console.log('[kvt][getdp][unsubscribe]', 'такой подписки нет')
     }
 }

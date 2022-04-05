@@ -1,6 +1,7 @@
 'use strict';
 
-let versionApi = "2.0.0";
+let versionApi = "2.0.0",
+    settings = {};
 
 function getCookies(e) {
 	e = RegExp(e + "[^;]+").exec(document.cookie);
@@ -26,6 +27,24 @@ chrome.storage.local.get('compactStyle', (result) => {
     }
 });
 
+['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
+    chrome.storage.local.get(st, (result) => {
+        settings[st] = result[st]
+    })
+})
+
+setTimeout(function () {
+    let tagName = document.getElementsByTagName('body')[0],
+        el = document.createElement("div");
+
+    settings['extensionId'] = chrome.runtime.id
+    settings['extensionVer'] = chrome.runtime.getManifest().version
+
+    el.setAttribute("data-kvt-extension", "");
+    el.textContent = JSON.stringify(settings)
+    tagName.appendChild(el)
+});
+
 
 function injectScript(url, tag, setExtId) {
     var tagName = document.getElementsByTagName(tag)[0],
@@ -33,15 +52,12 @@ function injectScript(url, tag, setExtId) {
 
     el.setAttribute("type", "text/javascript")
     el.setAttribute("src", url)
-    el.setAttribute("data-kvt-extension-ver", chrome.runtime.getManifest().version)
-    setExtId && el.setAttribute("data-kvt-extension-id", chrome.runtime.id)
-
     tagName.appendChild(el)
 }
 
-injectScript(chrome.runtime.getURL("js/helpers.js?t=" + Date.now()), "body", 1)
-injectScript(chrome.runtime.getURL("js/alor.js?t=" + Date.now()), "body", 1)
+injectScript(chrome.runtime.getURL("js/helpers.js?t=" + Date.now()), "body")
+injectScript(chrome.runtime.getURL("js/alor.js?t=" + Date.now()), "body")
 
 setTimeout(function () {
-    injectScript(chrome.runtime.getURL("js/page.js?t=" + Date.now()), "body", 1)
+    injectScript(chrome.runtime.getURL("js/page.js?t=" + Date.now()), "body")
 });

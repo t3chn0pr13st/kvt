@@ -1,21 +1,51 @@
 "use strict";
 
 let kvth = new kvtHelper(),
-    extensionId = document.querySelector("[data-kvt-extension-id]").getAttribute("data-kvt-extension-id").trim(),
-    extensionVer = document.querySelector("[data-kvt-extension-ver]").getAttribute("data-kvt-extension-ver").trim(),
-    kvtSettings = {},
+    kvtSettings = JSON.parse(document.querySelector("[data-kvt-extension]").innerHTML),
     kvtStates = {
         alor: {},
         kvts: {},
         rcktMon: {}
+    },
+    timeouts = {},
+    kvtGroups = {
+        1: "rgb(255, 212, 80)",
+        2: "rgb(255, 123, 118)",
+        3: "rgb(163, 129, 255)",
+        4: "rgb(77, 195, 247)",
+        5: "rgb(174, 213, 127)",
+        6: "rgb(77, 161, 151)",
+        7: "rgb(255, 183, 76)",
+        8: "rgb(248, 163, 77)",
+        9: "rgb(255, 136, 99)",
+        10: "rgb(238, 128, 93)",
+        11: "rgb(255, 120, 167)",
+        12: "rgb(212, 93, 140)",
+        13: "rgb(188, 113, 201)",
+        14: "rgb(124, 174, 255)",
+        15: "rgb(75, 208, 225)",
+        16: "rgb(115, 176, 119)",
+    },
+    kvtWidgets = {
+        spbTS: {
+            name: 'T&S SPBX',
+            icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>',
+            template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Price</th><th>Size</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
+            templateItem: (jd) => {
+                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty * jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+            },
+            unsubscribe: unsubscribe_spbTS
+        },
+        getdp: {
+            name: 'GETDP',
+            icon: '',
+            template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Ticker</th><th>Size</th><th>Price</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
+            templateItem: (jd) => {
+                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker">${(jd.text + jd.symbol)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+            },
+            unsubscribe: unsubscribe_getdp
+        }
     };
-
-// get settings
-['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'rcktMonConnect', 'alorToken', 'IsShortTicker'].forEach(function (st) {
-    chrome.runtime.sendMessage(extensionId, {type: "LOCALSTORAGE", path: st}, function (val) {
-        kvtSettings[st] = val
-    })
-})
 
 
 let kvtInit_TIMER = setInterval(() => {
@@ -53,46 +83,6 @@ setTimeout(function () {
         console.warn('[kvt]', 'telegramId не установлен')
     }
 }, 1000)
-
-let kvtWidgets = {
-    spbTS: {
-        name: 'T&S SPBX',
-        icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="rgb(var(--pro-icon-color))"></path></svg>',
-        template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Price</th><th>Size</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
-        templateItem: (jd) => {
-            return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td>${kvth._ft(jd.price)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.qty * jd.price)}</td><td>${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
-        },
-        unsubscribe: unsubscribe_spbTS
-    },
-    getdp: {
-        name: 'GETDP',
-        icon: '',
-        template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Ticker</th><th>Size</th><th>Price</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
-        templateItem: (jd) => {
-            return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker">${(jd.text + jd.symbol)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
-        },
-        unsubscribe: unsubscribe_getdp
-    }
-},
-    timeouts = {},
-    kvtGroups = {
-    1: "rgb(255, 212, 80)",
-    2: "rgb(255, 123, 118)",
-    3: "rgb(163, 129, 255)",
-    4: "rgb(77, 195, 247)",
-    5: "rgb(174, 213, 127)",
-    6: "rgb(77, 161, 151)",
-    7: "rgb(255, 183, 76)",
-    8: "rgb(248, 163, 77)",
-    9: "rgb(255, 136, 99)",
-    10: "rgb(238, 128, 93)",
-    11: "rgb(255, 120, 167)",
-    12: "rgb(212, 93, 140)",
-    13: "rgb(188, 113, 201)",
-    14: "rgb(124, 174, 255)",
-    15: "rgb(75, 208, 225)",
-    16: "rgb(115, 176, 119)",
-}
 
 function kvtRun() {
     if (kvtSettings.rcktMonConnect) {
@@ -280,8 +270,8 @@ function alor_connect() {
 }
 
 function kvt_connect(telegramId) {
-    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}&ver=${extensionVer}`);
-    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}&ver=${extensionVer}`);
+    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}&ver=${kvtSettings.extensionVer}`);
+    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}&ver=${kvtSettings.extensionVer}`);
 
     window.__kvtWS.onopen = (e) => {
         console.log("[kvt][kvts ws]", "connected to kvts");

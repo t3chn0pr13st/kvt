@@ -1,6 +1,6 @@
 {
   "name": "Kvalood Tools",
-  "version": "0.1.23",
+  "version": "0.1.25",
   "description": "Helper for Tinkoff Investments",
   "manifest_version": 3,
   "permissions": [
@@ -9,7 +9,8 @@
     "declarativeContent",
     "storage",
     "notifications",
-    "webRequest"
+    "webRequest",
+    "scripting"
   ],
   "host_permissions": [
     "https://*.tinkoff.ru/terminal/*"

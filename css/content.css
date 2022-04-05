@@ -52,7 +52,7 @@ span[data-kvt-volume]:hover {
     padding: 2px 8px !important;
 }
 .pro-menu-divider {
-    margin: 2px 7px;
+    margin: 2px 7px !important;
 }
 .pro-menu-item>* {
     margin-right: 6px;

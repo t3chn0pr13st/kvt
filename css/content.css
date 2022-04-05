@@ -47,11 +47,16 @@ span[data-kvt-volume]:hover {
 /**
  * Меню добавления виджетов
  */
-[class*=-components-Menu-styles-item-] {
-    height: 28px !important;
-    padding: 4px 12px !important;
+[class*="-components-Menu-styles-item-"] {
+    height: 24px !important;
+    padding: 2px 8px !important;
 }
-
+.pro-menu-divider {
+    margin: 2px 7px;
+}
+.pro-menu-item>* {
+    margin-right: 6px;
+}
 .pro-menu-item > * {
     margin-right: 10px;
 }
@@ -481,11 +486,11 @@ span[data-kvt-volume]:hover {
     top: 0;
     z-index: 1;
     width: 25%;
-    height: 28px;
+    height: 18px;
     font-weight: 500;
     color: rgba(var(--pro-text-color),1);
     font-size: 13px;
-    line-height: 20px;
+    line-height: 18px;
     white-space: nowrap;
     background: rgba(var(--pro-base-01),1);
 }

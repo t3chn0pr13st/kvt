@@ -1,24 +1,17 @@
 'use strict';
 
-let kvth = new kvtHelper();
-
-let storage = chrome.storage.local,
+let kvth = new kvtHelper(),
+    storage = chrome.storage.local,
     kvtSettings = {},
     config = {};
 
-// запрос на данные ТИ
+// запрос-ответ на данные ТИ
 document.addEventListener('DOMContentLoaded', function () {
-    chrome.tabs.query({currentWindow: !0, active: !0}, function (e) {
-        e = e[0];
-        chrome.tabs.sendMessage(e.id, {type: "config"})
+    chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "config"}, function (response) {
+            config = response
+        })
     })
-});
-
-// ответ на данные ТИ
-chrome.runtime.onMessage.addListener(function (e, t, o) {
-    if (e && "config" === e.msg) {
-        config = e;
-    }
 });
 
 // input settings
@@ -307,7 +300,35 @@ document.getElementById('kvShowReport').addEventListener('click', async function
         }
     } else {
 
-        fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
+        /*
+        По фьючам подзапрос отдаёт таку-же хуету, неверно считает.
+        fetch("https://api-invest.tinkoff.ru/trading/symbols/events?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
+            method: "POST",
+            body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0, ticker:"RIM2"})
+        }).then(function (e) {
+            return e.json();
+        }).then(function (e) {
+            let operations = ((e.payload || {}).events || []),
+                result = [],
+                cont = {sell:0, buy: 0}
+
+            operations.forEach(function (item) {
+                console.log(item)
+                if (item.eventType === 'Buy') {
+                    cont.buy += Math.abs(item.amount || 0)
+                }
+
+                if (item.eventType === 'Sell') {
+                    cont.sell += Math.abs(item.amount || 0)
+                }
+            })
+
+            console.log(cont)
+            console.log(Math.abs(cont.sell - cont.buy).toFixed(2))
+
+        })*/
+
+        await fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
             method: "POST",
             body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0})
         }).then(function (e) {
@@ -335,16 +356,15 @@ document.getElementById('kvShowReport').addEventListener('click', async function
                             ts["Тикер"] = t;
                             ts["Валюта"] = e.currency;
                             ts["Комиссия"] = 0;
+                            ts["Финансовый результат"] = 0;
+                            ts["Финансовый результат с учётом комиссии"] = 0;
                             ts["Сумма покупок"] = 0;
                             ts["Сумма продаж"] = 0;
                             ts["Сделок покупки"] = 0;
                             ts["Сделок продажи"] = 0;
                             ts["Совершенных сделок"] = 0;
                             ts["Отмененных сделок"] = 0;
-                            ts["Финансовый результат"] = 0;
-                            ts["Финансовый результат с учётом комиссии"] = 0;
                             ts["Количество"] = 0;
-                            ts["Цена"] = 0;
                             ts["Сумма открытой позы"] = 0;
 
                             tickers[t] = ts;
@@ -508,6 +528,7 @@ document.querySelectorAll('[data-set-time]').forEach(function (el) {
         switch (el.getAttribute('data-set-time')) {
             case 'from_morning':
             default:
+                // TODO: Если меньше 7 часов, то выводить предыдущий день m.getDate()
                 // if (m.getHours() < 7)
                 fromDate.value = time + '06:59'
                 toDate.value = ''
@@ -674,5 +695,34 @@ function loadPrintsTicker() {
         printsWindow.innerHTML  = 'укажите тикер';
     }
 }
+
+function downloadCSV (jsonData, filename = 'CSV') {
+    let json = jsonData,
+        fields = Object.keys(json[0]),
+        replacer = function(key, value) { return value === null ? '' : value },
+        csv = json.map(function(row){
+            return fields.map(function(fieldName){
+                return JSON.stringify(row[fieldName], replacer)
+            }).join(',')
+        })
+
+    csv.unshift(fields.join(',')) // add header column
+    csv = csv.join('\r\n');
+
+    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }),
+        link = document.createElement("a");
+
+    if (link.download !== undefined) { // feature detection
+        // Browsers that support HTML5 download attribute
+        var url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename + '.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 
 

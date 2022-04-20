@@ -12,9 +12,9 @@ function getPsid() {
 	return getCookies("psid")
 }
 
-chrome.runtime.onMessage.addListener(function (e, t, n) {
-    if(e && e.type === "config") {
-        chrome.runtime.sendMessage({msg: "config", psid: getPsid(), versionApi: versionApi})
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request && request.type === "config") {
+        sendResponse({msg: "config", psid: getPsid(), versionApi: versionApi});
     }
 });
 

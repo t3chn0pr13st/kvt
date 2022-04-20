@@ -299,35 +299,6 @@ document.getElementById('kvShowReport').addEventListener('click', async function
             })
         }
     } else {
-
-        /*
-        По фьючам подзапрос отдаёт таку-же хуету, неверно считает.
-        fetch("https://api-invest.tinkoff.ru/trading/symbols/events?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
-            method: "POST",
-            body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0, ticker:"RIM2"})
-        }).then(function (e) {
-            return e.json();
-        }).then(function (e) {
-            let operations = ((e.payload || {}).events || []),
-                result = [],
-                cont = {sell:0, buy: 0}
-
-            operations.forEach(function (item) {
-                console.log(item)
-                if (item.eventType === 'Buy') {
-                    cont.buy += Math.abs(item.amount || 0)
-                }
-
-                if (item.eventType === 'Sell') {
-                    cont.sell += Math.abs(item.amount || 0)
-                }
-            })
-
-            console.log(cont)
-            console.log(Math.abs(cont.sell - cont.buy).toFixed(2))
-
-        })*/
-
         await fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
             method: "POST",
             body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0})

@@ -537,6 +537,17 @@ span[data-kvt-volume]:hover {
 .kvt-widget-content tr td.item-ticker{
     white-space: nowrap;
 }
+.kvt-widget-content tr td.item-ticker div{
+    display: flex;
+    align-items: center;
+}
+.kvt-widget-content tr td.item-ticker span:not(.item-ticker-symbol){
+    font-size: 10px;
+    letter-spacing: -3px;
+}
+.kvt-widget-content tr td.item-ticker .item-ticker-symbol{
+    margin-left: 3px;
+}
 .kvt-widget-content tr td.item-total{
     font-weight: 500;
 }

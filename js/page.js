@@ -41,7 +41,7 @@ let kvth = new kvtHelper(),
             icon: '',
             template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Ticker</th><th>Size</th><th>Price</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
             templateItem: (jd) => {
-                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker">${(jd.text + jd.symbol)}</td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker"><div><span>${jd.text}</span><span class="item-ticker-symbol">${jd.symbol}</span><span>${jd.smallCap ? '⚠️' : ''}</span></div></td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
             },
             unsubscribe: unsubscribe_getdp
         }

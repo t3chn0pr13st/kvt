@@ -34,7 +34,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.tinkoff.ru/terminal/*"
+        "https://tinkoff.ru/terminal/*",
+        "https://www.tinkoff.ru/terminal/*"
       ],
       "js": [
         "js/content.js"

@@ -507,7 +507,8 @@ function add_kvtFastVolumePriceButtons(widget) {
 
                         let vel = document.createElement('span')
                         vel.setAttribute('data-kvt-volume', vol);
-                        vel.innerHTML = vol;
+                        vel.setAttribute('title', vol + ' шт');
+                        vel.innerHTML = i + '$'
 
                         insertBlock.insertAdjacentElement('beforeend', vel)
                         vel.onclick = e => {

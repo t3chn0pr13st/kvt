@@ -155,7 +155,7 @@ function kvtRun() {
                 if (mutation.target && mutation.type === 'characterData') {
 
                     // Добавим быстрый объем в $. следим за input цены справа вверху в виджете заявки
-                    if (mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
+                    if (mutation.target.parentElement && mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
                         add_kvtFastVolumePriceButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
                     }
                 }

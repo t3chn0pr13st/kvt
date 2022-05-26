@@ -5,12 +5,8 @@
   "manifest_version": 3,
   "permissions": [
     "activeTab",
-    "management",
-    "declarativeContent",
     "storage",
-    "notifications",
-    "webRequest",
-    "scripting"
+    "notifications"
   ],
   "host_permissions": [
     "https://*.tinkoff.ru/terminal/*"

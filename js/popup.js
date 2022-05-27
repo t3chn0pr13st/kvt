@@ -6,7 +6,7 @@ let kvth = new kvtHelper(),
     config = {};
 
 // input settings
-let settingsInput = ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon'];
+let settingsInput = ['fromDate', 'toDate', 'telegramId', 'usDataToken', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon'];
 settingsInput.forEach(function (st) {
     storage.get(st, (result) => {
         var t = document.getElementById(st);

@@ -5,7 +5,8 @@ let kvth = new kvtHelper(),
     kvtStates = {
         alor: {},
         kvts: {},
-        rcktMon: {}
+        rcktMon: {},
+        usData: {}
     },
     timeouts = {},
     kvtGroups = {
@@ -36,6 +37,15 @@ let kvth = new kvtHelper(),
             },
             unsubscribe: unsubscribe_spbTS
         },
+        usTS: {
+            name: 'T&S US',
+            icon: '<svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.134 11.866 1 8 1C4.134 1 1 4.134 1 8C1 11.866 4.134 15 8 15ZM10.6745 9.62376L8.99803 8.43701L8.9829 4.5097C8.98078 3.95742 8.53134 3.51143 7.97906 3.51356C7.42678 3.51568 6.98079 3.96512 6.98292 4.5174L7.00019 9.00001C7.00152 9.34537 7.18096 9.66281 7.47482 9.84425L9.62376 11.3255C10.0937 11.6157 10.7099 11.4699 11 11C11.2901 10.5301 11.1444 9.91391 10.6745 9.62376Z" fill="currentColor"></path></svg>',
+            template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Price</th><th>Size</th><th>Time</th><th>Cond</th><th>MM</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
+            templateItem: (itm) => {
+                return `<tr class="type-${itm.side}" data-ts-id="${itm.id}"><td>${kvth._ft(itm.price)}</td></tr>`
+            },
+            unsubscribe: unsubscribe_usTS
+        },
         getdp: {
             name: 'GETDP',
             icon: '',
@@ -62,8 +72,8 @@ function kvtInit() {
     let kvtRoot = document.getElementById("root")
     if (kvtRoot && kvtRoot.querySelector("header") && !kvtRoot.classList.contains('kvtRoot')) {
         kvtRoot.classList.add('kvtRoot')
-        console.log('[kvt]', '!!! INITED !!!')
         kvtRun()
+        console.log('[kvt]', '!!! INITIALIZED !!!')
         return true;
     } else {
         return false;
@@ -73,14 +83,18 @@ function kvtInit() {
 setTimeout(function () {
     if (kvtSettings.telegramId) {
         kvt_connect(kvtSettings.telegramId)
-
-        if (kvtSettings.alorToken) {
-            alor_connect()
-        } else {
-            console.log('[kvt][alor]', 'Токена нет');
-        }
     } else {
         console.warn('[kvt]', 'telegramId не установлен')
+    }
+    if (kvtSettings.alorToken) {
+        alor_connect()
+    } else {
+        console.log('[kvt][alor]', 'Токена нет');
+    }
+    if (kvtSettings.usDataToken) {
+        usData_connect()
+    } else {
+        console.log('[kvt][usData]', 'Токена нет');
     }
 }, 1000)
 
@@ -205,6 +219,9 @@ function kvtRun() {
 }
 
 function alor_connect() {
+
+    kvtSetState('alor', 1, `connecting...`)
+
     kvtSyncAlorAccessToken().then(res => {
         if (!kvtAlorJWT) {
             kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
@@ -266,6 +283,65 @@ function alor_connect() {
 
     window.__alorws.onerror = (error) => {
         console.warn(`[kvt][alor ws][error] ${error.message}`);
+    };
+}
+
+function usData_connect() {
+    window.__usdataws = new WebSocket('wss://localhost:53970/usData');
+
+    window.__usdataws.onopen = (e) => {
+        console.log('[kvt][usData ws]', 'connected to usData provider');
+        kvtSetState('usData', 2, `connected to usData ws`);
+
+        if (window.__kvtTs) {
+            // TODO: Сделать переподписку
+            Object.keys(window.__kvtTs).forEach(key => {
+                subscribe_us_TS(key, window.__kvtTsTickers[key], window.__kvtTs[key])
+            });
+        }
+    };
+
+    window.__usdataws.onmessage = (message) => {
+        let json = JSON.parse(message.data)
+
+        if (json) {
+            if (json.httpCode === 200) {
+
+            }
+
+            if (json.httpCode === 400) {
+
+            }
+        }
+
+        if (json.data && json.guid) {
+            let widgetId = kvth.getKeyByValue(window.__kvtTs, json.guid),
+                jd = json.data
+
+            insetItemsContent(widgetId, [jd])
+            // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
+        } else {
+            console.warn('[kvt][usData ws]', json)
+        }
+    }
+
+    window.__usdataws.onclose = (event) => {
+        if (event.wasClean) {
+            console.log(`[kvt][usData ws][close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+        } else {
+            // например, сервер убил процесс или сеть недоступна
+            // обычно в этом случае event.code 1006
+            console.log('[kvt][usData ws][close] Соединение прервано', event);
+            kvtSetState('usData', 0, `Соединение прервано`)
+
+            setTimeout(function() {
+                alor_connect();
+            }, 5000);
+        }
+    };
+
+    window.__usdataws.onerror = (error) => {
+        console.warn(`[kvt][usData ws][error] ${error.message}`);
     };
 }
 
@@ -684,6 +760,19 @@ function kvtCreateWidget(widget) {
             onClose = unsubscribe_spbTS
         }
 
+        if (widgetType === 'usTS') {
+            initWidget(widget, widgetType, symbol)
+            console.log('[kvt][usTS]', 'хотим подписаться на ', widgetID, symbol)
+            if (symbol.length) {
+                subscribe_us_TS(widgetID, symbol)
+            }
+            observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
+                unsubscribe_usTS(widgetID);
+                subscribe_us_TS(widgetID, newSymbol);
+            })
+            onClose = unsubscribe_usTS
+        }
+
         if (widgetType === 'getdp') {
             initWidget(widget, widgetType, symbol)
             subscribe_getdp(widgetID, symbol)
@@ -811,6 +900,44 @@ function subscribe_spb_TS(widgetId, ticker, guid) {
     }
 }
 
+function subscribe_us_TS(widgetId, ticker, guid) {
+    !window.__kvtUsTs ? window.__kvtUsTs = [] : 0
+    !window.__kvtUsTsTickers ? window.__kvtUsTsTickers = [] : 0
+
+    if (!guid) {
+        window.__kvtUsTs[widgetId] = kvth.uuidv4()
+    }
+
+    window.__kvtUsTsTickers[widgetId] = ticker
+
+    console.log('[kvt][TSUS][subscribe]', 'subscribe_us_TS', widgetId, ticker)
+
+    // // Запросим 200 последних принтов
+    // if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+    //     window.__kvtWS.send(JSON.stringify({
+    //         user_id: kvtSettings.telegramId,
+    //         type: 'getLastTrades',
+    //         ticker: ticker,
+    //         guid: window.__kvtTs[widgetId]
+    //     }));
+    // }
+
+    // if (window.__alorws && window.__alorws.readyState === 1) {
+    //     window.__alorws.send(JSON.stringify({
+    //         "opcode": "AllTradesGetAndSubscribe",
+    //         "code": ticker,
+    //         "exchange": "SPBX",
+    //         "delayed": false,
+    //         "token": kvtAlorJWT,
+    //         "guid": window.__kvtTs[widgetId]
+    //     }));
+
+    //     console.log('[kvt][T&S][subscribe]', 'Вроде подписался')
+    // } else {
+    //     console.log('[kvt][T&S][subscribe]', 'Не подписался, сокет не готов')
+    // }
+}
+
 function unsubscribe_spbTS(widgetId) {
 
     console.log('[kvt][T&S][unsubscribe]', widgetId)
@@ -832,6 +959,30 @@ function unsubscribe_spbTS(widgetId) {
         delete window.__kvtTsTickers[widgetId]
     } else {
         console.log('[kvt][T&S][unsubscribe]', 'такой подписки нет')
+    }
+}
+
+function unsubscribe_usTS(widgetId) {
+
+    console.log('[kvt][TSUS][unsubscribe]', widgetId)
+
+    if (window.__kvtUsTs && window.__kvtUsTs[widgetId]) {
+        if (window.__alorws && window.__alorws.readyState === 1) {
+            window.__alorws.send(JSON.stringify({
+                "opcode": "unsubscribe",
+                "token": kvtAlorJWT,
+                "guid": window.__kvtUsTs[widgetId]
+            }));
+
+            console.log('[kvt][TSUS][unsubscribe]', 'отписался от ', widgetId)
+        } else {
+            console.log('[kvt][TSUS][unsubscribe]', 'Не отписался, сокет не готов')
+        }
+
+        delete window.__kvtUsTs[widgetId]
+        delete window.__kvtUsTsTickers[widgetId]
+    } else {
+        console.log('[kvt][TSUS][unsubscribe]', 'такой подписки нет')
     }
 }
 

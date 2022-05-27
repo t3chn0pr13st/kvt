@@ -78,6 +78,10 @@ span[data-kvt-volume]:hover {
     border-radius: 50%;
     border-width: 3px;
     border-style: solid;
+    cursor: pointer;
+}
+[data-kvt-state-name]:hover {
+    opacity: 0.7;
 }
 
 [data-kvt-state-value="0"] {

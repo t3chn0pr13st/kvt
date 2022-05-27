@@ -62,4 +62,23 @@ class kvtHelper {
     getKeyByValue(object, value) {
         return Object.keys(object).find(key => object[key] === value);
     }
+
+    sizeFormat(val) 
+    {
+        val = parseFloat(val)
+        // Nine Zeroes for Billions
+        return Math.abs(Number(val)) >= 1.0e+9
+    
+            ? (Math.abs(Number(val)) / 1.0e+9).toFixed(2).replace(/[.,]00$/, "") + "b"
+            // Six Zeroes for Millions 
+            : Math.abs(Number(val)) >= 1.0e+6
+    
+            ? (Math.abs(Number(val)) / 1.0e+6).toFixed(2).replace(/[.,]00$/, "") + "m"
+            // Three Zeroes for Thousands
+            : Math.abs(Number(val)) >= 1.0e+3
+    
+            ? (Math.abs(Number(val)) / 1.0e+3).toFixed(2).replace(/[.,]00$/, "") + "k"
+    
+            : Math.abs(Number(val));  
+    }
 }

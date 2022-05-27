@@ -5,6 +5,15 @@ let kvth = new kvtHelper(),
     kvtSettings = {},
     config = {};
 
+// запрос-ответ на данные ТИ
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "config"}, function (response) {
+            config = response
+        })
+    })
+});
+
 // input settings
 let settingsInput = ['fromDate', 'toDate', 'telegramId', 'usDataToken', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon'];
 settingsInput.forEach(function (st) {
@@ -17,9 +26,6 @@ settingsInput.forEach(function (st) {
             var obj= {};
             obj[st] = kvtSettings[st] = t.value || '';
             storage.set(obj);
-            chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "settingsUpdated", data: obj});
-            })
         }
     });
 });
@@ -37,23 +43,7 @@ settingsSwitch.forEach(function (st) {
             var obj= {};
             obj[st] = kvtSettings[st] = t.checked || false;
             storage.set(obj);
-            chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "settingsUpdated", data: obj});
-            });
         }
-    });
-});
-
-chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {type: "settingsUpdated", data: kvtSettings});
-});
-
-// запрос-ответ на данные ТИ
-document.addEventListener('DOMContentLoaded', function () {
-    chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {type: "config"}, function (response) {
-            config = response
-        });
     });
 });
 

@@ -51,7 +51,7 @@ let kvth = new kvtHelper(),
             icon: '',
             template: '<div class="kvt-widget"><div class="kvt-widget-inner"><table class="kvt-widget-table"><thead><tr><th>Ticker</th><th>Size</th><th>Price</th><th>Vol.$</th><th>Time</th></tr></thead><tbody class="kvt-widget-content"></tbody></table></div></div>',
             templateItem: (jd) => {
-                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker"><div><span>${jd.text}</span><span class="item-ticker-symbol">${jd.symbol}</span><span>${jd.smallCap ? '⚠️' : ''}</span></div></td><td>${jd.qty}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth._ft(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
+                return `<tr class="type-${jd.side}" data-ts-id="${jd.id}"><td class="item-ticker"><div><span>${jd.text}</span><span class="item-ticker-symbol">${jd.symbol}</span><span>${jd.smallCap ? '⚠️' : ''}</span></div></td><td>${kvth.sizeFormat(jd.qty)}</td><td>${kvth._ft(jd.price)}</td><td class="item-total">${kvth.sizeFormat(jd.qty * jd.price)}</td><td class="item-timestamp">${kvth._tsToTime(jd.timestamp).padStart(12)}</td></tr>`
             },
             unsubscribe: unsubscribe_getdp
         }
@@ -169,7 +169,7 @@ function kvtRun() {
                 if (mutation.target && mutation.type === 'characterData') {
 
                     // Добавим быстрый объем в $. следим за input цены справа вверху в виджете заявки
-                    if (mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
+                    if (mutation.target.parentElement && mutation.target.parentElement.matches('[class*="src-containers-Animated-styles-clickable-"]')) {
                         add_kvtFastVolumePriceButtons(mutation.target.parentElement.closest('[data-widget-type="COMBINED_ORDER_WIDGET"]'));
                     }
                 }
@@ -584,7 +584,7 @@ function add_kvtFastVolumePriceButtons(widget) {
                         let vel = document.createElement('span')
                         vel.setAttribute('data-kvt-volume', vol);
                         vel.setAttribute('title', vol + ' шт');
-                        vel.innerHTML = i + '$'
+                        vel.innerHTML = kvth.sizeFormat(i) + '$'
 
                         insertBlock.insertAdjacentElement('beforeend', vel)
                         vel.onclick = e => {

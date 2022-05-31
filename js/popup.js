@@ -39,18 +39,25 @@ const sendMessagePromise = async function (tabId, tp) {
             if (response && response.msg === tp) {
                 resolve(response)
             } else {
-                reject('Something wrong')
+                reject('Не удалось загрузить config psid. Обновите страницу терминала.')
             }
         });
     });
 }
 
 async function run() {
-    // запрос-ответ на данные ТИ
-    config = await sendMessagePromise(await getCurrentTabId(), "config")
+    // Тянем config psid
+    config = await sendMessagePromise(await getCurrentTabId(), "config").catch(err => {
+        chrome.notifications.create("", {
+            title: "Ошибка загрузки config",
+            message: err,
+            type: "basic",
+            iconUrl: "icons/icon48.png"
+        })
+    })
 
     // input & checkbox settings
-    for (const key of ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker', 'alorStats']) {
+    for (const key of ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker', 'alorStats', 'debug']) {
         let el = document.getElementById(key),
             val = await getObjectFromLocalStorage(key)
 
@@ -325,205 +332,215 @@ async function run() {
                 })
             }
         } else {
-            await fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
-                method: "POST",
-                body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0})
-            }).then(function (e) {
-                return e.json();
-            }).then(function (e) {
+            if (config !== undefined) {
+                await fetch("https://api-invest.tinkoff.ru/trading/user/operations?appName=invest_terminal&appVersion=" + config.versionApi + "&sessionId=" + config.psid, {
+                    method: "POST",
+                    body: JSON.stringify({to: toDate, from: fromDate, overnightsDisabled: !0})
+                }).then(function (e) {
+                    return e.json();
+                }).then(function (e) {
 
-                console.log(e)
+                    console.log(e)
 
-                let operations = ((e.payload || {}).items || []).filter(function (e) {
-                        return ((e || {}).ticker || "").toUpperCase()
-                    }),
-                    result = []
+                    let operations = ((e.payload || {}).items || []).filter(function (e) {
+                            return ((e || {}).ticker || "").toUpperCase()
+                        }),
+                        result = []
 
-                if (operations.length) {
+                    if (operations.length) {
 
-                    let tickers = {},
-                        operationsReversed = operations.reverse();
+                        let tickers = {},
+                            operationsReversed = operations.reverse();
 
-                    operationsReversed.forEach(function (e) {
+                        operationsReversed.forEach(function (e) {
 
-                        if (e.ticker && e.currency) {
+                            if (e.ticker && e.currency) {
 
-                            let t = e.ticker;
+                                let t = e.ticker;
 
-                            if (void 0 === tickers[t]) {
-                                let ts = {};
-                                ts["Тикер"] = t;
-                                ts["Валюта"] = e.currency;
-                                ts["Комиссия"] = 0;
-                                ts["Финансовый результат"] = 0;
-                                ts["Финансовый результат с учётом комиссии"] = 0;
-                                ts["Сумма покупок"] = 0;
-                                ts["Сумма продаж"] = 0;
-                                ts["Сделок покупки"] = 0;
-                                ts["Сделок продажи"] = 0;
-                                ts["Совершенных сделок"] = 0;
-                                ts["Отмененных сделок"] = 0;
-                                ts["Количество"] = 0;
-                                ts["Сумма открытой позы"] = 0;
+                                if (void 0 === tickers[t]) {
+                                    let ts = {};
+                                    ts["Тикер"] = t;
+                                    ts["Валюта"] = e.currency;
+                                    ts["Комиссия"] = 0;
+                                    ts["Финансовый результат"] = 0;
+                                    ts["Финансовый результат с учётом комиссии"] = 0;
+                                    ts["Сумма покупок"] = 0;
+                                    ts["Сумма продаж"] = 0;
+                                    ts["Сделок покупки"] = 0;
+                                    ts["Сделок продажи"] = 0;
+                                    ts["Совершенных сделок"] = 0;
+                                    ts["Отмененных сделок"] = 0;
+                                    ts["Количество"] = 0;
+                                    ts["Сумма открытой позы"] = 0;
 
-                                tickers[t] = ts;
-                            }
+                                    tickers[t] = ts;
+                                }
 
-                            if (e.status === "decline") {
-                                tickers[t]["Отмененных сделок"]++;
-                            } else if (e.status === "done") {
+                                if (e.status === "decline") {
+                                    tickers[t]["Отмененных сделок"]++;
+                                } else if (e.status === "done") {
 
-                                switch (e.operationType) {
-                                    case 'Sell' : {
-                                        tickers[t]["Сделок продажи"]++
-                                        tickers[t]["Комиссия"] += Math.abs(e.commission || 0)
-                                        tickers[t]["Сумма продаж"] += Math.abs(e.payment || 0)
-                                        tickers[t]["Количество"] -= (e.quantity || 0);
+                                    switch (e.operationType) {
+                                        case 'Sell' : {
+                                            tickers[t]["Сделок продажи"]++
+                                            tickers[t]["Комиссия"] += Math.abs(e.commission || 0)
+                                            tickers[t]["Сумма продаж"] += Math.abs(e.payment || 0)
+                                            tickers[t]["Количество"] -= (e.quantity || 0);
 
-                                        if (tickers[t]["Количество"] === 0) {
-                                            tickers[t]["Сумма открытой позы"] = 0;
-                                        } else {
-                                            tickers[t]["Сумма открытой позы"] -= Math.abs(e.payment || 0)
+                                            if (tickers[t]["Количество"] === 0) {
+                                                tickers[t]["Сумма открытой позы"] = 0;
+                                            } else {
+                                                tickers[t]["Сумма открытой позы"] -= Math.abs(e.payment || 0)
+                                            }
+                                            break
                                         }
-                                        break
-                                    }
 
-                                    case 'Buy' : {
-                                        tickers[t]["Сделок покупки"]++
-                                        tickers[t]["Комиссия"] += Math.abs(e.commission || 0)
-                                        tickers[t]["Сумма покупок"] += Math.abs(e.payment || 0)
-                                        tickers[t]["Количество"] += e.quantity;
+                                        case 'Buy' : {
+                                            tickers[t]["Сделок покупки"]++
+                                            tickers[t]["Комиссия"] += Math.abs(e.commission || 0)
+                                            tickers[t]["Сумма покупок"] += Math.abs(e.payment || 0)
+                                            tickers[t]["Количество"] += e.quantity;
 
-                                        if (tickers[t]["Количество"] === 0) {
-                                            tickers[t]["Сумма открытой позы"] = 0;
-                                        } else {
-                                            tickers[t]["Сумма открытой позы"] += Math.abs(e.payment || 0)
+                                            if (tickers[t]["Количество"] === 0) {
+                                                tickers[t]["Сумма открытой позы"] = 0;
+                                            } else {
+                                                tickers[t]["Сумма открытой позы"] += Math.abs(e.payment || 0)
+                                            }
+                                            break
                                         }
-                                        break
-                                    }
 
-                                    // Начисление вариационной маржи
-                                    case 'AccruingVarMargin' : {
+                                        // Начисление вариационной маржи
+                                        case 'AccruingVarMargin' : {
 
-                                        break
-                                    }
+                                            break
+                                        }
 
-                                    // Списание вариационной маржи
-                                    case 'WriteOffVarMargin' : {
+                                        // Списание вариационной маржи
+                                        case 'WriteOffVarMargin' : {
 
-                                        break
+                                            break
+                                        }
                                     }
                                 }
                             }
-                        }
-                    })
+                        })
 
-                    Object.keys(tickers).forEach(function (e) {
-                        return result.push(tickers[e])
-                    })
+                        Object.keys(tickers).forEach(function (e) {
+                            return result.push(tickers[e])
+                        })
 
-                    let total = {},
-                        currencies = [];
+                        let total = {},
+                            currencies = [];
 
-                    result.forEach(function (e) {
+                        result.forEach(function (e) {
 
-                        if (void 0 === total[e['Валюта']]) {
-                            total[e['Валюта']] = {
-                                commission: 0,
-                                result: 0,
-                                buyCount: 0,
-                                sellCount: 0,
-                                declineCount: 0,
-                                buySum: 0,
-                                sellSum: 0
+                            if (void 0 === total[e['Валюта']]) {
+                                total[e['Валюта']] = {
+                                    commission: 0,
+                                    result: 0,
+                                    buyCount: 0,
+                                    sellCount: 0,
+                                    declineCount: 0,
+                                    buySum: 0,
+                                    sellSum: 0
+                                }
                             }
-                        }
-                        if (e["Количество"] > 0) {
-                            e["Сумма покупок"] -= e["Сумма открытой позы"]
-                        } else if (e["Количество"] < 0) {
-                            e["Сумма продаж"] += e["Сумма открытой позы"]
-                        }
+                            if (e["Количество"] > 0) {
+                                e["Сумма покупок"] -= e["Сумма открытой позы"]
+                            } else if (e["Количество"] < 0) {
+                                e["Сумма продаж"] += e["Сумма открытой позы"]
+                            }
 
-                        e["Финансовый результат"] = e["Сумма продаж"] - e["Сумма покупок"]
-                        e["Финансовый результат с учётом комиссии"] = e["Сумма продаж"] - e["Сумма покупок"] - e["Комиссия"]
+                            e["Финансовый результат"] = e["Сумма продаж"] - e["Сумма покупок"]
+                            e["Финансовый результат с учётом комиссии"] = e["Сумма продаж"] - e["Сумма покупок"] - e["Комиссия"]
 
-                        total[e['Валюта']].result += e["Финансовый результат с учётом комиссии"]
-                        total[e['Валюта']].commission += e["Комиссия"]
-                        total[e['Валюта']].buyCount += e['Сделок покупки']
-                        total[e['Валюта']].sellCount += e['Сделок продажи']
-                        total[e['Валюта']].declineCount += e['Отмененных сделок']
-                        total[e['Валюта']].buySum += e['Сумма покупок']
-                        total[e['Валюта']].sellSum += e['Сумма продаж']
-                    });
+                            total[e['Валюта']].result += e["Финансовый результат с учётом комиссии"]
+                            total[e['Валюта']].commission += e["Комиссия"]
+                            total[e['Валюта']].buyCount += e['Сделок покупки']
+                            total[e['Валюта']].sellCount += e['Сделок продажи']
+                            total[e['Валюта']].declineCount += e['Отмененных сделок']
+                            total[e['Валюта']].buySum += e['Сумма покупок']
+                            total[e['Валюта']].sellSum += e['Сумма продаж']
+                        });
 
-                    // Итоговая таблица
-                    Object.keys(total).forEach(function (e) {
-                        total[e].currency = e;
-                        return currencies.push(total[e])
+                        // Итоговая таблица
+                        Object.keys(total).forEach(function (e) {
+                            total[e].currency = e;
+                            return currencies.push(total[e])
+                        })
+
+                        let topTable = '<div class="top-table">';
+                        currencies.forEach(function (e) {
+                            topTable += '' +
+                                '<div>' +
+                                '<span>Чистыми:</span> ' + kvth._ft(e.result) + ' ' + kvth._c(e.currency) + '<br/>' +
+                                'Комиссия: ' + kvth._ft(e.commission) + ' ' + kvth._c(e.currency) + '<br/>' +
+                                'Оборот: ' + kvth._ft(e.buySum + e.sellSum) + ' ' + kvth._c(e.currency) + '<br/>' +
+                                '<span title="buy/sell (совершенных/отмененных)">Сделок:</span> ' + e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount + e.sellCount) + ' / ' + e.declineCount + ') ' +
+                                '</div>'
+                            ;
+                        });
+                        topTable += '</div>';
+
+                        reportWindow.innerHTML = topTable;
+
+                        /*
+                        * Итоговая таблица по тикерам
+                        */
+                        let table = '<table class="report_table" id="sortable">' +
+                            '<thead><tr>' +
+                            '<th>тикер</th>' +
+                            '<th>профит</th>' +
+                            '<th>comm</th>' +
+                            '<th title="buy/sell (совершенных/отмененных)">кол-во сделок</th>' +
+                            '<th>сумма buy/sell</th>' +
+                            '<th></th>' +
+                            '</tr></thead><tbody>';
+
+                        result.forEach(function (e) {
+                            if (!kvtSettings.showNullOperation && e["Финансовый результат"] === 0/* || e['Сумма открытой позы']*/) {
+                                return false;
+                            }
+
+                            table += '<tr' + (e['Количество'] !== 0 ? ' class="open-ticker"' : '') + '>' +
+                                '<td>' + e['Тикер'] + '</td>' +
+                                '<td data-sort="' + kvth._rt(e['Финансовый результат с учётом комиссии']) + '">' + kvth._style(e['Финансовый результат с учётом комиссии']) + '</td>' +
+                                '<td data-sort="' + kvth._rt(e['Комиссия']) + '">' + kvth._ft(e['Комиссия']) + '</td>' +
+                                '<td>' + e['Сделок покупки'] + ' / ' + e['Сделок продажи'] + ' (' + (e['Сделок покупки'] + e['Сделок продажи']) + ' / ' + e["Отмененных сделок"] + ')</td>' +
+                                '<td data-sort="' + kvth._rt(e['Сумма покупок'] + e['Сумма продаж']) + '">' + kvth._ft(e['Сумма покупок']) + ' / ' + kvth._ft(e['Сумма продаж']) + '</td>' +
+                                '<td data-sort="' + e['Валюта'] + '">' + kvth._c(e['Валюта']) + '</td>' +
+                                '</tr>';
+                        });
+                        table += '</tbody></table><div class="note">* открытые позиции не учитываются в результате и помечаются в таблице <span class="open-ticker">цветом</span></div>';
+
+                        reportWindow.innerHTML += table;
+
+                        new Tablesort(document.getElementById('sortable'));
+
+                        return result;
+                    } else {
+                        reportWindow.innerHTML = 'Нет сделок за выбранный период или ТИ вернул фигу';
+                    }
+                }).catch(function (error) {
+                    reportWindow.innerHTML = '';
+                    console.error(error)
+                    chrome.notifications.create("", {
+                        title: "Финансовый результат",
+                        message: "Не удалось загрузить",
+                        type: "basic",
+                        iconUrl: "icons/icon48.png"
                     })
-
-                    let topTable = '<div class="top-table">';
-                    currencies.forEach(function (e) {
-                        topTable += '' +
-                            '<div>' +
-                            '<span>Чистыми:</span> ' + kvth._ft(e.result) + ' ' + kvth._c(e.currency) + '<br/>' +
-                            'Комиссия: ' + kvth._ft(e.commission) + ' ' + kvth._c(e.currency) + '<br/>' +
-                            'Оборот: ' + kvth._ft(e.buySum + e.sellSum) + ' ' + kvth._c(e.currency) + '<br/>' +
-                            '<span title="buy/sell (совершенных/отмененных)">Сделок:</span> ' + e.buyCount + ' / ' + e.sellCount + ' (' + (e.buyCount + e.sellCount) + ' / ' + e.declineCount + ') ' +
-                            '</div>'
-                        ;
-                    });
-                    topTable += '</div>';
-
-                    reportWindow.innerHTML = topTable;
-
-                    /*
-                    * Итоговая таблица по тикерам
-                    */
-                    let table = '<table class="report_table" id="sortable">' +
-                        '<thead><tr>' +
-                        '<th>тикер</th>' +
-                        '<th>профит</th>' +
-                        '<th>comm</th>' +
-                        '<th title="buy/sell (совершенных/отмененных)">кол-во сделок</th>' +
-                        '<th>сумма buy/sell</th>' +
-                        '<th></th>' +
-                        '</tr></thead><tbody>';
-
-                    result.forEach(function (e) {
-                        if (!kvtSettings.showNullOperation && e["Финансовый результат"] === 0/* || e['Сумма открытой позы']*/) {
-                            return false;
-                        }
-
-                        table += '<tr' + (e['Количество'] !== 0 ? ' class="open-ticker"' : '') + '>' +
-                            '<td>' + e['Тикер'] + '</td>' +
-                            '<td data-sort="' + kvth._rt(e['Финансовый результат с учётом комиссии']) + '">' + kvth._style(e['Финансовый результат с учётом комиссии']) + '</td>' +
-                            '<td data-sort="' + kvth._rt(e['Комиссия']) + '">' + kvth._ft(e['Комиссия']) + '</td>' +
-                            '<td>' + e['Сделок покупки'] + ' / ' + e['Сделок продажи'] + ' (' + (e['Сделок покупки'] + e['Сделок продажи']) + ' / ' + e["Отмененных сделок"] + ')</td>' +
-                            '<td data-sort="' + kvth._rt(e['Сумма покупок'] + e['Сумма продаж']) + '">' + kvth._ft(e['Сумма покупок']) + ' / ' + kvth._ft(e['Сумма продаж']) + '</td>' +
-                            '<td data-sort="' + e['Валюта'] + '">' + kvth._c(e['Валюта']) + '</td>' +
-                            '</tr>';
-                    });
-                    table += '</tbody></table><div class="note">* открытые позиции не учитываются в результате и помечаются в таблице <span class="open-ticker">цветом</span></div>';
-
-                    reportWindow.innerHTML += table;
-
-                    new Tablesort(document.getElementById('sortable'));
-
-                    return result;
-                } else {
-                    reportWindow.innerHTML = 'Нет сделок за выбранный период или ТИ вернул фигу';
-                }
-            }).catch(function (error) {
-                reportWindow.innerHTML = '';
-                console.error(error)
+                });
+            } else {
+                reportWindow.innerHTML = kvth._errW('Не удалось загрузить config. Обновите страницу терминала.');
                 chrome.notifications.create("", {
                     title: "Финансовый результат",
-                    message: "Не удалось загрузить",
+                    message: "Не удалось загрузить config. Обновите страницу терминала.",
                     type: "basic",
                     iconUrl: "icons/icon48.png"
                 })
-            });
+            }
         }
     });
 

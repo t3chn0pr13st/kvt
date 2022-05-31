@@ -99,6 +99,8 @@
 				</div>
 				<div class="form-text">Отображать бумаги с нулевым фин.результатом (выставили заявку - убрали)</div>
 			</div>
+
+			<hr/>
 			
 			<div class="form-group">
 				<label for="telegramId" class="form-label">Телеграм ID</label>
@@ -109,14 +111,14 @@
 			<div class="form-group">
 				<div class="form-check">
 					<input type="checkbox" name="IsShortTicker" id="IsShortTicker" class="form-check-input">
-					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки. Для использования нужно зарегаться в t.me/kvtsbot</label>
+					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки. Для использования нужно зарегистрироваться в t.me/kvtsbot</label>
 				</div>
 			</div>
 			
 			<hr/>
 			
 			<div class="form-group">
-				<label for="kvtFastVolumePrice" class="form-label">Кнопки быстрого объема в $</label>
+				<label for="kvtFastVolumePrice" class="form-label">Кнопки быстрого объема в деньгах ($/₽)</label>
 				<input type="text" name="kvtFastVolumePrice" id="kvtFastVolumePrice" class="form-control" placeholder="100000,50000,25000,10000,5000">
 				<div class="form-text">Быстрое заполнение объема в $, в виджете заявки. <b>Указывать через запятую</b>, например "100000,50000"</div>
 			</div>
@@ -163,7 +165,7 @@
 			
 			<hr/>
 			
-			<h3>Быстрый объем в $ при переходе к группе:</h3>
+			<h3>Быстрый объем в деньгах ($/₽) при переходе к группе:</h3>
 			
 			<div class="form-group row g-2">
 				<div class="col-6">
@@ -175,6 +177,16 @@
 					<input type="text" name="kvtSTIGFastVolSumRcktMon" id="kvtSTIGFastVolSumRcktMon" class="form-control" placeholder="666">
 				</div>
 			</div>
+
+			<hr/>
+
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="debug" id="debug" class="form-check-input">
+					<label for="debug">debug расширения (в консоли)</label>
+				</div>
+			</div>
+
 		</div>
 	</div>
 </body>

@@ -10,6 +10,7 @@ async function kvtSyncAlorAccessToken() {
         }
     }).then(e => {
         kvtAlorJWT = e.AccessToken;
+        return e
     }).catch(err => {
         return err
     })
@@ -62,7 +63,7 @@ async function kvtAlorGetStatsToday(portfolio) {
     })
 }
 
-async function kvtAlorGetStatsHistory(portfolio, dateFrom, tradeNumFrom) {
+async function kvtAlorGetStatsHistory(portfolio, dateFrom, tradeNumFrom, dateTo) {
 
     await kvtSyncAlorAccessToken()
 
@@ -70,6 +71,10 @@ async function kvtAlorGetStatsHistory(portfolio, dateFrom, tradeNumFrom) {
 
     if (dateFrom) {
         url.searchParams.append("dateFrom", dateFrom);
+    }
+
+    if (dateTo) {
+        url.searchParams.append("dateTo", dateTo);
     }
 
     if (tradeNumFrom) {

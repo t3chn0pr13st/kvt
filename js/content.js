@@ -45,12 +45,12 @@ async function run() {
         document.getElementById("root").classList.add("kvt-compactStyle");
     }
 
-    for (const key of ['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'rcktMonConnect', 'alorToken', 'usDataToken', 'IsShortTicker']) {
+    for (const key of ['kvtFastVolumePrice', 'kvtFastVolumePriceRound', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'telegramId', 'kvtToken', 'rcktMonConnect', 'alorToken', 'usDataToken', 'IsShortTicker', 'debug', 'alorTS']) {
         settings[key] = await getObjectFromLocalStorage(key)
     }
 
     // insert settings in html
-    setTimeout(function () {
+    //setTimeout(function () {
         let tagName = document.getElementsByTagName('body')[0],
             el = document.createElement("div");
 
@@ -60,7 +60,7 @@ async function run() {
         el.setAttribute("data-kvt-extension", "");
         el.textContent = JSON.stringify(settings)
         tagName.appendChild(el)
-    });
+    //}, 3000);
 
     injectScript(chrome.runtime.getURL("js/helpers.js?t=" + Date.now()), "body")
     injectScript(chrome.runtime.getURL("js/alor.js?t=" + Date.now()), "body")

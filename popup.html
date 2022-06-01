@@ -102,16 +102,25 @@
 
 			<hr/>
 			
-			<div class="form-group">
-				<label for="telegramId" class="form-label">Телеграм ID</label>
-				<input type="text" name="telegramId" id="telegramId" class="form-control" placeholder="123456789">
-				<div class="form-text">Для приватных инструментов</div>
+			<h3>⚠️ Для использования данных зарегистрируйтесь в t.me/kvtsbot</h3>
+
+			<div class="form-group row g-2">				
+				<div class="col-6">
+					<label for="kvtToken" class="form-label">Токен для подключения к kvts</label>
+					<input type="text" name="kvtToken" id="kvtToken" class="form-control" placeholder="">
+					<div class="form-text">Для получения ленты принтов (T&S SPBX) и других данных</div>
+				</div>
+				<div class="col-6">
+					<label for="telegramId" class="form-label">Телеграм ID</label>
+					<input type="text" name="telegramId" id="telegramId" class="form-control" placeholder="123456789">
+					<div class="form-text">Для приватных инструментов</div>
+				</div>
 			</div>
 			
 			<div class="form-group">
 				<div class="form-check">
 					<input type="checkbox" name="IsShortTicker" id="IsShortTicker" class="form-check-input">
-					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки. Для использования нужно зарегистрироваться в t.me/kvtsbot</label>
+					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки.</label>
 				</div>
 			</div>
 			
@@ -140,17 +149,25 @@
 			</div>
 			
 			<hr/>
-			
+
 			<div class="form-group">
 				<label for="alorToken" class="form-label">Алор токен</label>
 				<input type="text" name="alorToken" id="alorToken" class="form-control">
 				<div class="form-text">Для работы ленты принтов. Токен получать тут - <b>https://alor.dev/open-api-tokens</b></div>
 			</div>
+
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="alorTS" id="alorTS" class="form-check-input">
+					<label for="alorTS">Лента принтов через алор (T&S SPBX)</label>
+				</div>
+				<div class="form-text">Данные будут идти от alor.ru, вместо kvts</div>
+			</div>
 			
 			<div class="form-group">
 				<label for="alorPortfolio" class="form-label">Алор портфель</label>
 				<input type="text" name="alorPortfolio" id="alorPortfolio" class="form-control" placeholder="Портфель фондового рынка (DXXXXX)">
-				<div class="form-text">Для статистики, если торгуете через Алор</div>
+				<div class="form-text">Для статистики, при торговле через Алор</div>
 			</div>
 			
 			<hr/>

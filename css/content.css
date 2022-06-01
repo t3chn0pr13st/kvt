@@ -96,6 +96,11 @@ span[data-kvt-volume]:hover {
     border-color: rgba(var(--pro-green-1),1);
     background: rgba(var(--pro-green-5),1);
 }
+[data-kvt-state-value="3"] {
+    border-color: rgba(var(--pro-blue-1),1);
+    background: rgba(var(--pro-blue-5),1);
+}
+
 
 
 /**

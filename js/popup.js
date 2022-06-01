@@ -57,7 +57,7 @@ async function run() {
     })
 
     // input & checkbox settings
-    for (const key of ['fromDate', 'toDate', 'telegramId', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker', 'alorStats', 'debug']) {
+    for (const key of ['fromDate', 'toDate', 'telegramId', 'kvtToken', 'alorToken', 'alorPortfolio', 'kvtFastVolumePrice', 'kvtFastVolumeSize', 'kvtSTIGFastVolSumBot', 'kvtSTIGFastVolSumRcktMon', 'compactStyle', 'showNullOperation', 'rcktMonConnect', 'kvtFastVolumePriceRound', 'IsShortTicker', 'alorStats', 'debug', 'alorTS']) {
         let el = document.getElementById(key),
             val = await getObjectFromLocalStorage(key)
 

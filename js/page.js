@@ -61,19 +61,24 @@ let kvtInject_TIMER = setInterval(() => {
         }
 
         // Подключаемся к сервисам
-        if (kvtSettings.telegramId) {
+        if (kvtSettings.telegramId && kvtSettings.kvtToken) {
             kvt_connect()
         
             if (kvtSettings.alorToken) {
-                alor_connect()
+                if (kvtSettings.alorTS) {
+                    alor_connect()
+                } else {
+                    kvtd ?? console.log('[kvt][alor]', 'Нет необходимости подключаться');
+                    kvtStateSet('alor', 3, `Нет необходимости подключаться`)
+                }                
             } else {
                 kvtd ?? console.log('[kvt][alor]', 'Токена нет');
                 kvtStateSet('alor', 0, `Токена нет`)
             }
         } else {
-            kvtd ?? console.warn('[kvt]', 'telegramId не установлен')
-            kvtStateSet('kvts', 0, `telegramId не установлен`)
-            kvtStateSet('alor', 0, `telegramId не установлен`)
+            kvtd ?? console.warn('[kvt]', 'telegramId и/или kvt токен не установлен')
+            kvtStateSet('kvts', 0, `telegramId и/или kvt токен не установлен`)
+            kvtStateSet('alor', 0, `telegramId и/или kvt токен не установлен`)
         }
 
         // Подключение к rcktMon
@@ -239,6 +244,7 @@ function alor_connect(resubscribe = false) {
             window.__alorws.onopen = (e) => {
                 if (window.__kvtTs && resubscribe) {
                     for (let item of window.__kvtTs) {
+                        kvtd ?? console.warn('subscribe_spb_TS_1')
                         subscribe_spb_TS(item.widgetId, item.ticker, item.guid)
                     }
                 }
@@ -302,8 +308,8 @@ function alor_connect(resubscribe = false) {
 }
 
 function kvt_connect(resubscribe = false) {
-    //window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${kvtSettings.telegramId}&ver=${kvtSettings.extensionVer}`);
-    window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${kvtSettings.telegramId}&ver=${kvtSettings.extensionVer}`);
+    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${kvtSettings.telegramId}&ver=${kvtSettings.extensionVer}`);
+    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${kvtSettings.telegramId}&token=${kvtSettings.kvtToken}&ver=${kvtSettings.extensionVer}`);
 
     window.__kvtWS.onopen = (e) => {
         kvtd ?? console.log("[kvt][kvts ws]", "Подключен к серверу kvts");
@@ -313,7 +319,15 @@ function kvt_connect(resubscribe = false) {
         if (window.__kvtGetdp && resubscribe) {
             for (let item of window.__kvtGetdp) {
                 subscribe_getdp(item.widgetId, item.ticker, item.guid)
-                kvtd ?? console.warn('Вызвали subscribe_getdp_1')
+                kvtd ?? console.warn('subscribe_getdp_1')
+            }
+        }
+
+        // Переподписка на TS
+        if (window.__kvtTs && resubscribe) {
+            for (let item of window.__kvtTs) {
+                kvtd ?? console.warn('subscribe_spb_TS_5')
+                subscribe_spb_TS(item.widgetId, item.ticker, item.guid)
             }
         }
 
@@ -432,7 +446,7 @@ function setTickerInGroup(ticker, group_id, type) {
     let widget = getGroupWidget(group_id);
 
     if (!widget) {
-        kvtd ?? console.error('[kvt][STIG]', 'Виджет не найден')
+        kvtd ?? console.error('[kvt][setTickerInGroup]', 'Виджет не найден')
         return null;
     }
     let reactObjectName = Object.keys(widget).find(function (key) {
@@ -709,10 +723,12 @@ function kvtCreateWidget(widget) {
             kvtd ?? console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
             
             if (symbol.length) {
+                kvtd ?? console.warn('subscribe_spb_TS_3')
                 subscribe_spb_TS(widgetID, symbol)
             }
             observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
                 unsubscribe_spbTS(widgetID);
+                kvtd ?? console.warn('subscribe_spb_TS_4')
                 subscribe_spb_TS(widgetID, newSymbol);
             })
             onClose = unsubscribe_spbTS
@@ -759,6 +775,7 @@ function insetItemsContent(widgetId, data) {
 
     if (widget && wContent && wType) {
         if (data.length > 1) {
+            wContent.innerHTML = ''
             let todayDate = new Date().getUTCDate(),
                 sepDate = todayDate;
 
@@ -808,13 +825,34 @@ function observeWidgetChangeTicker(widget, widgetType, callback) {
 function subscribe_spb_TS(widgetId, ticker, guid = '') {
     !window.__kvtTs ? window.__kvtTs = [] : 0
     let obj = {widgetId: widgetId, guid: guid ? guid : kvth.uuidv4(), ticker: ticker}
-    
+
+    window.__kvtTs = window.__kvtTs.filter(i => i.widgetId !== widgetId);
     window.__kvtTs.push(obj)
 
     kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'subscribe_spb_TS', obj.widgetId, obj.ticker)
 
-    // kvtStates.kvts
-    let subscribe_kvtWS_TIMER = setInterval(() => {
+    if (kvtSettings.alorTS) {
+        let subscribe_alorws_TIMER = setInterval(() => {
+            if (kvtStates.alor.httpCode === 403) {  // TODO: !== 200 ???
+                clearInterval(subscribe_alorws_TIMER)
+            } else if (window.__alorws && window.__alorws.readyState === 1) {
+                window.__alorws.send(JSON.stringify({
+                    "opcode": "AllTradesGetAndSubscribe",
+                    "code": ticker,
+                    "exchange": "SPBX",
+                    "delayed": false,
+                    "token": kvtAlorJWT,
+                    "guid": obj.guid
+                }));
+    
+                clearInterval(subscribe_alorws_TIMER)
+    
+                kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Вроде подписался')
+            } else {
+                kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Не подписался, сокет не готов')
+            }
+        }, 100);
+
         if (window.__kvtWS && window.__kvtWS.readyState === 1) {
             window.__kvtWS.send(JSON.stringify({
                 user_id: kvtSettings.telegramId,
@@ -822,31 +860,17 @@ function subscribe_spb_TS(widgetId, ticker, guid = '') {
                 ticker: ticker,
                 guid: obj.guid
             }));
-
-            clearInterval(subscribe_kvtWS_TIMER)
-        }
-    }, 100)    
-    
-    let subscribe_alorws_TIMER = setInterval(() => {
-        if (kvtStates.alor.httpCode === 403) {
-            clearInterval(subscribe_alorws_TIMER)
-        } else if (window.__alorws && window.__alorws.readyState === 1) {
-            window.__alorws.send(JSON.stringify({
-                "opcode": "AllTradesGetAndSubscribe",
-                "code": ticker,
-                "exchange": "SPBX",
-                "delayed": false,
-                "token": kvtAlorJWT,
-                "guid": obj.guid
+        }   
+    } else {        
+        if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+            window.__kvtWS.send(JSON.stringify({
+                user_id: kvtSettings.telegramId,
+                type: 'subscribeTS',
+                ticker: ticker,
+                guid: obj.guid
             }));
-
-            clearInterval(subscribe_alorws_TIMER)
-
-            kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Вроде подписался')
-        } else {
-            kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Не подписался, сокет не готов')
         }
-    }, 100);
+    }    
 }
 
 function unsubscribe_spbTS(widgetId) {
@@ -856,17 +880,27 @@ function unsubscribe_spbTS(widgetId) {
     let obj = window.__kvtTs ? window.__kvtTs.find(item => item.widgetId === widgetId) : 0
 
     if (obj) {
-        if (window.__alorws && window.__alorws.readyState === 1) {
-            window.__alorws.send(JSON.stringify({
-                "opcode": "unsubscribe",
-                "token": kvtAlorJWT,
-                "guid": obj.guid
-            }));
+        if (kvtSettings.alorTS) {
+            if (window.__alorws && window.__alorws.readyState === 1) {
+                window.__alorws.send(JSON.stringify({
+                    "opcode": "unsubscribe",
+                    "token": kvtAlorJWT,
+                    "guid": obj.guid
+                }));
 
-            kvtd ?? console.log('[kvt][unsubscribe_spbTS] отписался от ', widgetId)
+                kvtd ?? console.log('[kvt][unsubscribe_spbTS][alor] отписался от ', widgetId)
+            }
+        } else {
+            if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+                window.__kvtWS.send(JSON.stringify({
+                    user_id: kvtSettings.telegramId,
+                    type: 'unsubscribeTS',
+                    guid: obj.guid
+                }));
+    
+                kvtd ?? console.log('[kvt][unsubscribe_getdp]', 'отписался от ', widgetId)
+            }
         }
-
-        
 
         // удалим
         window.__kvtTs = window.__kvtTs.filter((item) => item.widgetId !== widgetId);
@@ -887,28 +921,27 @@ function subscribe_getdp(widgetId, ticker, guid) {
     !window.__kvtGetdp ? window.__kvtGetdp = [] : 0
 
     let obj = {widgetId: widgetId, guid: guid ? guid : kvth.uuidv4(), ticker: ticker}
-    
+
+    window.__kvtGetdp = window.__kvtGetdp.filter(i => i.widgetId !== widgetId);
     window.__kvtGetdp.push(obj)
 
     kvtd ?? console.log('[kvt][subscribe_getdp]', 'subscribe_getdp', widgetId)
 
-    // Запросим последние getdp записи
-    let subscribe_getdp_TIMER = setInterval(() => {
-        if (window.__kvtWS && window.__kvtWS.readyState === 1) {
-            window.__kvtWS.send(JSON.stringify({
-                user_id: kvtSettings.telegramId,
-                type: 'getdp',
-                ticker: ticker,
-                guid: obj.guid
-            }));
+    // Запросим последние getdp записи    
+    if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+        window.__kvtWS.send(JSON.stringify({
+            user_id: kvtSettings.telegramId,
+            type: 'getdp',
+            ticker: ticker,
+            guid: obj.guid
+        }));
 
-            clearInterval(subscribe_getdp_TIMER)
-    
-            kvtd ?? console.log('[kvt][subscribe_getdp]', 'подписался')
-        } else {
-            kvtd ?? console.log('[kvt][subscribe_getdp]', 'Не подписался, сокет не готов', window.__kvtWS, window.__kvtWS.readyState) // TODO: Удалить это, или будет спам ошибок 
-        }
-    }, 100)
+        clearInterval(subscribe_getdp_TIMER)
+
+        kvtd ?? console.log('[kvt][subscribe_getdp]', 'подписался')
+    } else {
+        kvtd ?? console.log('[kvt][subscribe_getdp]', 'Не подписался, сокет не готов', window.__kvtWS, window.__kvtWS.readyState) // TODO: Удалить это, или будет спам ошибок 
+    }
 }
 
 function unsubscribe_getdp(widgetId) {

@@ -936,8 +936,6 @@ function subscribe_getdp(widgetId, ticker, guid) {
             guid: obj.guid
         }));
 
-        clearInterval(subscribe_getdp_TIMER)
-
         kvtd ?? console.log('[kvt][subscribe_getdp]', 'подписался')
     } else {
         kvtd ?? console.log('[kvt][subscribe_getdp]', 'Не подписался, сокет не готов', window.__kvtWS, window.__kvtWS.readyState) // TODO: Удалить это, или будет спам ошибок 

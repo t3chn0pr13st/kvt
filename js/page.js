@@ -1,7 +1,8 @@
 "use strict";
 
-let kvth = new kvtHelper(),
-    kvtSettings = JSON.parse(document.querySelector("[data-kvt-extension]").innerHTML),
+let kvtd = false,
+    kvth,
+    kvtSettings,
     kvtStates = {
         alor: {},
         kvts: {},
@@ -58,58 +59,75 @@ let kvth = new kvtHelper(),
     };
 
 
-let kvtInit_TIMER = setInterval(() => {
-    if (kvtInit()) {
-        console.log('[kvt]', 'init TIMER TRUE')
-        clearInterval(kvtInit_TIMER)
+let kvtInject_TIMER = setInterval(() => {
+    if (document.querySelector("[data-kvt-extension]") !== null) {
+        clearInterval(kvtInject_TIMER)
+
+        kvth = new kvtHelper()
+        kvtSettings = JSON.parse(document.querySelector("[data-kvt-extension]").innerHTML)
+
+        if (kvtSettings.debug) {
+            kvtd = null
+        }
+
+        // Подключаемся к сервисам
+        if (kvtSettings.telegramId && kvtSettings.kvtToken) {
+            kvt_connect()
+        } else {
+            kvtd ?? console.warn('[kvt]', 'telegramId и/или kvt токен не установлен')
+            kvtStateSet('kvts', 0, `telegramId и/или kvt токен не установлен`)
+        }
+
+        if (kvtSettings.alorToken) {
+            if (kvtSettings.alorTS) {
+                alor_connect()
+            } else {
+                kvtd ?? console.log('[kvt][alor]', 'Нет необходимости подключаться');
+                kvtStateSet('alor', 3, `Нет необходимости подключаться`)
+            }                
+        } else {
+            kvtd ?? console.log('[kvt][alor]', 'Токена нет');
+            kvtStateSet('alor', 0, `Токена нет`)
+        }
+
+        if (kvtSettings.usDataToken) {
+            usData_connect()
+        } else {
+            kvtd ?? console.log('[kvt][usData]', 'Токена нет');
+        }
+
+        // Подключение к rcktMon
+        if (kvtSettings.rcktMonConnect) {
+            rcktMonConnect();
+        } else {
+            kvtd ?? console.warn('[kvt]', `Опция 'Переключать тикеры из RcktMon' выключена`)
+            kvtStateSet('rcktMon', 0, `Опция 'Переключать тикеры из RcktMon' выключена`)
+        }
+
+        // Запуск оболочки
+        let kvtInit_TIMER = setInterval(() => {
+            let kvtRoot = document.getElementById("root")
+            if (kvtRoot && kvtRoot.querySelector("header") && !kvtRoot.classList.contains('kvtRoot')) {
+                kvtRoot.classList.add('kvtRoot')
+                kvtd ?? console.log('[kvt]', '!!! INITIALIZED !!!')
+                kvtRun()
+                clearInterval(kvtInit_TIMER)
+            }
+        }, 100);
+
     } else {
-        console.log('[kvt]', 'init TIMER FALSE')
+        // Загрузка не удалась.
     }
 }, 100);
 
 
-function kvtInit() {
-    let kvtRoot = document.getElementById("root")
-    if (kvtRoot && kvtRoot.querySelector("header") && !kvtRoot.classList.contains('kvtRoot')) {
-        kvtRoot.classList.add('kvtRoot')
-        kvtRun()
-        console.log('[kvt]', '!!! INITIALIZED !!!')
-        return true;
-    } else {
-        return false;
-    }
-}
-
-setTimeout(function () {
-    if (kvtSettings.telegramId) {
-        kvt_connect(kvtSettings.telegramId)
-    } else {
-        console.warn('[kvt]', 'telegramId не установлен')
-    }
-    if (kvtSettings.alorToken) {
-        alor_connect()
-    } else {
-        console.log('[kvt][alor]', 'Токена нет');
-    }
-    if (kvtSettings.usDataToken) {
-        usData_connect()
-    } else {
-        console.log('[kvt][usData]', 'Токена нет');
-    }
-}, 1000)
-
 function kvtRun() {
-    if (kvtSettings.rcktMonConnect) {
-        rcktMonConnect();
-    } else {
-        console.warn('[kvt]', 'rcktMonConnect не включен')
-    }
 
     // STATE: Индикация соединений
     document.querySelector('[class*=src-containers-Profile-styles-buttons-]').insertAdjacentHTML('afterbegin', '<div class="kvt-state"></div>')
     let kvtState = document.querySelector('.kvt-state')
     Object.keys(kvtStates).forEach(i => {
-        kvtState.insertAdjacentHTML('beforeend', `<div data-kvt-state-name="${i}" data-kvt-state-value="${(kvtStates[i].state || 0)}" title="${i} - ${(kvtStates[i].msg || 'no attempts to connect')}"></div>`)
+        kvtState.insertAdjacentHTML('beforeend', `<div data-kvt-state-name="${i}" data-kvt-state-value="${(kvtStates[i].state || 0)}" title="${i} - ${(kvtStates[i].msg || 'нет попыток подключиться')}"></div>`)
     });
 
     /**
@@ -182,7 +200,6 @@ function kvtRun() {
         characterData: true
     })
 
-    // TODO: При смене табов терминала, слетают виджеты
     kvtWidgetsLoad()
 
     // при загрузке страницы работаем с виджетами заявки
@@ -208,82 +225,101 @@ function kvtRun() {
                         add_IsShortTicker(mutation.target)
                     }
                 }
+
+                // При смене табов отписываемся от разных данных
+                if (mutation.target.getAttribute('id') === 'SpacePanel') {
+                    if (window.__kvtTs) {
+                        for (let item of window.__kvtTs) {
+                            unsubscribe_spbTS(item.widgetId)
+                        }
+                    }
+
+                    if (window.__kvtGetdp) {
+                        for (let item of window.__kvtTs) {
+                            unsubscribe_getdp(item.widgetId)
+                        }
+                    }
+                }
             }
         })
     }).observe(document.body, {
         childList: true,
         subtree: true,
         attributeOldValue: true,
-        attributeFilter: ['data-symbol-id']
-    })
+        attributeFilter: ['data-symbol-id', 'data-space-id']
+    })    
 }
 
-function alor_connect() {
-
-    kvtSetState('alor', 1, `connecting...`)
-
+function alor_connect(resubscribe = false) {
     kvtSyncAlorAccessToken().then(res => {
-        if (!kvtAlorJWT) {
-            kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
+
+        if (res.AccessToken) {
+            window.__alorws = new WebSocket('wss://api.alor.ru/ws');
+
+            window.__alorws.onopen = (e) => {
+                if (window.__kvtTs && resubscribe) {
+                    for (let item of window.__kvtTs) {
+                        kvtd ?? console.warn('subscribe_spb_TS_1')
+                        subscribe_spb_TS(item.widgetId, item.ticker, item.guid)
+                    }
+                }
+            };
+
+            window.__alorws.onmessage = (message) => {
+                let json = JSON.parse(message.data)
+
+                kvtd ?? console.log('[kvt][alor ws]', json)
+                
+                if (json.httpCode === 200) {
+                    kvtd ?? console.log('[kvt][alor ws]', 'Подключен к вебсокету Alor'); // FIXME: надо что-то с этим сделать. Будет постоянно лезть при подписке.
+                    kvtStateSet('alor', 2, `Подключен к вебсокету Alor`, 200)
+                }
+
+                if (json.httpCode === 400) {
+                    kvtd ?? console.log('[kvt][alor ws]', `Ошибка подключения. Сообщение: ${json.message}`);
+                    kvtStateSet('alor', 1, `Ошибка подключения. Сообщение: ${json.message}`, json.httpCode)
+                }
+
+                // if (json.httpCode === 401) {
+                //     kvtd ?? console.log('[kvt][alor ws]', `Ошибка подключения. Сообщение: ${json.message}`);
+                //     kvtStateSet('alor', 1, `Ошибка подключения. Сообщение: ${json.message}`, json.httpCode)
+                // }
+
+                if (json.data && json.guid) {
+                    let obj = getKvtTsByGuid(json.guid),
+                        jd = json.data
+
+                    if (obj) {
+                        insetItemsContent(obj.widgetId, [jd])
+                    }
+                }
+            }
+
+            window.__alorws.onclose = (event) => {
+                if (event.wasClean) {
+                    kvtd ?? console.log(`[kvt][alor ws][close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+                    kvtStateSet('alor', 0, `Соединение прервано`)
+                } else {
+                    // например, сервер убил процесс или сеть недоступна
+                    // обычно в этом случае event.code 1006
+                    kvtd ?? console.log('[kvt][alor ws][close] Соединение прервано', event);
+                    kvtStateSet('alor', 0, `Соединение прервано`)
+
+                    setTimeout(function() {
+                        kvtd ?? console.log('[kvt][alor ws] Пробуем переподписаться', event);
+                        alor_connect(true);
+                    }, 5000);
+                }
+            };
+
+            window.__alorws.onerror = (error) => {
+                kvtd ?? console.warn(`[kvt][alor ws][error] ${error.message}`);
+                kvtStateSet('alor', 0, `Ошибка сокета: ${error.message}`)
+            };
+        } else {
+            kvtStateSet('alor', 0, `${res.status} ${res.statusText}`, res.status)
         }
     })
-
-    window.__alorws = new WebSocket('wss://api.alor.ru/ws');
-
-    window.__alorws.onopen = (e) => {
-        console.log('[kvt][alor ws]', 'connected to Alor ws');
-        kvtSetState('alor', 2, `connected to Alor ws`)
-
-        if (window.__kvtTs) {
-            // TODO: Сделать переподписку
-            Object.keys(window.__kvtTs).forEach(key => {
-                subscribe_spb_TS(key, window.__kvtTsTickers[key], window.__kvtTs[key])
-            });
-        }
-    };
-
-    window.__alorws.onmessage = (message) => {
-        let json = JSON.parse(message.data)
-
-        if (json) {
-            if (json.httpCode === 200) {
-
-            }
-
-            if (json.httpCode === 400) {
-
-            }
-        }
-
-        if (json.data && json.guid) {
-            let widgetId = kvth.getKeyByValue(window.__kvtTs, json.guid),
-                jd = json.data
-
-            insetItemsContent(widgetId, [jd])
-            // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
-        } else {
-            console.warn('[kvt][alor ws]', json)
-        }
-    }
-
-    window.__alorws.onclose = (event) => {
-        if (event.wasClean) {
-            console.log(`[kvt][alor ws][close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
-        } else {
-            // например, сервер убил процесс или сеть недоступна
-            // обычно в этом случае event.code 1006
-            console.log('[kvt][alor ws][close] Соединение прервано', event);
-            kvtSetState('alor', 0, `Соединение прервано`)
-
-            setTimeout(function() {
-                alor_connect();
-            }, 5000);
-        }
-    };
-
-    window.__alorws.onerror = (error) => {
-        console.warn(`[kvt][alor ws][error] ${error.message}`);
-    };
 }
 
 function usData_connect() {
@@ -346,39 +382,48 @@ function usData_connect() {
 }
 
 function kvt_connect(telegramId) {
-    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${telegramId}&ver=${kvtSettings.extensionVer}`);
-    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${telegramId}&ver=${kvtSettings.extensionVer}`);
+    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${kvtSettings.telegramId}&token=${kvtSettings.kvtToken}&ver=${kvtSettings.extensionVer}`);
+    //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${kvtSettings.telegramId}&token=${kvtSettings.kvtToken}&ver=${kvtSettings.extensionVer}`);
 
     window.__kvtWS.onopen = (e) => {
-        console.log("[kvt][kvts ws]", "connected to kvts");
-        kvtSetState('kvts', 2, `connected to kvts`)
+        kvtd ?? console.log("[kvt][kvts ws]", "Подключен к серверу kvts");
+        kvtStateSet('kvts', 2, `Подключен к серверу kvts`)
 
-        if (window.__kvtGetdp) {
-            Object.keys(window.__kvtGetdp).forEach(key => {
-                subscribe_getdp(key, '', window.__kvtGetdp[key])
-            });
+        // Переподписка на Getdp
+        if (window.__kvtGetdp && resubscribe) {
+            for (let item of window.__kvtGetdp) {
+                subscribe_getdp(item.widgetId, item.ticker, item.guid)
+                kvtd ?? console.warn('subscribe_getdp_1')
+            }
+        }
+
+        // Переподписка на TS
+        if (window.__kvtTs && resubscribe) {
+            for (let item of window.__kvtTs) {
+                kvtd ?? console.warn('subscribe_spb_TS_5')
+                subscribe_spb_TS(item.widgetId, item.ticker, item.guid)
+            }
         }
 
         window.__kvtWS.onmessage = (message) => {
             let msg = JSON.parse(message.data);
-            //console.log('[kvt][kvts ws]', 'Message', msg);
 
             switch (msg.type) {
                 case 'setTicker':
-                    setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumBot')
+                    setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumBot') // TODO: Wtf?
                     break
 
                 case 'getLastTrades': {
-                    let widgetId = kvth.getKeyByValue(window.__kvtTs, msg.guid)
-                    if (msg.data) {
-                        insetItemsContent(widgetId, msg.data)
+                    let obj = getKvtTsByGuid(msg.guid)
+                    if (msg.data && obj) {
+                        insetItemsContent(obj.widgetId, msg.data)
                     }
 
                     break;
                 }
 
                 case 'IsShortTicker': {
-                    let widgetId = kvth.getKeyByValue(window.__kvtIsShortTickers, msg.guid),
+                    let widgetId = Object.keys(window.__kvtIsShortTickers).find(key => window.__kvtIsShortTickers[key] === msg.guid),
                         widget = document.querySelector('[data-widget-id="'+ widgetId +'"]')
 
                     if (widget && msg.data) {
@@ -402,9 +447,10 @@ function kvt_connect(telegramId) {
                 }
 
                 case 'getdp': {
-                    let widgetId = kvth.getKeyByValue(window.__kvtGetdp, msg.guid)
+                    let obj = window.__kvtGetdp.find(item => item.guid === msg.guid)
                     if (msg.data) {
-                        insetItemsContent(widgetId, msg.data)
+                        kvtd ?? console.warn('insetItemsContent_3 getdp')
+                        insetItemsContent(obj.widgetId, msg.data)
                     }
 
                     break;
@@ -418,21 +464,19 @@ function kvt_connect(telegramId) {
         if (event.wasClean) {
             msg = `Соединение закрыто чисто, код=${event.code} причина=${event.reason}`
         } else {
-            // например, сервер убил процесс или сеть недоступна
-            // обычно в этом случае event.code 1006
             msg = `Соединение прервано, код=${event.code} причина=${event.reason}`
 
             setTimeout(function() {
-                kvt_connect(telegramId);
+                kvt_connect(true);
             }, 5000);
         }
 
-        console.log('[kvt][kvts ws][close]', msg);
-        kvtSetState('kvts', 0, msg)
+        kvtd ?? console.log('[kvt][kvts ws][close]', msg);
+        kvtStateSet('kvts', 0, msg)
     };
 
     window.__kvtWS.onerror = (error) => {
-        console.warn('[kvt][kvts ws][error]', error.message);
+        kvtd ?? console.warn('[kvt][kvts ws][error]', error.message);
     };
 }
 
@@ -440,13 +484,13 @@ function rcktMonConnect() {
     window.__RcktMonWS = new WebSocket('ws://localhost:51337');
 
     window.__RcktMonWS.onopen = (e) => {
-        console.log('[kvt][RcktMon ws]', 'connected to RcktMon');
-        kvtSetState('rcktMon', 2, 'connected to RcktMon')
+        kvtd ?? console.log('[kvt][RcktMon ws]', 'connected to RcktMon');
+        kvtStateSet('rcktMon', 2, 'connected to RcktMon')
     };
 
     window.__RcktMonWS.onmessage = (message) => {
         const msg = JSON.parse(message.data);
-        console.log('[kvt][RcktMon ws][Message]', msg);
+        kvtd ?? console.log('[kvt][RcktMon ws][Message]', msg);
         setTickerInGroup(msg.ticker, msg.group, 'kvtSTIGFastVolSumRcktMon');
     }
 
@@ -462,20 +506,21 @@ function rcktMonConnect() {
                 }, 5000);
             }
         }
-        console.log('[kvt][RcktMon ws][close]', msg);
-        kvtSetState('rcktMon', 0, msg)
+        kvtd ?? console.log('[kvt][RcktMon ws][close]', msg);
+        kvtStateSet('rcktMon', 0, msg)
     };
 
     window.__RcktMonWS.onerror = (error) => {
-        console.warn('[kvt][RcktMon ws][error]', error.message);
+        kvtd ?? console.warn('[kvt][RcktMon ws][error]', error.message);
     };
 }
+
 
 function setTickerInGroup(ticker, group_id, type) {
     let widget = getGroupWidget(group_id);
 
     if (!widget) {
-        console.error('[kvt][STIG]', 'Виджет не найден')
+        kvtd ?? console.error('[kvt][setTickerInGroup]', 'Виджет не найден')
         return null;
     }
     let reactObjectName = Object.keys(widget).find(function (key) {
@@ -584,7 +629,7 @@ function add_kvtFastVolumePriceButtons(widget) {
                         let vel = document.createElement('span')
                         vel.setAttribute('data-kvt-volume', vol);
                         vel.setAttribute('title', vol + ' шт');
-                        vel.innerHTML = kvth.sizeFormat(i) + '$'
+                        vel.innerHTML = kvth.sizeFormat(i);
 
                         insertBlock.insertAdjacentElement('beforeend', vel)
                         vel.onclick = e => {
@@ -631,7 +676,7 @@ function add_kvtFastVolumeSizeButtons(widget) {
 function add_IsShortTicker (widget) {
     if (kvtSettings.IsShortTicker) {
 
-        console.log('[kvt][IsShortTicker]', widget, widget.getAttribute("data-symbol-id"))
+        kvtd ?? console.log('[kvt][IsShortTicker]', widget, widget.getAttribute("data-symbol-id"))
 
         setTimeout(function() {
             let widgetId = widget.getAttribute('data-widget-id')
@@ -703,15 +748,15 @@ function kvtWidgetsLoad() {
 
     if (Object.keys(kvtWidgets).length) {
         setTimeout(function() {
-            //console.log('[kvt][kvtWidgetsLoad]', 'БД Есть виджеты')
+            kvtd ?? console.log('[kvt][kvtWidgetsLoad] БД Есть виджеты')
             Object.keys(kvtWidgets).forEach(i => {
                 let widget = document.querySelector('[data-widget-id=' + i + ']')
 
                 if (widget) {
-                    //console.log('[kvt][kvtWidgetsLoad]', 'widget YES', i, widget)
+                    kvtd ?? console.log('[kvt][kvtWidgetsLoad] Виджет есть', i, widget)
                     kvtCreateWidget(widget)
                 } else {
-                    //console.log('[kvt][kvtWidgetsLoad]', 'widget NO', i, widget)
+                    kvtd ?? console.log('[kvt][kvtWidgetsLoad] Виджета НЕТ, но он в БД', i, widget)
                     //delete kvtWidgets[i]
                 }
             })
@@ -719,7 +764,7 @@ function kvtWidgetsLoad() {
             //localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
         }, 1)
     } else {
-        console.log('[kvt][kvtWidgetsLoad]', 'Виджетов нет')
+        kvtd ?? console.log('[kvt][kvtWidgetsLoad]', 'Виджетов нет')
     }
 }
 
@@ -738,23 +783,26 @@ function kvtCreateWidget(widget) {
             window[`__kvtNewWidget`] = false;
         }
 
-        console.log('[kvt][kvtCreateWidget]', 'вызвали изменение виджета', widgetID)
+        kvtd ?? console.log('[kvt][kvtCreateWidget]', 'вызвали изменение виджета', widgetID)
 
         if (widgetType) {
             widget.setAttribute('data-kvt-widget-load', widgetType)
-            console.log('Установим seAttribute', 'data-kvt-widget-load', widgetType)
+            kvtd ?? console.log('Установим seAttribute', 'data-kvt-widget-load', widgetType)
             kvtWidgets[widgetID] = widgetType
             localStorage.setItem("_kvt-widgets", JSON.stringify(kvtWidgets))
         }
 
         if (widgetType === 'spbTS') {
             initWidget(widget, widgetType, symbol)
-            console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
+            kvtd ?? console.log('[kvt][spbTS]', 'хотим подписаться на ', widgetID, symbol)
+            
             if (symbol.length) {
+                kvtd ?? console.warn('subscribe_spb_TS_3')
                 subscribe_spb_TS(widgetID, symbol)
             }
             observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
                 unsubscribe_spbTS(widgetID);
+                kvtd ?? console.warn('subscribe_spb_TS_4')
                 subscribe_spb_TS(widgetID, newSymbol);
             })
             onClose = unsubscribe_spbTS
@@ -777,6 +825,7 @@ function kvtCreateWidget(widget) {
             initWidget(widget, widgetType, symbol)
             subscribe_getdp(widgetID, symbol)
             observeWidgetChangeTicker(widget, widgetType, (newSymbol) => {
+                unsubscribe_getdp(widgetID);                
                 subscribe_getdp(widgetID, newSymbol);
             })
             onClose = unsubscribe_getdp
@@ -807,13 +856,13 @@ function initWidget(widget, widgetType, symbol = '') {
 }
 
 function insetItemsContent(widgetId, data) {
-    let widget = document.querySelector('[data-widget-id="'+ widgetId +'"]')
+    let widget = document.querySelector('[data-widget-id="'+ widgetId +'"]'),
+        wContent = widget ? widget.querySelector('.kvt-widget-content') : 0,
+        wType = widget && wContent ? widget.getAttribute('data-kvt-widget-load') : 0;
 
-    let wType = widget.getAttribute('data-kvt-widget-load'),
-        wContent = widget.querySelector('.kvt-widget-content')
-
-    if (widget && wContent) {
+    if (widget && wContent && wType) {
         if (data.length > 1) {
+            wContent.innerHTML = ''
             let todayDate = new Date().getUTCDate(),
                 sepDate = todayDate;
 
@@ -831,14 +880,12 @@ function insetItemsContent(widgetId, data) {
         } else {
             for (let jd of data) {
                 wContent.insertAdjacentHTML('afterbegin', kvtWidgets[wType].templateItem(jd))
-                if (299 < wContent.children.length) {
+                if (399 < wContent.children.length) {
                     wContent.lastChild.remove();
                 }
             }
         }
-    } else {
-        kvtWidgets[wType].unsubscribe(widgetId)
-    }
+    }    
 }
 
 function observeWidgetChangeTicker(widget, widgetType, callback) {
@@ -848,7 +895,7 @@ function observeWidgetChangeTicker(widget, widgetType, callback) {
                 let symbol = mutation.target.getAttribute('data-symbol-id')
                 let prevSymbol = mutation.oldValue
 
-                console.log('[kvt][observeWidgetChangeTicker]', `newTicker: ${symbol}`, `prevTicker: ${prevSymbol}`)
+                kvtd ?? console.log('[kvt][observeWidgetChangeTicker]', `newTicker: ${symbol}`, `prevTicker: ${prevSymbol}`)
 
                 if (prevSymbol !== symbol) {
                     initWidget(widget, widgetType, symbol)
@@ -862,42 +909,55 @@ function observeWidgetChangeTicker(widget, widgetType, callback) {
     })
 }
 
-function subscribe_spb_TS(widgetId, ticker, guid) {
+function subscribe_spb_TS(widgetId, ticker, guid = '') {
     !window.__kvtTs ? window.__kvtTs = [] : 0
-    !window.__kvtTsTickers ? window.__kvtTsTickers = [] : 0
+    let obj = {widgetId: widgetId, guid: guid ? guid : kvth.uuidv4(), ticker: ticker}
 
-    if (!guid) {
-        window.__kvtTs[widgetId] = kvth.uuidv4()
-    }
+    window.__kvtTs = window.__kvtTs.filter(i => i.widgetId !== widgetId);
+    window.__kvtTs.push(obj)
 
-    window.__kvtTsTickers[widgetId] = ticker
+    kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'subscribe_spb_TS', obj.widgetId, obj.ticker)
 
-    console.log('[kvt][T&S][subscribe]', 'subscribe_spb_TS', widgetId, ticker)
+    if (kvtSettings.alorTS) {
+        let subscribe_alorws_TIMER = setInterval(() => {
+            if (kvtStates.alor.httpCode === 403) {  // TODO: !== 200 ???
+                clearInterval(subscribe_alorws_TIMER)
+            } else if (window.__alorws && window.__alorws.readyState === 1) {
+                window.__alorws.send(JSON.stringify({
+                    "opcode": "AllTradesGetAndSubscribe",
+                    "code": ticker,
+                    "exchange": "SPBX",
+                    "delayed": false,
+                    "token": kvtAlorJWT,
+                    "guid": obj.guid
+                }));
+    
+                clearInterval(subscribe_alorws_TIMER)
+    
+                kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Вроде подписался')
+            } else {
+                kvtd ?? console.log('[kvt][subscribe_spb_TS]', 'Не подписался, сокет не готов')
+            }
+        }, 100);
 
-    // Запросим 200 последних принтов
-    if (window.__kvtWS && window.__kvtWS.readyState === 1) {
-        window.__kvtWS.send(JSON.stringify({
-            user_id: kvtSettings.telegramId,
-            type: 'getLastTrades',
-            ticker: ticker,
-            guid: window.__kvtTs[widgetId]
-        }));
-    }
-
-    if (window.__alorws && window.__alorws.readyState === 1) {
-        window.__alorws.send(JSON.stringify({
-            "opcode": "AllTradesGetAndSubscribe",
-            "code": ticker,
-            "exchange": "SPBX",
-            "delayed": false,
-            "token": kvtAlorJWT,
-            "guid": window.__kvtTs[widgetId]
-        }));
-
-        console.log('[kvt][T&S][subscribe]', 'Вроде подписался')
-    } else {
-        console.log('[kvt][T&S][subscribe]', 'Не подписался, сокет не готов')
-    }
+        if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+            window.__kvtWS.send(JSON.stringify({
+                user_id: kvtSettings.telegramId,
+                type: 'getLastTrades',
+                ticker: ticker,
+                guid: obj.guid
+            }));
+        }   
+    } else {        
+        if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+            window.__kvtWS.send(JSON.stringify({
+                user_id: kvtSettings.telegramId,
+                type: 'subscribeTS',
+                ticker: ticker,
+                guid: obj.guid
+            }));
+        }
+    }    
 }
 
 function subscribe_us_TS(widgetId, ticker, guid) {
@@ -940,25 +1000,35 @@ function subscribe_us_TS(widgetId, ticker, guid) {
 
 function unsubscribe_spbTS(widgetId) {
 
-    console.log('[kvt][T&S][unsubscribe]', widgetId)
+    kvtd ?? console.log('[kvt][unsubscribe_spbTS]', widgetId)
 
-    if (window.__kvtTs && window.__kvtTs[widgetId]) {
-        if (window.__alorws && window.__alorws.readyState === 1) {
-            window.__alorws.send(JSON.stringify({
-                "opcode": "unsubscribe",
-                "token": kvtAlorJWT,
-                "guid": window.__kvtTs[widgetId]
-            }));
+    let obj = window.__kvtTs ? window.__kvtTs.find(item => item.widgetId === widgetId) : 0
 
-            console.log('[kvt][T&S][unsubscribe]', 'отписался от ', widgetId)
+    if (obj) {
+        if (kvtSettings.alorTS) {
+            if (window.__alorws && window.__alorws.readyState === 1) {
+                window.__alorws.send(JSON.stringify({
+                    "opcode": "unsubscribe",
+                    "token": kvtAlorJWT,
+                    "guid": obj.guid
+                }));
+
+                kvtd ?? console.log('[kvt][unsubscribe_spbTS][alor] отписался от ', widgetId)
+            }
         } else {
-            console.log('[kvt][T&S][unsubscribe]', 'Не отписался, сокет не готов')
+            if (window.__kvtWS && window.__kvtWS.readyState === 1) {
+                window.__kvtWS.send(JSON.stringify({
+                    user_id: kvtSettings.telegramId,
+                    type: 'unsubscribeTS',
+                    guid: obj.guid
+                }));
+    
+                kvtd ?? console.log('[kvt][unsubscribe_getdp]', 'отписался от ', widgetId)
+            }
         }
 
-        delete window.__kvtTs[widgetId]
-        delete window.__kvtTsTickers[widgetId]
-    } else {
-        console.log('[kvt][T&S][unsubscribe]', 'такой подписки нет')
+        // удалим
+        window.__kvtTs = window.__kvtTs.filter((item) => item.widgetId !== widgetId);
     }
 }
 
@@ -986,8 +1056,8 @@ function unsubscribe_usTS(widgetId) {
     }
 }
 
-function kvtSetState(name, state, msg) {
-    kvtStates[name] = {state: state, msg: msg}
+function kvtStateSet(name, state, msg, httpCode) {
+    kvtStates[name] = {state: state, msg: msg, httpCode: httpCode}
 
     let st = document.querySelector(`[data-kvt-state-name=${name}]`)
     if (st) {
@@ -999,46 +1069,53 @@ function kvtSetState(name, state, msg) {
 function subscribe_getdp(widgetId, ticker, guid) {
     !window.__kvtGetdp ? window.__kvtGetdp = [] : 0
 
-    if (!guid) {
-        window.__kvtGetdp[widgetId] = kvth.uuidv4()
-    }
+    let obj = {widgetId: widgetId, guid: guid ? guid : kvth.uuidv4(), ticker: ticker}
 
-    console.log('[kvt][getdp][subscribe]', 'subscribe_getdp', widgetId)
+    window.__kvtGetdp = window.__kvtGetdp.filter(i => i.widgetId !== widgetId);
+    window.__kvtGetdp.push(obj)
 
-    // Запросим последние getdp записи
+    kvtd ?? console.log('[kvt][subscribe_getdp]', 'subscribe_getdp', widgetId)
+
+    // Запросим последние getdp записи    
     if (window.__kvtWS && window.__kvtWS.readyState === 1) {
         window.__kvtWS.send(JSON.stringify({
             user_id: kvtSettings.telegramId,
             type: 'getdp',
             ticker: ticker,
-            guid: window.__kvtGetdp[widgetId]
+            guid: obj.guid
         }));
 
-        console.log('[kvt][getdp][subscribe]', 'подписался')
+        kvtd ?? console.log('[kvt][subscribe_getdp]', 'подписался')
     } else {
-        console.log('[kvt][getdp][subscribe]', 'Не подписался, сокет не готов')
+        kvtd ?? console.log('[kvt][subscribe_getdp]', 'Не подписался, сокет не готов', window.__kvtWS, window.__kvtWS.readyState) // TODO: Удалить это, или будет спам ошибок 
     }
 }
 
 function unsubscribe_getdp(widgetId) {
 
-    console.log('[kvt][getdp][unsubscribe]', widgetId)
+    kvtd ?? console.log('[kvt][unsubscribe_getdp]', widgetId)
 
-    if (window.__kvtGetdp && window.__kvtGetdp[widgetId]) {
+    let obj = window.__kvtGetdp ? window.__kvtGetdp.find(item => item.widgetId === widgetId) : 0
+
+    if (obj) {
         if (window.__kvtWS && window.__kvtWS.readyState === 1) {
             window.__kvtWS.send(JSON.stringify({
                 user_id: kvtSettings.telegramId,
                 type: 'unsubscribe',
-                guid: window.__kvtGetdp[widgetId]
+                guid: obj.guid
             }));
 
-            console.log('[kvt][getdp][unsubscribe]', 'отписался от ', widgetId)
+            kvtd ?? console.log('[kvt][unsubscribe_getdp]', 'отписался от ', widgetId)
         } else {
-            console.log('[kvt][getdp][unsubscribe]', 'Не отписался, сокет не готов')
+            kvtd ?? console.log('[kvt][unsubscribe_getdp]', 'Не отписался, сокет не готов')
         }
 
-        delete window.__kvtGetdp[widgetId]
+        window.__kvtGetdp = window.__kvtGetdp.filter((item) => item.widgetId !== widgetId);
     } else {
-        console.log('[kvt][getdp][unsubscribe]', 'такой подписки нет')
+        kvtd ?? console.log('[kvt][unsubscribe_getdp]', 'такой подписки нет')
     }
+}
+
+function getKvtTsByGuid(guid) {
+    return window.__kvtTs ? window.__kvtTs.find(item => item.guid === guid) : 0
 }

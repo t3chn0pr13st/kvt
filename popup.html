@@ -99,24 +99,35 @@
 				</div>
 				<div class="form-text">Отображать бумаги с нулевым фин.результатом (выставили заявку - убрали)</div>
 			</div>
+
+			<hr/>
 			
-			<div class="form-group">
-				<label for="telegramId" class="form-label">Телеграм ID</label>
-				<input type="text" name="telegramId" id="telegramId" class="form-control" placeholder="123456789">
-				<div class="form-text">Для приватных инструментов</div>
+			<h3>⚠️ Для использования данных зарегистрируйтесь в t.me/kvtsbot</h3>
+
+			<div class="form-group row g-2">				
+				<div class="col-6">
+					<label for="kvtToken" class="form-label">Токен для подключения к kvts</label>
+					<input type="text" name="kvtToken" id="kvtToken" class="form-control" placeholder="">
+					<div class="form-text">Для получения ленты принтов (T&S SPBX) и других данных</div>
+				</div>
+				<div class="col-6">
+					<label for="telegramId" class="form-label">Телеграм ID</label>
+					<input type="text" name="telegramId" id="telegramId" class="form-control" placeholder="123456789">
+					<div class="form-text">Для приватных инструментов</div>
+				</div>
 			</div>
 			
 			<div class="form-group">
 				<div class="form-check">
 					<input type="checkbox" name="IsShortTicker" id="IsShortTicker" class="form-check-input">
-					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки. Для использования нужно зарегаться в t.me/kvtsbot</label>
+					<label for="IsShortTicker">Показывать у каких брокеров есть бумага в шорт, в окне ввода заявки.</label>
 				</div>
 			</div>
 			
 			<hr/>
 			
 			<div class="form-group">
-				<label for="kvtFastVolumePrice" class="form-label">Кнопки быстрого объема в $</label>
+				<label for="kvtFastVolumePrice" class="form-label">Кнопки быстрого объема в деньгах ($/₽)</label>
 				<input type="text" name="kvtFastVolumePrice" id="kvtFastVolumePrice" class="form-control" placeholder="100000,50000,25000,10000,5000">
 				<div class="form-text">Быстрое заполнение объема в $, в виджете заявки. <b>Указывать через запятую</b>, например "100000,50000"</div>
 			</div>
@@ -138,7 +149,7 @@
 			</div>
 			
 			<hr/>
-			
+
 			<div class="form-group">
 				<label for="usDataToken" class="form-label">US Data токен</label>
 				<input type="text" name="usDataToken" id="usDataToken" class="form-control">
@@ -150,11 +161,19 @@
 				<input type="text" name="alorToken" id="alorToken" class="form-control">
 				<div class="form-text">Для работы ленты принтов. Токен получать тут - <b>https://alor.dev/open-api-tokens</b></div>
 			</div>
+
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="alorTS" id="alorTS" class="form-check-input">
+					<label for="alorTS">Лента принтов через алор (T&S SPBX)</label>
+				</div>
+				<div class="form-text">Данные будут идти от alor.ru, вместо kvts</div>
+			</div>
 			
 			<div class="form-group">
 				<label for="alorPortfolio" class="form-label">Алор портфель</label>
 				<input type="text" name="alorPortfolio" id="alorPortfolio" class="form-control" placeholder="Портфель фондового рынка (DXXXXX)">
-				<div class="form-text">Для статистики, если торгуете через Алор</div>
+				<div class="form-text">Для статистики, при торговле через Алор</div>
 			</div>
 			
 			<hr/>
@@ -169,7 +188,7 @@
 			
 			<hr/>
 			
-			<h3>Быстрый объем в $ при переходе к группе:</h3>
+			<h3>Быстрый объем в деньгах ($/₽) при переходе к группе:</h3>
 			
 			<div class="form-group row g-2">
 				<div class="col-6">
@@ -181,6 +200,16 @@
 					<input type="text" name="kvtSTIGFastVolSumRcktMon" id="kvtSTIGFastVolSumRcktMon" class="form-control" placeholder="666">
 				</div>
 			</div>
+
+			<hr/>
+
+			<div class="form-group">
+				<div class="form-check">
+					<input type="checkbox" name="debug" id="debug" class="form-check-input">
+					<label for="debug">debug расширения (в консоли)</label>
+				</div>
+			</div>
+
 		</div>
 	</div>
 </body>

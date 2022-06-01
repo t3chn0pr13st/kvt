@@ -224,7 +224,7 @@ function alor_connect() {
 
     kvtSyncAlorAccessToken().then(res => {
         if (!kvtAlorJWT) {
-            kvtSetState('alor', 0, `${res.status} ${res.statusText}`)
+            kvtSetState('alor', 1, `${res.status} ${res.statusText}`)
         }
     })
 
@@ -291,38 +291,46 @@ function usData_connect() {
 
     window.__usdataws.onopen = (e) => {
         console.log('[kvt][usData ws]', 'connected to usData provider');
-        kvtSetState('usData', 2, `connected to usData ws`);
+        kvtSetState('usData', 1, `connecting to US data provider`);
 
-        if (window.__kvtTs) {
+        window.__usdataws.send(JSON.stringify({
+            action: 'auth',
+            params: kvtSettings.usDataToken
+        }));
+
+        if (window.__kvtUsTs) {
             // TODO: Сделать переподписку
-            Object.keys(window.__kvtTs).forEach(key => {
-                subscribe_us_TS(key, window.__kvtTsTickers[key], window.__kvtTs[key])
+            Object.keys(window.__kvtUsTs).forEach(key => {
+                subscribe_us_TS(key, window.__kvtUsTsTickers[key], window.__kvtUsTs[key])
             });
         }
     };
 
     window.__usdataws.onmessage = (message) => {
-        let json = JSON.parse(message.data)
+        //console.log('US Data', message);
+        let jarr = JSON.parse(message.data)
 
-        if (json) {
-            if (json.httpCode === 200) {
-
+        if (jarr) {
+            let json = jarr[0];
+            if (json.ev && json.ev == 'status')
+            {
+                if (json.status == 'auth_success')
+                    kvtSetState('usData', 2, 'US Data provider connected.');
+                else if (json.status == 'auth_failed')
+                    kvtSetState('usData', 1, json.message);
             }
-
-            if (json.httpCode === 400) {
-
+            else {
+                if (json.data && json.guid) {
+                    let widgetId = kvth.getKeyByValue(window.__kvtUsTs, json.guid),
+                        jd = json.data
+        
+                    insetItemsContent(widgetId, [jd])
+                    // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
+                } else {
+                    //console.warn('[kvt][usData ws]', jarr);
+                }
             }
-        }
-
-        if (json.data && json.guid) {
-            let widgetId = kvth.getKeyByValue(window.__kvtTs, json.guid),
-                jd = json.data
-
-            insetItemsContent(widgetId, [jd])
-            // console.log('[kvt][alor ws]', jd.side, jd.symbol, kvth._ft(jd.price), jd.qty, kvth._tsToTime(jd.timestamp))
-        } else {
-            console.warn('[kvt][usData ws]', json)
-        }
+        }        
     }
 
     window.__usdataws.onclose = (event) => {
@@ -335,7 +343,7 @@ function usData_connect() {
             kvtSetState('usData', 0, `Соединение прервано`)
 
             setTimeout(function() {
-                alor_connect();
+                usData_connect();
             }, 5000);
         }
     };

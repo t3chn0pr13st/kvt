@@ -308,7 +308,7 @@ function alor_connect(resubscribe = false) {
 }
 
 function kvt_connect(resubscribe = false) {
-    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${kvtSettings.telegramId}&ver=${kvtSettings.extensionVer}`);
+    window.__kvtWS = new WebSocket(`wss://kvalood.ru?id=${kvtSettings.telegramId}&token=${kvtSettings.kvtToken}&ver=${kvtSettings.extensionVer}`);
     //window.__kvtWS = new WebSocket(`ws://localhost:28972?id=${kvtSettings.telegramId}&token=${kvtSettings.kvtToken}&ver=${kvtSettings.extensionVer}`);
 
     window.__kvtWS.onopen = (e) => {
